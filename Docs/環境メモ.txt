@@ -1,0 +1,38 @@
+##########################
+# ローカル環境
+##########################
+/usr/local/mysql/support-files/mysql.server start
+GRANT ALL PRIVILEGES ON *.* TO redsmylife@"localhost" IDENTIFIED BY 'redsmylife' WITH GRANT OPTION;
+
+##########################
+# GMO VPS環境 153.122.4.181
+##########################
+★Apache2.2
+/etc/httpd
+/var/www/html
+sudo service httpd restart
+
+★Tomcat6
+/usr/tomcat6
+sudo service jsvc restart
+
+★MySQL5.1
+/var/lib/mysql
+sudo service mysqld restart
+GRANT ALL PRIVILEGES ON *.* TO redsmylife@"localhost" IDENTIFIED BY 'xmen9001' WITH GRANT OPTION;
+
+★bounceHammer(バウンスメール解析)
+/usr/local/bouncehammer
+
+★WebDAV
+http://sub0000499082.hmk-temp.com/webdav/
+/tmp/webdav/
+
+
+##########################
+# さくらのインターネット環境
+##########################
+/etc/rc.d/init.d/mysqld start
+/usr/local/tomcat/bin/catalina.sh start
+GRANT ALL PRIVILEGES ON *.* TO redsmylife@"localhost" IDENTIFIED BY 'xmen9001' WITH GRANT OPTION;
+

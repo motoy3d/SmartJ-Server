@@ -1,0 +1,48 @@
+insert into feed_master values(
+default, 'http://sanukireds.ashita-sanuki.jp/index.rdf', 'J for 2014', 'J for 2014',now());
+
+select entry_url,entry_title,feed_id,site_name,published_date from entry;
+
+select * from redsFeedMaster where feed_id in (3, 14, 17, 34, 45 );
+
+insert into redsAvoidFeed VALUES(3);
+insert into redsAvoidFeed VALUES(14);
+insert into redsAvoidFeed VALUES(17);
+insert into redsAvoidFeed VALUES(34);
+insert into redsAvoidFeed VALUES(45);
+
+-- 日別チーム別のエントリー件数
+select 
+
+
+insert into message values(
+'reds'
+,1
+,'日程が表示できない事があります。
+申し訳ありません。修正までお待ちください。'
+,'iPhone'
+,'2014-11-04'
+,'2014-11-15'
+,'5.0'
+,'8.1'
+,now()
+);
+
+select count(*) from albirexResults;
+select count(*) from frontaleResults;
+select count(*) from marinosResults;
+select count(*) from fctokyoResults;
+select count(*) from grampusResults;
+select count(*) from spulseResults;
+select count(*) from gambaResults;
+select count(*) from antlersResults;
+select count(*) from visselResults;
+select count(*) from sanfrecceResults;
+select count(*) from vegaltaResults;
+select count(*) from cerezoResults;
+select count(*) from ardijaResults;
+select count(*) from ventforetResults;
+select count(*) from saganResults;
+select count(*) from reysolResults;
+select count(*) from vortisResults;
+select count(*) from redsResults;

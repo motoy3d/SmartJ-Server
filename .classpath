@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="ap/WEB-INF/src"/>
+	<classpathentry kind="src" output="work" path="work"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/commons-beanutils-1.8.3.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/commons-dbcp-1.4.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/commons-pool-1.6.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/jsonic-1.3.0.jar" sourcepath="/Users/motoy3d/Documents/Library/jsonic-1.3.0/jsonic-1.3.0-sources.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/mysql-connector-java-5.1.23-bin.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/commons-dbutils-1.5.jar" sourcepath="/Users/motoy3d/Documents/Library/commons-dbutils-1.5/commons-dbutils-1.5-sources.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/httpunit.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/js-1.6R5.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/nekohtml-0.9.5.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/xercesImpl-2.6.1.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/xmlParserAPIs-2.6.1.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-async-3.0.5.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-core-3.0.5.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-media-support-3.0.5.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-stream-3.0.5.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/servlet-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/jasper.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/jsp-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/el-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="output" path="ap/WEB-INF/classes"/>
+</classpath>
