@@ -59,7 +59,7 @@ public class VortisResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-		String[] urls = new String[] {SRC_URL_J, SRC_URL_NABISCO, SRC_URL_TENNOHAI};
+		String[] urls = new String[] {SRC_URL_J, /*SRC_URL_NABISCO,*/ SRC_URL_TENNOHAI};
         String[] compeList = new String[]{"J", "天皇杯"};
 		try {
 			String resultsTable = teamId + "Results";
@@ -87,7 +87,7 @@ public class VortisResultsSaver {
 	            List<Object[]> insertDataList = new ArrayList<Object[]>();
 				for(int r=0; r<gameList.size(); r+=3) {
 					Object game = gameList.get(r);
-					System.out.println("★" + r);
+//					System.out.println("★" + r);
 					boolean isHome = false;
 					List<Object> gameItems = (List<Object>)((Map)game).get("td");
 					if (gameItems == null || gameItems.isEmpty()) {
@@ -100,10 +100,8 @@ public class VortisResultsSaver {
 					
 					String compeName = null;
 					if (compeIdx == 0) {
-						compeName = "J1";
+						compeName = "J2";
 					} else if (compeIdx == 1){
-						compeName = "YNC";
-					} else if (compeIdx == 2){
 						compeName = "天皇杯";
 					}
 					String compe = (String)((Map)gameItems.get(0)).get("p");
@@ -122,7 +120,7 @@ public class VortisResultsSaver {
 					}
 					String detailUrl = null;
 					gameDateView = gameDateView.replace("･祝", "").replace("･休", "").replace("（", "(").replace("）", ")");
-	System.out.println("gameDateView=" + gameDateView + "   time=" + time);
+	System.out.println("★gameDateView=" + gameDateView + "   time=" + time);
 					String gameDate = null;
 					if(gameDateView.contains("(")) {//半角(
 						gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("))
@@ -152,6 +150,9 @@ public class VortisResultsSaver {
 						score = "";
 					} else {
 						result = resultAndScore.substring(0,1);
+						if ("-".equals(result)) {
+							result = null;
+						}
 						score = resultAndScore.substring(1).replace("\n", "").trim();
 						Object detailUrlDiv = ((Map)gameItems.get(3)).get("div");
 						if (detailUrlDiv != null) {
@@ -174,7 +175,7 @@ public class VortisResultsSaver {
 					oneRec[c++] = score;
 					oneRec[c++] = detailUrl;
 					insertDataList.add(oneRec);
-					logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + isHome + ", " 
+					logger.info("■" + compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + isHome + ", " 
 							+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 				}
 				if(insertDataList.isEmpty()) {

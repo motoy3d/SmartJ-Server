@@ -12,10 +12,12 @@ create table teamMaster(
 	,primary key(team_id)
 );
 /**
- *  順位表
+ *  Jリーグ順位表
  */
 create table standings(
   season year
+  ,league varchar(4)
+  ,stage varchar(5)
   ,seq int
   ,rank int
   ,team_name varchar(50)
@@ -28,7 +30,28 @@ create table standings(
   ,lost_goal int
   ,diff int
   ,up_date timestamp
-	,primary key(season, seq)
+	,primary key(season, league, seq)
+);
+
+/**
+ *  ナビスコカップ　グループリーグ順位表
+ */
+create table nabiscoStandings(
+  season year
+  ,group_name varchar(2)
+  ,seq int
+  ,rank int
+  ,team_name varchar(50)
+  ,point int
+  ,games int
+  ,win int
+  ,draw int
+  ,lose int
+  ,got_goal int
+  ,lost_goal int
+  ,diff int
+  ,up_date timestamp
+	,primary key(season, group_name, seq)
 );
 
 /**
