@@ -32,7 +32,8 @@ public class FrontaleResultsSaver {
 	 * 取得元URL
 	 */
 	private static final String SRC_URL_BASE = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D'http%3A%2F%2Fwww.frontale.co.jp%2Fschedule%2F{HTML}'%20and%20xpath%3D%22%2F%2Ftable%5B%40id%3D'{TABLE_ID}'%5D%2Ftbody%2Ftr%22&format=json&diagnostics=true&callback=";
-	private static final String SRC_HTML_J1 = "j_league.html";
+	private static final String SRC_HTML_J1_1st = "j_league_1st.html";
+	private static final String SRC_HTML_J1_2nd = "j_league_2nd.html";
 	private static final String SRC_HTML_NABISCO = "yamazaki_nabisco.html";
 	private static final String SRC_HTML_TENNOHAI = "emperors_cup.html";
 	private static final String SRC_HTML_ACL = "acl.html";
@@ -54,9 +55,9 @@ public class FrontaleResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-		String[] htmls = new String[] {SRC_HTML_J1, SRC_HTML_NABISCO, SRC_HTML_TENNOHAI, SRC_HTML_ACL};
-		String[] tableIds = new String[] {"tbl_cate_j_league", "tbl_cate_yamazaki_nabisco", "tbl_cate_emperors_cup", "tbl_cate_acl"};
-        String[] compeList = new String[]{"J", "YNC", "天皇杯", "ACL"};
+		String[] htmls = new String[] {SRC_HTML_J1_1st, SRC_HTML_J1_2nd, SRC_HTML_NABISCO, SRC_HTML_TENNOHAI};
+		String[] tableIds = new String[] {"tbl_cate_j_league", "tbl_cate_j_league", "tbl_cate_yamazaki_nabisco", "tbl_cate_emperors_cup"};
+        String[] compeList = new String[]{"J1 1st", "J1 2nd", "YNC", "天皇杯"};
 		try {
 			QueryRunner qr = DB.createQueryRunner();
             String season = new SimpleDateFormat("yyyy").format(new Date());
@@ -90,6 +91,9 @@ public class FrontaleResultsSaver {
 					logger.info("★" + gameItems.get(0));
 					
 					Object compeSrc = ((Map)gameItems.get(0)).get("p");
+					if (compeSrc == null) {
+						compeSrc = ((Map)gameItems.get(0)).get("strong");
+					}
 					String compe = "";
 					if(compeSrc instanceof String) {
 						compe = compeList[compeIdx] + "/" + StringUtils.trimToEmpty((String)compeSrc);
@@ -101,13 +105,27 @@ public class FrontaleResultsSaver {
 //						System.out.println("改行あり！！！");
 						compe = compe.replaceAll("\n", "");
 					}
-					if(compeIdx == 0) {
+					if(compeIdx == 0 || compeIdx == 1) {
 						compe += "節";
 					}
-					String gameDateView = ((String)((Map)gameItems.get(2)).get("p")).replace("（", "(").replace("）", ")").replace("・祝", "");
+					Object gameDateViewTmp = ((Map)gameItems.get(2)).get("p");
+					System.out.println(">>>>> " + gameDateViewTmp);
+					String gameDateView = null;
+					if (gameDateViewTmp instanceof String) {
+						gameDateView = ((String)gameDateViewTmp);
+					} else if (gameDateViewTmp instanceof Map) {
+						gameDateView = (String)((Map)gameDateViewTmp).get("content");
+					}
+					gameDateView = gameDateView.replaceAll("（", "(").replaceAll("）", ")").replaceAll("・祝", "").replaceAll("\n", "")
+							.replaceAll("※.*", "");
 					String gameDate = null;
 					if(gameDateView.contains("(")) {//半角(
-						gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
+						gameDate = gameDateView.substring(0, gameDateView.indexOf("(")).replaceAll("月", "/").replaceAll("日", "");
+						if ("1/1".equals(gameDate)) {	//翌年の天皇杯決勝
+							gameDate = (Integer.parseInt(season)+1) + "/" + gameDate;
+						} else {
+							gameDate = season + "/" + gameDate;
+						}
 					} else {
 						gameDate = "";	//未定等
 					}
@@ -121,16 +139,19 @@ public class FrontaleResultsSaver {
 					} else {
 						stadium = (String)((Map)gameItems.get(4)).get("p");
 					}
-					String vsTeam = (String)((Map)gameItems.get(1)).get("p");
+					String vsTeam = ((String)((Map)gameItems.get(1)).get("p")).replaceAll("※.*", "");
 					String tv = "";
 					String resultOrg = (String)((Map)gameItems.get(5)).get("p");
 					String result = null;
 					String score = null;
 					Map detailUrlMap = (Map)((Map)gameItems.get(7)).get("a");
-					if(resultOrg != null) {
-						result = resultOrg.substring(0, 1);
-						score = resultOrg.substring(1);					
-						
+					//System.out.println("△" + resultOrg);
+					if(resultOrg != null && !" - ".equals(resultOrg) &&
+							StringUtils.isNotBlank(resultOrg.substring(0, 1)) &&
+							resultOrg.length() != 1) {	//何故かよく分からない半角スペースのようなものがあるため・・・意味不明
+						result = resultOrg.substring(0, 1).trim();
+						//System.out.println("■result=[" + result + "] " + StringUtils.isBlank(result));
+						score = resultOrg.substring(1);
 					}
 					String detailUrl = "";
 					if(detailUrlMap != null) {

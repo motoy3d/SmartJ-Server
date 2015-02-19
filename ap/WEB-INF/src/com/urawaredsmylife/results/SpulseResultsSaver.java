@@ -66,7 +66,7 @@ public class SpulseResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[]{"J1", "ナビスコ", "天皇杯"};
+            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -74,7 +74,7 @@ public class SpulseResultsSaver {
 				if (((Map)game).get("td") instanceof Map) {
 					logger.info("大会名の行");
 					compeIdx++;
-					if(compeIdx == 3) {
+					if(compeIdx == 3) {	//TODO 天皇杯が始まったら4に変更
 						break;
 					}
 					continue;

@@ -68,7 +68,7 @@ public class FCTokyoResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[]{"AET CUP", "ナビスコ", "J1", "天皇杯"};
+            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -88,13 +88,13 @@ public class FCTokyoResultsSaver {
 					continue;
 				}
 				String gameNumber = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));
-				String compe = compeList[compeIdx] + " " + gameNumber;
-				if((compeIdx == 1 || compeIdx == 2) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
-					compe += "節";
+				if((compeIdx == 0 || compeIdx == 1 || compeIdx == 2) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
+					gameNumber = "第" + gameNumber + "節";
 				}
 				else if(compeIdx == 3 && NumberUtils.isDigits(gameNumber)) {	//天皇杯
-					compe += "回戦";
+					gameNumber += "回戦";
 				}
+				String compe = compeList[compeIdx] + " " + gameNumber;
 				String gameDateView = (String)((Map)gameItems.get(1)).get("p");
 				if(gameDateView == null && (Map)((Map)gameItems.get(1)).get("span") != null) {
 					gameDateView = (String)((Map)((Map)gameItems.get(1)).get("span")).get("content");

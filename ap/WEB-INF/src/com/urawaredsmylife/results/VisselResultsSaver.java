@@ -73,15 +73,15 @@ public class VisselResultsSaver {
 					continue;
 				}
 				String compeName = (String)((Map)((Map)gameItems.get(0)).get("img")).get("src");
-				if (compeName.endsWith("logo-presea.gif")) {
+				if (compeName.endsWith("logo-presea.png")) {
 					compeName = "プレシーズンマッチ";
-				} else if (compeName.endsWith("logo-j.gif")) {
-					compeName = "J";
-				} else if (compeName.endsWith("logo-ync.gif")) {
+				} else if (compeName.endsWith("logo-j2015.png")) {
+					compeName = "J1";
+				} else if (compeName.endsWith("logo-ync.png")) {
 					compeName = "ナビスコ";
-				} else if (compeName.endsWith("logo-emp.gif")) {
+				} else if (compeName.endsWith("logo-emp.png")) {
 					compeName = "天皇杯";
-				} else if (compeName.endsWith("logo-acl.gif")) {
+				} else if (compeName.endsWith("logo-acl.png")) {
 					compeName = "ACL";
 				} else {
 					compeName = null;
@@ -108,7 +108,7 @@ public class VisselResultsSaver {
 				}
 				String time = (String)((Map)gameItems.get(3)).get("p");
 				String stadium = (String)((Map)((Map)gameItems.get(5)).get("a")).get("content");
-				System.out.println("★" + (Map)gameItems.get(5));
+//				System.out.println("★" + (Map)gameItems.get(5));
 				String homeAway = null;
 				if (((Map)(Map)gameItems.get(5)).get("span") != null) {
 					homeAway = (String)((Map)((Map)gameItems.get(5)).get("span")).get("content");

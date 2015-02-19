@@ -68,9 +68,10 @@ public class GrampusResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeNameList = new String[]{"J1", "ナビスコ", "天皇杯", "トヨタプレミアカップ"};
+            String[] compeNameList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "天皇杯", "プレシーズン"};
             for(int compeIdx=0; compeIdx<compeList.size(); compeIdx++) {
-				if (compeIdx == 3) {	//トヨタプレミアムカップは除外
+            	//TODO 天皇杯が始まったら、3を4にする
+				if (compeIdx >= 3) {	//プレシーズンは除外
 					break;
 				}
 				Map compeMap = (Map)compeList.get(compeIdx);
@@ -84,26 +85,37 @@ public class GrampusResultsSaver {
 					if(gameItems == null) {
 						continue;	//ヘッダはthなので飛ばす
 					}
-					String gameNumber = StringUtils.trimToEmpty((String)((Map)gameItems.get(1)).get("p"));
+					Object gameNumberTmp = ((Map)gameItems.get(1)).get("p");
+					String gameNumber = null;
+					if (gameNumberTmp instanceof String) {
+						gameNumber = StringUtils.trimToEmpty((String)gameNumberTmp);
+					} else if (gameNumberTmp instanceof Map) {
+						System.out.println("■gameNumber " + (Map)gameNumberTmp);
+						gameNumber = StringUtils.trimToEmpty((String)((Map)gameNumberTmp).get("p"));
+					}
 					String compe = compeNameList[compeIdx] + " " + gameNumber;
-					if((compeIdx == 0 || compeIdx == 1) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
+					if((compeIdx <= 2) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
 						compe += "節";
 					}
-					else if(compeIdx == 2 && NumberUtils.isDigits(gameNumber)) {	//天皇杯
+					else if(compeIdx == 3 && NumberUtils.isDigits(gameNumber)) {	//天皇杯
 						compe += "回戦";
 					}
-					String gameDateView = (String)((Map)((Map)gameItems.get(2)).get("p")).get("content");
+					String gameDateView = null;
+					if (((Map)gameItems.get(2)).get("p") instanceof String) {
+						gameDateView = (String)((Map)gameItems.get(2)).get("p");
+					} else {
+						gameDateView = (String)((Map)((Map)gameItems.get(2)).get("p")).get("content");
+					}
 					String time = null;
 //logger.info("■gameDateView = [" + gameDateView + "]");
-					if (gameDateView != null) {
+					if (gameDateView != null && 3 <= gameDateView.split("\n").length) {
 						time = gameDateView.split("\n")[2].trim().replace("：", ":");
-						gameDateView = gameDateView.split("\n")[0].trim().replace("（", "(").replace("）", ")");
-						logger.info("  time=[" + time + "]");
-						logger.info("  gameDateView=[" + gameDateView + "]");
+//						logger.info("  time=[" + time + "]");
+//						logger.info("  gameDateView=[" + gameDateView + "]");
 					}
-//					if(gameDateView == null && (Map)((Map)gameItems.get(2)).get("span") != null) {
-//						gameDateView = (String)((Map)((Map)gameItems.get(2)).get("span")).get("content");
-//					}
+					if (gameDateView != null) {
+						gameDateView = gameDateView.split("\n")[0].trim().replace("（", "(").replace("）", ")");
+					}
 					String gameDate = null;
 					if(gameDateView != null && gameDateView.contains("(")) {
 						gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
@@ -111,15 +123,16 @@ public class GrampusResultsSaver {
 						gameDate = "";	//未定等
 					}
 					String stadium = (String)((Map)gameItems.get(4)).get("p");
-//					if(stadium == null) {
-//						stadium = (String)((Map)((Map)gameItems.get(4)).get("span")).get("content");
-//					}
 					String homeAway = ((Map)gameItems.get(4)).get("img") != null? (String)((Map)((Map)gameItems.get(4)).get("img")).get("alt") : "";
 					String vsTeam = ((Map)gameItems.get(3)).get("div") != null ? 
 							(String)((Map)((Map)gameItems.get(3)).get("div")).get("span") 
 							: (String)((Map)((Map)gameItems.get(3))).get("p");
 					String tv = null;	//TODO
-					Map resultMap = ((Map)gameItems.get(5)).get("p") instanceof Map? (Map)((Map)gameItems.get(5)).get("p") : null;
+					Map resultMap = null;
+					Object resultTmp = gameItems.get(5);
+					if (resultTmp instanceof Map) {
+						resultMap = (Map)((Map)resultTmp).get("p");;
+					}
 					String result = null;
 					String score = null;
 					String detailUrl = null;
@@ -146,7 +159,7 @@ public class GrampusResultsSaver {
 					oneRec[c++] = score;
 					oneRec[c++] = detailUrl;
 					insertDataList.add(oneRec);
-					logger.info("■" + compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+					logger.info("■" + compe + ", " + gameDate + "," + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 							+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 				}
 				

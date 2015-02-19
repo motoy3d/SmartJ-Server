@@ -9,6 +9,7 @@ import java.util.Map;
 import net.arnx.jsonic.JSON;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -30,14 +31,10 @@ public class ReysolResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL_J_TENNOHAI = "https://query.yahooapis.com/v1/public/yql?q="
+	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q="
 			+ "select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.reysol.co.jp%2Fgame%2F"
 			+ "results%2Findex.php%22%20and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'game_results_tbl"
-			+ "'%5D%2Ftr%22&format=json&callback=";
-	private static final String SRC_URL_NABISCO = "https://query.yahooapis.com/v1/public/yql?q="
-			+ "select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.reysol.co.jp%2Fgame%2F"
-			+ "results%2Findex.php%22%20and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'game_results_tbl"
-			+ "%20m20'%5D%2Ftr%22&format=json&callback=";
+			+ "'%5D%22&format=json&callback=";
 
 	/** チームID */
 	private static final String teamId = "reysol";
@@ -56,52 +53,48 @@ public class ReysolResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-		String[] urls = new String[] {SRC_URL_J_TENNOHAI, SRC_URL_NABISCO};
-        String[] compeList = new String[]{"J1", "YNC", "天皇杯", "ACL"};
+        String[] compeList = new String[]{"ACL", "ACL", "J1 1st", "J1 2nd", "ﾅﾋﾞｽｺ", "天皇杯"};
 		try {
 			String resultsTable = teamId + "Results";
 			QueryRunner qr = DB.createQueryRunner();
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			qr.update("DELETE FROM " + resultsTable + " WHERE season=" + season);
-			for(int compeIdx=0; compeIdx<urls.length; compeIdx++) {
-				String srcUrl = urls[compeIdx];
-				logger.info("####################################");
-				logger.info(srcUrl);
-				logger.info("####################################");
-				GetMethodWebRequest req = new GetMethodWebRequest(srcUrl);
-				StopWatch sw = new StopWatch();
-				sw.start();
-				WebResponse res = wc.getResponse(req);
-				sw.stop();
-				System.out.println((sw.getTime()/1000.0) + "秒");
-				Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
-				logger.info(json.toString());
-				List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json
-						.get("query")).get("results")).get("tr");
-				logger.info(gameList.getClass().toString());
-				
-	            String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-	            List<Object[]> insertDataList = new ArrayList<Object[]>();
-				for(int r=0; r<gameList.size(); r++) {
+			GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL);
+			StopWatch sw = new StopWatch();
+			sw.start();
+			WebResponse res = wc.getResponse(req);
+			sw.stop();
+			System.out.println((sw.getTime()/1000.0) + "秒");
+			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
+			logger.info(json.toString());
+			List<Object> gameGroupList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json
+					.get("query")).get("results")).get("table");
+			logger.info(gameGroupList.getClass().toString());
+			
+            String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            List<Object[]> insertDataList = new ArrayList<Object[]>();
+			for(int compeIdx = 0; compeIdx<gameGroupList.size(); compeIdx++) {
+				Object tmp = ((Map)gameGroupList.get(compeIdx)).get("tr");
+				List<Object> gameList = null;
+				if (tmp instanceof Map) {
+					gameList = new ArrayList<>();
+					gameList.add(tmp);
+				} else if (tmp instanceof List) {
+					gameList = (List<Object>)tmp;
+				}
+	            for(int r=0; r<gameList.size(); r++) {
 					Object game = gameList.get(r);
-	//				System.out.println("xx=" + ((Map)game));
 					boolean isHome = "yellow_zone".equals(((Map)game).get("class"));
 					List<Object> gameItems = (List<Object>)((Map)game).get("td");
-					boolean isTennohai = compeIdx == 0 && gameItems.size() == 7;
-					if (!isTennohai && gameItems.size() != 8) {
-						continue;	//試合なしの場合
+					if (gameItems.size() <= 2) {
+						logger.info("日程候補：" + gameItems.get(0));
+						continue;
 					}
-					
-					String compeName = null;
-					if (compeIdx == 0) {
-						if (isTennohai) {
-							compeName = "天皇杯";
-						} else {
-							compeName = "J1";
-						}
-					} else {
-						compeName = "YNC";
-					}
+//					if (((Map)game).get("th") == null) {
+//						logger.info("??：" + game + " ★gameItems.size()=" + gameItems.size());
+//						continue;
+//					}
+					String compeName = compeList[compeIdx];
 					String compe = (String)((Map)((Map)game).get("th")).get("p");
 					if (NumberUtils.isDigits(compe)) {
 						compe = "第" + compe + "節";
@@ -115,36 +108,59 @@ public class ReysolResultsSaver {
 						detailUrl = "http://www.reysol.co.jp/game/results/" + 
 								(String)((Map)((Map)gameItems.get(0)).get("a")).get("href");
 					} else {
-						gameDateView = (String)((Map)gameItems.get(0)).get("p");
+						Object gameDateViewTmp = ((Map)gameItems.get(0)).get("p");
+						if (gameDateViewTmp instanceof String) {
+							gameDateView = (String)gameDateViewTmp;
+						} else if (gameDateViewTmp instanceof Map) {
+//							System.out.println("★" + gameDateViewTmp);
+							gameDateView = (String)((Map)gameDateViewTmp).get("content");
+						}
 					}
-					gameDateView = gameDateView.replace("･祝", "").replace("･休", "").replace("（", "(").replace("）", ")");
+					gameDateView = gameDateView.replace("･祝", "").replace("･休", "").replace("（", "(").replace("）", ")")
+							.replaceAll("\n", "").trim();
 					String gameDate = null;
 					if(gameDateView.contains("(")) {//半角(
 						gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("))
 								.replace("月", "/").replace("日", "");
 					} else {
 						gameDate = "";	//未定等
+						continue;
 					}
-					String time = ((String)((Map)gameItems.get(1)).get("p")).replace("：", ":");
+					String time = null;
+					if (gameItems.get(1) != null && ((Map)gameItems.get(1)).get("p") != null) {
+						time = ((String)((Map)gameItems.get(1)).get("p")).replace("：", ":").replaceAll("※.*", "");
+					}
 					String stadium = (String)((Map)gameItems.get(2)).get("p");
-					String vsTeam = (String)((Map)gameItems.get(3)).get("p");
+					Object vsTeamTmp = ((Map)gameItems.get(3)).get("p");
+					String vsTeam = null;
+					if (vsTeamTmp instanceof String) {
+						vsTeam = (String)vsTeamTmp;
+					} else if (vsTeamTmp instanceof Map) {
+//						System.out.println("★vsTeamTmp=" + vsTeamTmp);
+						vsTeam = (String)((Map)vsTeamTmp).get("content");
+					}
+					if (vsTeam != null) {
+						vsTeam = vsTeam.replaceAll("\n", "").replaceAll(" ", "").replaceAll("（", "(").replaceAll("）", ")");
+					}
 					String tv = null;
 					if (((Map)gameItems.get(4)).get("p") instanceof Map) {
 						tv = (String)((Map)((Map)gameItems.get(4)).get("p")).get("content");
 					} else {
 						tv = (String)((Map)gameItems.get(4)).get("p");
 					}
-					String result = (String)((Map)gameItems.get(isTennohai? 5 : 6)).get("p");
+					String result = StringUtils.trimToNull(((String)((Map)gameItems.get(5)).get("p"))
+							.replaceAll(" ", ""));	//←普通の半角スペースとは違うらしい
+//					System.out.println("★結果 [" + result + "]");
 					String score = null;
-					if (((Map)gameItems.get(isTennohai? 6 : 7)).get("p") instanceof Map) {
-						score = ((String)((Map)((Map)gameItems.get(isTennohai? 6 : 7)).get("p")).get("content"))
+					if (((Map)gameItems.get(6)).get("p") instanceof Map) {
+						score = ((String)((Map)((Map)gameItems.get(6)).get("p")).get("content"))
 								.replaceAll(" ", "");
 					} else {
-						score = (String)((Map)gameItems.get(isTennohai? 6 : 7)).get("p");
+						score = (String)((Map)gameItems.get(6)).get("p");
 					}
 					score = toHankakuNum(score);
-					if ("-".equals(score)) {
-						score = "";
+					if ("-".equals(score) || " ".equals(score)|| StringUtils.isBlank(score)) {
+						score = null;		//↑普通の半角スペースとは違うらしい
 					}
 					
 					int c = 0;
@@ -162,17 +178,15 @@ public class ReysolResultsSaver {
 					oneRec[c++] = score;
 					oneRec[c++] = detailUrl;
 					insertDataList.add(oneRec);
-					logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + isHome + ", " 
-							+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
+					logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " 
+							+ isHome + ", " + vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 				}
-				
-				if(insertDataList.isEmpty()) {
-					logger.warn("日程データが取得出来ませんでした " + compeList[compeIdx]);
-					continue;
-				}
-	            int[] resultCount = qr.batch(insertSql, insertDataList.toArray(new Object[insertDataList.size()][]));
-	            logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 			}
+			if(insertDataList.isEmpty()) {
+				logger.warn("日程データが取得出来ませんでした ");
+			}
+            int[] resultCount = qr.batch(insertSql, insertDataList.toArray(new Object[insertDataList.size()][]));
+            logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("試合日程・結果抽出エラー", e);
 		}

@@ -32,9 +32,9 @@ public class ArdijaResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20"
-			+ "html%20where%20url%3D%22http%3A%2F%2Fwww.ardija.co.jp%2Fmatch%2F%22%20and%20"
-			+ "xpath%3D%22%2F%2Ftable%5B%40class%3D'match'%5D%2Ftr%22&format=json&callback=";
+	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20"
+			+ "where%20url%3D%22http%3A%2F%2Fwww.ardija.co.jp%2Fmatch%2F%22%20and%20"
+			+ "xpath%3D%22%2F%2Fdiv%5B%40class%3D'matchCategory'%5D%22&diagnostics=true";
 
 	/**
 	 * コンストラクタ
@@ -68,7 +68,7 @@ public class ArdijaResultsSaver {
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
-				List<Object> gameItems = (List<Object>)((Map)game).get("td");
+				List<Object> gameItems = (List<Object>)((Map)game).get("div");
 				if (gameItems == null) {
 					continue;
 				}

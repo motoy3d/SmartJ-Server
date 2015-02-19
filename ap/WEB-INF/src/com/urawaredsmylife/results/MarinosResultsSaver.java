@@ -34,7 +34,9 @@ public class MarinosResultsSaver {
 	 * 取得元URL
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20"
-			+ "where%20url%3D'http%3A%2F%2Fwww.f-marinos.com%2Fschedule%2Fmatch'%20and%20xpath%3D'%2F%2Ftable%5B%40class%3D%22matchSchedule%20mb10%20views-view-grid%20cols-4%22%5D%2Ftbody%2Ftr'&format=json&diagnostics=true&callback=";
+			+ "where%20url%3D'http%3A%2F%2Fwww.f-marinos.com%2Fschedule%2Fmatch'%20and%20"
+			+ "xpath%3D'%2F%2Ftable%5B%40class%3D%22matchSchedule%20mb10%20views-view-grid%20"
+			+ "cols-4%22%5D%2Ftbody%2Ftr'&format=json&diagnostics=true&callback=";
 
 	/**
 	 * コンストラクタ
@@ -74,25 +76,44 @@ public class MarinosResultsSaver {
 				if(gameItems == null) {
 					continue;
 				}
-				String compe = StringUtils.trimToEmpty((String)((Map)((Map)gameItems.get(1)).get("p")).get("span"));
+				String compe = StringUtils.trimToEmpty((String)((Map)((Map)gameItems.get(1)).get("p")).get("span"))
+						.replaceAll("明治安田", "").replaceAll("ナビスコカップ", "ﾅﾋﾞｽｺ");
+				System.out.println("★compe=" + compe);
 				Object compe2 = ((Map)gameItems.get(2)).get("p");
 				if(compe2 != null) {
 					if(compe2 instanceof String) {
 						compe += StringUtils.trimToEmpty((String)compe2);
+						System.out.println("★compe2=" + compe2);
 					} else if(compe2 instanceof List) {
 						for(Object s : (List)compe2) {
-							compe += s;
+							if (s instanceof Map) {
+								compe += ((Map)s).get("content");
+							} else {
+								compe += s;
+							}
+							System.out.println("◯compe2=" + s);
 						}
 					}
+					compe = compe.replaceAll("ステージ", "").replaceAll("Ｊ１", "J1 ")
+							.replaceAll("１ｓｔ", "1st").replaceAll("２ｎｄ", "2nd").replaceAll("予選リーグ", "");
 				}
-				String gameDateView = (String)((Map)((Map)((List)((Map)gameItems.get(0)).get("p")).get(0)).get("span")).get("content");
+				Object gameDateViewTmp = ((Map)gameItems.get(0)).get("p");
+				String gameDateView = null;
+				if (gameDateViewTmp instanceof List) {
+					gameDateView = (String)((Map)((Map)((List)gameDateViewTmp).get(0)).get("span")).get("content");
+				} else if (gameDateViewTmp instanceof Map) {
+					gameDateView = (String)((Map)((Map)gameDateViewTmp).get("span")).get("content");
+				}
 				String gameDate = null;
 				if(gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)((List)((Map)gameItems.get(0)).get("p")).get(1)).get("content");
+				String time = null;
+				if (gameDateViewTmp instanceof List) {
+					time = (String)((Map)((List)gameDateViewTmp).get(1)).get("content");
+				}
 				String stadium = (String)((List)((Map)gameItems.get(4)).get("p")).get(1);
 				String homeAway = (String)((Map)((List)((Map)gameItems.get(4)).get("p")).get(0)).get("span");
 				String vsTeam = (String)((Map)gameItems.get(3)).get("p");
@@ -127,7 +148,7 @@ public class MarinosResultsSaver {
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
-				logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}
 			

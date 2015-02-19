@@ -54,8 +54,10 @@ public class CerezoResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-		String[] htmls = new String[] {COMPE_ID_J, COMPE_ID_NABISCO, COMPE_ID_TENNOHAI, COMPE_ID_ACL};
-        String[] compeList = new String[]{"J", "YNC", "天皇杯", "ACL"};
+//		String[] htmls = new String[] {COMPE_ID_J, COMPE_ID_NABISCO, COMPE_ID_TENNOHAI, COMPE_ID_ACL};
+		String[] htmls = new String[] {COMPE_ID_J/*, COMPE_ID_TENNOHAI*/};
+//        String[] compeList = new String[]{"J", "YNC", "天皇杯", "ACL"};
+		String[] compeList = new String[]{"J", "天皇杯"};
 		try {
 			String resultsTable = teamId + "Results";
 			QueryRunner qr = DB.createQueryRunner();

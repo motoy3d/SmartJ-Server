@@ -65,7 +65,7 @@ public class AlbirexResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[]{"J1", "YNC", "天皇杯"};
+            String[] compeList = new String[]{"J1 1st", "J1 2nd", "YNC", "天皇杯"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -73,7 +73,7 @@ public class AlbirexResultsSaver {
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				if(gameItems == null) {
 					compeIdx++;
-					if(compeIdx == 3) {
+					if(compeIdx == 3) { //プレシーズン
 						break;
 					}
 					continue;

@@ -66,6 +66,7 @@ public class RedsResultsSaver {
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
+				System.out.println(r + "------------------------------");
 				if (((Map)game).get("td") instanceof Map) {
 					logger.info("無観客試合など");
 					continue;
@@ -78,36 +79,61 @@ public class RedsResultsSaver {
 					logger.info("無観客試合など");
 					continue;
 				}
-				String compe = null;
+				String compe = "";
 				if (((Map)gameItems.get(0)).get("p") instanceof Map) {
 					compe = ((String)((Map)((Map)gameItems.get(0)).get("p")).get("content")).replaceAll("\n", "");
 				} else {
 					compe = (String)((Map)gameItems.get(0)).get("p");
 				}
+				if ("大会/節".equals(compe) || "Jリーグ・スカパー！ニューイヤーカップ".equals(compe)) {
+					continue;
+				}
+				compe = compe.replaceAll("J1リーグ", "J1").replaceAll("1stステージ", "1st").replaceAll("2ndステージ", "2nd")
+						.replaceAll("Ｊリーグヤマザキナビスコカップ", "ナビスコ")
+						.replaceAll("ACLノックアウトステージ　", "ACL").replaceAll("　", "");
 				String gameDateView = null;
 				if (((Map)gameItems.get(1)).get("p") instanceof Map) {
 					gameDateView = ((String)((Map)((Map)gameItems.get(1)).get("p")).get("content"))
-							.replaceAll("\n", "").replaceAll("<br/>", "");
+							.replaceAll("\n", "").replaceAll("<br/>", "").replaceAll("※.*", "");
 				} else {
-					gameDateView = (String)((Map)gameItems.get(1)).get("p");
+					gameDateView = ((String)((Map)gameItems.get(1)).get("p")).replaceAll("※.*", "");
 				}
+				//System.out.println("★" + gameDateView);
 				String gameDate = null;
 				if(gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)gameItems.get(2)).get("p");
-				String homeAway = ((String)((Map)game).get("class")).startsWith("home")? "HOME" : "AWAY";
+//				System.out.println("時間★" + ((Map)gameItems.get(2)).get("p"));
+				String time = null;
+				if (((Map)gameItems.get(2)).get("p") instanceof Map) {
+					time = "時間未定";
+				} else {
+					time = (String)((Map)gameItems.get(2)).get("p");
+//					System.out.println("★時間=" + time);
+				}
+				String homeAway = "";
+				if (((Map)game).get("class") != null) {
+					homeAway = ((String)((Map)game).get("class")).startsWith("home")? "HOME" : "AWAY";
+				}
 				String vsTeam = (String)((Map)gameItems.get(3)).get("p");
 				String stadium = "";
 				String tv = null;
 				if (gameItems.get(4) != null && ((Map)gameItems.get(4)).get("p") != null) {
-					stadium = (String)((Map)((Map)gameItems.get(4)).get("p")).get("content");
-					int idx = stadium.indexOf("\n");
-					if (idx != -1) {
-						tv = stadium.substring(idx + 1);
-						stadium = stadium.substring(0, idx);
+//					System.out.println("スタジアム★" + ((Map)gameItems.get(4)).get("p"));
+					if (((Map)gameItems.get(4)).get("p") instanceof String) {
+						stadium = (String)((Map)gameItems.get(4)).get("p");
+					} else {
+						stadium = (String)((Map)((Map)gameItems.get(4)).get("p")).get("content");
+						int idx = stadium.indexOf("\n");
+						if (idx != -1) {
+							tv = stadium.substring(idx + 1);
+							stadium = stadium.substring(0, idx);
+						}
+					}
+					if ("未定".equals(stadium)) {
+						stadium = "会場未定";
 					}
 				}
 				Map resultMap = (Map)((Map)gameItems.get(5)).get("a");
@@ -118,6 +144,10 @@ public class RedsResultsSaver {
 					result = ((String)resultMap.get("content")).substring(0, 1);
 					score = ((String)resultMap.get("content")).substring(1);					
 					detailUrl = (String)resultMap.get("href");
+				} else if (((Map)gameItems.get(5)).get("p") != null){
+					// 親善試合などでスコアにリンクがない場合
+					result = ((String)((Map)gameItems.get(5)).get("p")).substring(0, 1);
+					score = ((String)((Map)gameItems.get(5)).get("p")).substring(1);
 				}
 				int c = 0;
 				Object[] oneRec = new Object[12];
@@ -160,6 +190,4 @@ public class RedsResultsSaver {
 		RedsResultsSaver srv = new RedsResultsSaver();
 		srv.extractResults();
 	}
-
-
 }

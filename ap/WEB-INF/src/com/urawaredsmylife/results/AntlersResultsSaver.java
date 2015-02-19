@@ -67,19 +67,19 @@ public class AntlersResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[] {"J", "ナビスコ", "天皇杯", "ナビスコ"};
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ACL", "ナビスコ", "天皇杯"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				if (gameItems == null) {
 					compeIdx++;
-					if(compeIdx == 4) {
+					if(compeIdx == 3) { //プレシーズン
 						break;
 					}
 					continue;
 				}
-				System.out.println("★" + ((Map)gameItems.get(0)).get("p"));
+				//System.out.println("★" + ((Map)gameItems.get(0)).get("p"));
 				String compe = "";
 				if (((Map)gameItems.get(0)).get("p") instanceof String) {
 					compe = compeList[compeIdx] + "/" + 
@@ -88,7 +88,15 @@ public class AntlersResultsSaver {
 					compe = compeList[compeIdx] + "/" + 
 							StringUtils.trimToEmpty((String)((Map)((Map)gameItems.get(0)).get("p")).get("content"));
 				}
-				String gameDateView = ((String)((Map)gameItems.get(1)).get("p")).replaceAll("・祝", "").replace(".", "/");
+				Object gameDateViewTmp = ((Map)gameItems.get(1)).get("p");
+				String gameDateView = null;
+				if (gameDateViewTmp instanceof String) {
+					gameDateView = (String)gameDateViewTmp;
+				} else if (gameDateViewTmp instanceof Map) {
+					gameDateView = (String)((Map)gameDateViewTmp).get("content");
+				}
+				gameDateView = gameDateView.replaceAll("・祝", "").replace(".", "/").replaceAll("※.*", "")
+						.replaceAll("\r", "").replaceAll("\n", "");
 				String gameDate = null;
 				if (gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));

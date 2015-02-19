@@ -11,6 +11,7 @@ import net.arnx.jsonic.JSON;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
@@ -34,7 +35,8 @@ public class VegaltaResultsSaver {
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from"
 			+ "%20html%20where%20url%3D%22http%3A%2F%2Fwww.vegalta.co.jp%2Fleagues%22%20and%20"
-			+ "xpath%3D%22%2F%2Fdiv%5B%40id%3D'main_contents'%5D%2Ftable%2Ftr%22&format=json&callback=";
+//			+ "%20html%20where%20url%3D%22http%3A%2F%2Fwww.vegalta.co.jp%2Fleagues_j1%2F2015-all.html%22%20and%20"
+			+ "xpath%3D%22%2F%2Fdiv%5B%40id%3D'main_contents'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -51,6 +53,7 @@ public class VegaltaResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
+		logger.info("SRC_URL=" + SRC_URL);
 		GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL);
 		try {
 			StopWatch sw = new StopWatch();
@@ -66,35 +69,27 @@ public class VegaltaResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-			for(int r=0; r<gameList.size(); r++) {
+            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
+            int compeIdx = 0;
+			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
-				if (gameItems == null || gameItems.size() == 7) {	//7はプレシーズンマッチ
+				if (gameItems == null) {
+					if (((Map)game).get("th") != null) {
+						compeIdx++;
+					}
 					continue;
 				}
-				String compe = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));
-				String compeName = "";
-				if (compe.startsWith("YN")) {
-					compeName = "YNC";
-					compe = compe.replace("YN0", "").replace("YN", "") + "節";
-				} else if (compe.startsWith("EM")) {
-					compeName = "天皇杯";
-					compe = compe.replace("EM_0", "");
-				} else if (compe.startsWith("PSM")) {
-					compeName = "プレシーズンマッチ";
-					compe = "";
-				} else if (compe.startsWith("ACL")) {
-					compeName = "ACL";
-					compe = compe.replace("ACL0", "");
-				} else {
-					compeName = "J";
-					compe += "節";
+				String compe = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));				
+				String compeName = compeList[compeIdx];
+				if (NumberUtils.isDigits(compe)) {
 					if(compe.startsWith("0")) {
 						compe = compe.substring(1);
 					}
+					compe = "第" + compe + "節";
 				}
 				compe = compeName + (compe.equals("")? "" : "/" + compe);
-				String gameDateView = (String)((Map)gameItems.get(1)).get("p") + "(" + (String)((Map)gameItems.get(2)).get("p") + ")";
+				String gameDateView = ((String)((Map)gameItems.get(1)).get("p")).replaceAll("（", "(").replaceAll("）", ")");
 				String gameDate = null;
 				if (gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("))
@@ -102,12 +97,21 @@ public class VegaltaResultsSaver {
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)gameItems.get(3)).get("p");
-				String stadium = (String)((Map)gameItems.get(5)).get("p");
+				String time = (String)((Map)gameItems.get(2)).get("p");
+				String stadium = (String)((Map)gameItems.get(4)).get("p");
 				String homeAway = (String)((Map)game).get("class");
-				String vsTeam = (String)((Map)gameItems.get(4)).get("p");
-				String tv = (String)((Map)gameItems.get(6)).get("p");
-				Map resultMap = (Map)((Map)gameItems.get(7)).get("a");
+				String vsTeam = (String)((Map)gameItems.get(3)).get("p");
+				Object tvTmp = ((Map)gameItems.get(5)).get("p");
+				String tv = null;
+				if (tvTmp instanceof String) {
+					tv = (String)tvTmp;
+				} else if (tvTmp instanceof Map) {
+					tv = (String)((Map)tvTmp).get("content");
+				}
+				Map resultMap = null;
+				if (gameItems.size() >= 7) {
+					resultMap = (Map)((Map)gameItems.get(6)).get("a");
+				}
 				String result = null;
 				String score = null;
 				String detailUrl = null;

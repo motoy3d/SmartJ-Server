@@ -10,6 +10,7 @@ import net.arnx.jsonic.JSON;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
@@ -66,7 +67,7 @@ public class SanfrecceResultsSaver {
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
             int compeIdx = 0;
-            String[] compeList = new String[] {"FUJI XEROX SUPER CUP 2014", "ACL", "ACL ROUND16", "J1", "天皇杯", "YNC"};
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
@@ -76,13 +77,15 @@ public class SanfrecceResultsSaver {
 				}
 				String compe = null;
 				if (((Map)gameItems.get(0)).get("p") instanceof Map) {
+					String matchNo = ((String)((Map)((Map)gameItems.get(0)).get("p")).get("content")).replaceAll("※.*", "");
 					compe = compeList[compeIdx] 
-							+ (compeIdx == 0? "" : "/" + ((String)((Map)((Map)gameItems.get(0)).get("p")).get("content")))
-							+ (compeIdx == 1 || compeIdx == 3 ? "節" : "");
+							+ ("/" + matchNo)
+							+ (NumberUtils.isDigits(matchNo) ? "節" : "");
 				} else {
+					String matchNo = ((String)((Map)gameItems.get(0)).get("p")).replaceAll("※.*", "");
 					compe = compeList[compeIdx]
-							+ (compeIdx == 0? "" : "/" + ((String)((Map)gameItems.get(0)).get("p")))
-							+ (compeIdx == 1 || compeIdx == 3 ? "節" : "");
+							+ ("/" + matchNo)
+							+ (NumberUtils.isDigits(matchNo) ? "節" : "");
 				}
 				String gameDateView = ((String)((Map)gameItems.get(1)).get("p"))
 						.replaceAll("祝", "").replace("・", "").replace("()", "").replace("\n", "");

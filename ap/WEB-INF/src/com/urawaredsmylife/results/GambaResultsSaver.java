@@ -77,14 +77,22 @@ public class GambaResultsSaver {
 				Map compeA = (Map)((Map)gameItems.get(2)).get("a");
 				if (compeA != null) {
 					String compeImg = (String)((Map)compeA.get("img")).get("src");
-					if (compeImg.endsWith("j1.png")) {
+					if (compeImg.endsWith("b_logo_j1meijiyasuda.png")) {
 						compeName = "J1";
 					} else if (compeImg.endsWith("j2.png")) {
 						compeName = "J2";
 					} else if (compeImg.endsWith("nabisco.png")) {
 						compeName = "ナビスコ";
+					} else if (compeImg.endsWith("acl.png")) {
+						compeName = "ACL";
 					} else if (compeImg.endsWith("tennohai.png")) {
 						compeName = "天皇杯";	//天皇杯にはリンクがなかったが念のためこちらにも
+					} else if (compeImg.endsWith("b_logo_xerox.png")) {
+						compeName = "FUJI XEROX SUPER CUP";
+					} else if (compeImg.endsWith("b_logo_panasoniccup.png")) {
+						compeName = "Panasonic CUP";
+					} else if (compeImg.endsWith("b_logo_suruga.png")) {
+						compeName = "スルガ銀行チャンピオンシップ";
 					}
 				}
 				Map compeA2 = (Map)((Map)gameItems.get(2)).get("img");	//天皇杯はリンクがない
@@ -95,15 +103,49 @@ public class GambaResultsSaver {
 					}
 				}
 				String compe = compeName + "/" + StringUtils.trimToEmpty((String)((Map)gameItems.get(3)).get("p"));
-				String gameDateView = ((String)((Map)gameItems.get(0)).get("p")).replaceAll(" 祝", "").replace(".", "/");
+				compe = compe.replaceAll(" ステージ", "");
+				
+				Object gameDateViewTmp = ((Map)gameItems.get(0)).get("p");
+				String gameDateView = null;
+				if (gameDateViewTmp instanceof String) {
+					gameDateView = ((String)gameDateViewTmp);
+				} else if (gameDateViewTmp instanceof Map) {
+					gameDateView = ((String)((Map)gameDateViewTmp).get("content"));
+				}
+				gameDateView = gameDateView.replaceAll(" 祝", "").replace(".", "/").replaceAll("※.*", "")
+						.replaceAll("\r", "").replaceAll("\n", "").replaceAll(" ", "");
 				String gameDate = null;
 				if (gameDateView.contains("(")) {
-					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
+					gameDate = gameDateView.substring(0, gameDateView.indexOf("("));
+					if ("1/1".equals(gameDate)) {	//翌年の天皇杯決勝
+						gameDate = (Integer.parseInt(season)+1) + "/" + gameDate;
+					} else {
+						gameDate = season + "/" + gameDate;
+					}
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)gameItems.get(1)).get("p");
-				String stadium = (String)((Map)((Map)gameItems.get(6)).get("a")).get("content");
+				
+				Object timeTmp = ((Map)gameItems.get(1)).get("p");
+				String time = null;
+				if (timeTmp instanceof String) {
+					time = (String)timeTmp;
+				} else if (timeTmp instanceof Map) {
+					time = (String)((Map)timeTmp).get("content");
+				}
+				time = time.replaceAll("\r", "").replaceAll("\n", "").replaceAll(" ", "");
+				String stadium = null;
+				if (true) {
+					Map stadiumTmp = (Map)((Map)gameItems.get(6)).get("a");
+					if (stadiumTmp != null) {
+						stadium = (String)stadiumTmp.get("content");
+					} else {
+						stadium = (String)((Map)gameItems.get(6)).get("p");
+						if ("未定".equals(stadium)) {
+							stadium = "会場未定";
+						}
+					}					
+				}
 				String homeAway = ((String)((Map)((Map)gameItems.get(5)).get("img")).get("src"))
 						.endsWith("icon_home_s.png")? "H" : "A";
 				List resultMapList = (List)((Map)((Map)((Map)gameItems.get(4)).get("table")).get("tr")).get("td");
