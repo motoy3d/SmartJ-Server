@@ -75,7 +75,7 @@ public class FCTokyoResultsSaver {
 				//System.out.println("▲game=" + ((Map)game));
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				String bgcolor = (String)((Map)gameItems.get(0)).get("bgcolor");
-				if(gameItems.size() == 7) {//AET CUPは省略
+				if(gameItems.size() != 8) {//プレシーズンやナビスコ試合なしは省略
 					logger.info("#省略 " + r);
 					continue;
 				}
@@ -125,7 +125,7 @@ public class FCTokyoResultsSaver {
 				}
 //				String tv = ((Map)gameItems.get(7)).get("span") != null? 
 //						(String)((Map)((List)((Map)gameItems.get(7)).get("span")).get(0)).get("content") : null;
-				String tv = null;	//TODO
+				String tv = null;	//TODO TV
 				Map resultMap = (Map)((Map)gameItems.get(5)).get("a");
 				String result = null;
 				String score = null;

@@ -15,7 +15,7 @@ import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.TeamUtils;
 
 /**
- * DBに格納されている順位表から検索し、JSONを返す。
+ * DBに格納されているJ1/J2/ナビスコカップ/ACLの順位表から検索し、JSONを返す。
  * JSONへの変換はJSONICが行う。
  * @author motoy3d
  *
@@ -33,8 +33,11 @@ public class StandingsService {
 			QueryRunner qr = DB.createQueryRunner();
 			String season = (String)params.get("season");
 			String teamId = (String)params.get("teamId");
+			String stage = (String)params.get("stage");
+			// 大会(J, Nabisco, ACL)
+			String compe = StringUtils.defaultIfEmpty((String)params.get("compe"), "J");
 			String sort = (String)params.get("sort");
-			logger.info("順位表 " + season + " : " + teamId + " : " + sort);
+			logger.info(compe + "順位表 " + season + " : " + teamId + " : " + sort);
 			if("gotGoal".equals(sort)) {
 				sort = "got_goal DESC, seq";
 			} else if("lostGoal".equals(sort)) {
@@ -50,26 +53,16 @@ public class StandingsService {
 			} else {
 				sort = "seq";
 			}
-			String league = "J1";
-			if (StringUtils.isNotBlank(teamId)) {
-				String teamName = TeamUtils.getTeamName(teamId);
-				String leagueSelectSql = "SELECT league FROM standings WHERE"
-						+ " season=" + season
-						+ " AND team_name=" + DB.quote(teamName);
-				//logger.info(leagueSelectSql);
-				Map<String, Object> leagueMap = qr.query(leagueSelectSql, new MapHandler());
-				if (leagueMap != null) {
-					league = (String)leagueMap.get("league");
-					if (StringUtils.isBlank(league)) {
-						league = "J1";
-					}				
-				}
+			String sql = null;
+			if ("J".equals(compe)) {
+				sql = createSqlForJ(qr, season, teamId, stage, sort);
+			} else if ("Nabisco".equals(compe)) {
+				sql = createSqlForNabisco(qr, season, teamId);
+			} else if ("ACL".equals(compe)) {
+				sql = createSqlForACL(qr, season, teamId);
+			} else {
+				return null;
 			}
-
-			String sql = "SELECT * FROM standings WHERE"
-					+ " season=" + season 
-					+ " AND league='" + league + "'"
-					+ " ORDER BY " + sort;
 			logger.info(sql);
 			List<Map<String, Object>> resultList = qr.query(sql, new MapListHandler());
 			return resultList;
@@ -77,5 +70,91 @@ public class StandingsService {
 			logger.error("順位表読み込みエラー", e);
 			return new Object[] {new NoDataResult()};
 		}
+	}
+
+	/**
+	 * Jリーグ順位表取得SQLを生成して返す。
+	 * チームIDによってJ1/J2を自動判定する。
+	 * @param qr
+	 * @param season
+	 * @param teamId
+	 * @param sort
+	 * @return
+	 * @throws SQLException
+	 */
+	private String createSqlForJ(QueryRunner qr, String season,
+			String teamId, String stage, String sort) throws SQLException {
+		String sql;
+		String league = "J1";
+		if (StringUtils.isBlank(stage)) {
+			stage = "1st";
+		}
+		// チームのリーグカテゴリを検索
+		if (StringUtils.isNotBlank(teamId)) {
+			String teamName = TeamUtils.getTeamName(teamId);
+			String leagueSelectSql = "SELECT league FROM standings WHERE"
+					+ " season=" + season
+					+ " AND team_name=" + DB.quote(teamName);
+			//logger.info(leagueSelectSql);
+			Map<String, Object> leagueMap = qr.query(leagueSelectSql, new MapHandler());
+			if (leagueMap != null) {
+				league = (String)leagueMap.get("league");
+				if (StringUtils.isBlank(league)) {
+					league = "J1";
+				}
+			}
+		}
+		// ステージ
+		String stageCond = "";
+		if ("J1".equals(league)) {
+			stageCond = " AND stage=" + DB.quote(stage);
+		}
+
+		sql = "SELECT *, team_name AS team FROM standings WHERE"
+				+ " season=" + season 
+				+ " AND league='" + league + "'"
+				+ stageCond
+				+ " ORDER BY " + sort;
+		return sql;
+	}
+
+	/**
+	 * ナビスコカップ順位表取得SQLを生成して返す。
+	 * チームIDによってグループを自動判定する。
+	 * @param qr
+	 * @param season
+	 * @param teamId
+	 * @return
+	 * @throws SQLException
+	 */
+	private String createSqlForNabisco(QueryRunner qr, String season,
+			String teamId) throws SQLException {
+		String teamName = TeamUtils.getTeamName(teamId);
+
+		String sql = "SELECT * FROM nabiscoStandings WHERE"
+				+ " season=" + season 
+				+ " AND group_name=(SELECT group_name FROM nabiscoStandings WHERE team_name=" + DB.quote(teamName) + ")"
+				+ " ORDER BY seq";
+		return sql;
+	}
+
+	/**
+	 * ACLグループリーグ順位表取得SQLを生成して返す。
+	 * チームIDによってグループを自動判定する。
+	 * @param qr
+	 * @param season
+	 * @param teamId
+	 * @return
+	 * @throws SQLException
+	 */
+	private String createSqlForACL(QueryRunner qr, String season,
+			String teamId) throws SQLException {
+		String teamName = TeamUtils.getTeamName(teamId);
+
+		String sql = "SELECT * FROM aclStandings WHERE"
+				+ " season=" + season 
+				+ " AND group_name=(SELECT group_name FROM aclStandings WHERE team_name=" + DB.quote(teamName) + ")"
+				+ " ORDER BY seq";
+		return sql;
 	}
 }

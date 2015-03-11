@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.urawaredsmylife.dto.NoDataResult;
@@ -30,10 +31,14 @@ public class ConfigService {
 		try {
 			QueryRunner qr = DB.createQueryRunner();
 			String os = (String)params.get("os");
-			String version = (String)params.get("version");
+			String osVersion = (String)params.get("osversion");
+			if (StringUtils.isBlank(osVersion)) {
+				osVersion = (String)params.get("version");		//古いアプリへの対応
+			}
+//TODO アプリバージョンによるメッセージ判定			String appVersion = (String)params.get("appversion");
 			String teamId = (String)params.get("teamId");
 			String sql = "SELECT * FROM message WHERE os=" + DB.quote(os) 
-					+ " AND " + DB.quote(version) + " BETWEEN min_ver AND max_ver"
+					+ " AND " + DB.quote(osVersion) + " BETWEEN min_ver AND max_ver"
 					+ " AND team_id = " + DB.quote(teamId);
 			logger.info(sql);
 			List<Map<String, Object>> messageList = qr.query(sql, new MapListHandler());
@@ -49,7 +54,9 @@ public class ConfigService {
 			if(messageList != null && !messageList.isEmpty()) {
 				conf.put("message", messageList.get(0).get("message"));
 			}
+			conf.put("jcategory", team.get("category"));
 			conf.put("adType", team.get("adType"));
+			conf.put("aclFlg", team.get("aclFlg"));
 			
 			resultList.add(conf);
 			return resultList;

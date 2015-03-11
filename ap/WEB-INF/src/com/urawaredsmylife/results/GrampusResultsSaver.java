@@ -127,7 +127,7 @@ public class GrampusResultsSaver {
 					String vsTeam = ((Map)gameItems.get(3)).get("div") != null ? 
 							(String)((Map)((Map)gameItems.get(3)).get("div")).get("span") 
 							: (String)((Map)((Map)gameItems.get(3))).get("p");
-					String tv = null;	//TODO
+					String tv = null;	//TODO TV
 					Map resultMap = null;
 					Object resultTmp = gameItems.get(5);
 					if (resultTmp instanceof Map) {

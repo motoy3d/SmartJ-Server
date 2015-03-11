@@ -9,6 +9,7 @@ import java.util.Map;
 import net.arnx.jsonic.JSON;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -29,10 +30,7 @@ public class SaganResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL_BASE = "https://query.yahooapis.com/v1/public/yql?q="
-			+ "select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.sagantosu.jp%2Fgame%2F"
-			+ "game_schedule.html%22%20%0Aand%20xpath%3D%22%2F%2Fdiv%5B%40id%3D'schedule'%5D%2F"
-			+ "table%2Ftr%22&format=json&callback=";
+	private static final String SRC_URL_BASE = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.sagan-tosu.net%2Fgame%2F%22%20and%20xpath%3D%22%2F%2Fdiv%5B%40id%3D'contents'%5D%2Ftable%2Ftr%22&format=json&diagnostics=true&callback=";
 	
 	/** チームID */
 	private static final String teamId = "sagan";
@@ -78,12 +76,15 @@ public class SaganResultsSaver {
 //				System.out.println("xx=" + ((Map)game));
 				boolean isHome = "home_game".equals(((Map)game).get("class"));
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
+				if (gameItems == null) {
+					continue;
+				}
 
 				String compeName = "";
-				Map compeImgTmp = (Map)((Map)gameItems.get(2)).get("img");
+				Map compeImgTmp = (Map)((Map)gameItems.get(3)).get("img");
 				if (compeImgTmp != null) {
 					String compeImg = (String)((Map)compeImgTmp).get("src");
-					if (compeImg.endsWith("j1.png")) {
+					if (compeImg.endsWith("j1-1.png") || compeImg.endsWith("j1-2.png")) {
 						compeName = "J1";
 					} else if (compeImg.endsWith("j2.png")) {
 						compeName = "J2";
@@ -102,35 +103,74 @@ public class SaganResultsSaver {
 					}
 				}
 
-				String compe = (String)((Map)gameItems.get(3)).get("p");
+				String compe = (String)((Map)((Map)gameItems.get(4)).get("p")).get("content");
 				compe = compeName + "/" + compe.replaceAll("ステージ", "").replaceAll("予選リーグ", "")
-						.replaceAll("　", " ");
+						.replaceAll("　", " ").replaceAll("\n", "");
 				
-				String day = (String)((Map)gameItems.get(0)).get("p");
-				String gameDateView = ((String)((Map)((Map)game).get("th")).get("p")).replace(".", "/")
+				String day = (String)((Map)gameItems.get(1)).get("p");
+				String gameDateView = ((String)((Map)gameItems.get(0)).get("p")).replaceAll("\\.", "/")
 						+ "(" + day + ")";
 				String gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
-				String time = ((String)((Map)gameItems.get(1)).get("p")).replace("：", ":");
-				String stadium = (String)((Map)gameItems.get(11)).get("p");
+				String time = ((String)((Map)gameItems.get(2)).get("p")).replace("：", ":");
+				String stadium = "";
 				String vsTeam = null;
-				Object vsTeamTmp = ((Map)gameItems.get(10)).get("p");
-				if (vsTeamTmp instanceof String) {
-					vsTeam = (String)vsTeamTmp;
-				} else if(vsTeamTmp instanceof Map) {
-					vsTeam = (String)((Map)vsTeamTmp).get("content");
-				}
-				vsTeam = vsTeam.replaceAll("\n", "").trim();
 				String tv = "";
-				Map resultMap = (Map)gameItems.get(6) == null? 
-						null : (Map)((Map)gameItems.get(6)).get("a");
 				String result = null;
 				String score = null;
 				String detailUrl = null;
-				if (resultMap != null) {
-					score = ((String)resultMap.get("content")).replaceAll(" ", "");
-					result = score.substring(0, 1);
-					score = score.substring(1);
-					detailUrl = "http://www.sagantosu.jp/sp" + ((String)resultMap.get("href"));
+				
+				List resultsTmp = null;
+				//結果が出ている場合
+				if (((Map)(Map)gameItems.get(5)).get("div") != null) {
+					resultsTmp = (List)((Map)((Map)((Map)((Map)((List)((Map)gameItems.get(5)).get("div")).get(1)).get("table"))
+							.get("tbody")).get("tr")).get("td");
+					Map vsTeamMap = (Map)resultsTmp.get(2);
+					vsTeam = (String)((Map)vsTeamMap).get("p");
+					vsTeam = StringUtils.deleteWhitespace(vsTeam.replaceAll("\n", ""));
+					
+					//スペースがよく分からない文字になっている確認
+//					byte[] b = vsTeam.getBytes("utf-8");
+//					System.out.println("------------------------");
+//					for(int i=0; i<b.length; i++) {
+//						System.out.println(Integer.toHexString(b[i]));
+//					}
+//					System.out.println("------------------------");
+//					vsTeam = "   新潟";
+//					b = vsTeam.getBytes("utf-8");
+//					for(int i=0; i<b.length; i++) {
+//						System.out.println(Integer.toHexString(b[i]));
+//					}
+//					System.out.println("------------------------");
+					
+					//なぜかスペースが消せないので文字数で切る
+					vsTeam = vsTeam.substring(3);
+					Map resultMap = (Map)((Map)(Map)resultsTmp.get(1)).get("a");
+					if (resultMap != null) {
+						score = StringUtils.deleteWhitespace(((String)resultMap.get("content")).replaceAll("−", "-"));
+						System.out.println("スコア " + score + ", " + StringUtils.contains(score, " "));
+						// 得点から勝敗を抽出。ホームが左になっている
+						int saganScore = Integer.parseInt(score.substring(0, score.indexOf("-") - 1));
+						int vsScore = Integer.parseInt(score.substring(score.indexOf("-") + 2));
+						score = saganScore + "-" + vsScore;
+						if (vsScore < saganScore) {
+							result = "○";
+						} else if (saganScore < vsScore) {
+							result = "●";
+						} else {
+							result = "△";
+						}
+						detailUrl = "http://www.sagan-tosu.net/game/" + ((String)resultMap.get("href")).replaceAll("\\./","");
+					}
+				} else {
+					//結果が出ていない場合
+					List pList = (List)((Map)(Map)gameItems.get(5)).get("p");
+					if (pList != null && pList.size() >= 2) {
+						vsTeam = (String)((Map)pList.get(0)).get("content");
+						vsTeam = vsTeam.replaceAll("VS", "").replaceAll("　", "");
+						//なぜかスペースが消せないので文字数で切る
+						vsTeam = vsTeam.substring(6);
+						stadium = (String)((Map)pList.get(1)).get("content");
+					}
 				}
 				int c = 0;
 				Object[] oneRec = new Object[12];

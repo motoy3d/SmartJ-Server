@@ -33,7 +33,7 @@ public class AlbirexResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20html%20WHERE%20url%3D'http%3A%2F%2Fwww.albirex.co.jp%2Fgames%2Fold'%20and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'league'%5D%2Ftable%2Ftr%22&format=json&diagnostics=true&callback=";
+	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20html%20WHERE%20url%3D'http%3A%2F%2Fwww.albirex.co.jp%2Fgames%2Fold'%20and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'game-archives-section'%5D%2Ftable%2Ftr%22&format=json&diagnostics=true&callback=";
 
 	/**
 	 * コンストラクタ
@@ -60,7 +60,7 @@ public class AlbirexResultsSaver {
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 			logger.info(json.toString());
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
-			logger.info(gameList.getClass().toString());
+			logger.info("gameList.size() = " + gameList.size());
 			
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
@@ -69,14 +69,19 @@ public class AlbirexResultsSaver {
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
-//				System.out.println("xx=" + ((Map)game));
-				List<Object> gameItems = (List<Object>)((Map)game).get("td");
+System.out.println("game=" + ((Map)game));
+				List<Object> gameItems = (List<Object>)((Map)game).get("th");
 				if(gameItems == null) {
-					compeIdx++;
-					if(compeIdx == 3) { //プレシーズン
-						break;
-					}
+					System.out.println("continue...............");
 					continue;
+				}
+				if ("節".equals((String)((Map)gameItems.get(0)).get("p"))) {
+					compeIdx++;
+					System.out.println("continue............... compeIdx=" + compeIdx);
+					continue;
+				}
+				if(compeIdx == 3) { //プレシーズン
+					break;
 				}
 				String compe = compeList[compeIdx] + " " + StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));
 				String gameDateView = (String)((Map)gameItems.get(1)).get("p");

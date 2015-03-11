@@ -30,14 +30,29 @@ public class StandingsSaver {
 	private static final String SRC_URL_J1 = "http://soccer.yahoo.co.jp/jleague/standings/j1";
 	private static final String SRC_URL_J2 = "http://soccer.yahoo.co.jp/jleague/standings/j2";
 	private static final String SRC_URL_NABISCO = "http://soccer.yahoo.co.jp/jleague/standings/jleaguecup";
+	private static final String SRC_URL_ACL1 = "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/144/";
+	private static final String SRC_URL_ACL2= "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/145/";
+	private static final String SRC_URL_ACL3 = "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/146/";
+	private static final String SRC_URL_ACL4 = "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/147/";
+	
 	/**
-	 * J1開幕日
+	 * 開幕日
 	 */
+	// 日程修正
 	private static final String J1_OPEN_DATE = "2015/03/07";
+	private static final String J2_OPEN_DATE = "2015/03/08";
+	// 日程修正
+	private static final String NABISCO_OPEN_DATE = "2015/03/18";
+	private static final String ACL_OPEN_DATE = "2015/02/24";
+
 	/**
 	 * ナビスコカップ参加チーム数（年によって変わる可能性あり）
 	 */
 	private static final int NABISCO_TEAM_COUNT = 14;
+	/**
+	 * ACLチーム数（年によって変わる可能性あり）
+	 */
+	private static final int ACL_TEAM_COUNT = 16;
 	
 	/**
 	 * メインメソッド
@@ -59,28 +74,41 @@ public class StandingsSaver {
 	/**
 	 * Yahooスポーツにアクセスし、順位表を抽出する
 	 * @return
+	 * @throws ParseException 
 	 */
 	private int extractStandings() {
-		//1/1〜開幕まではデータ更新しない
 		try {
+			// J1
 			Date j1OpenDate = DateUtils.parseDate(J1_OPEN_DATE, new String[] {"yyyy/MM/dd"});
-			if (new Date().getTime() < j1OpenDate.getTime()) {
-				logger.info("---------- J1開幕前");
-				return 0;
+			int j1Result = 0;
+			if (j1OpenDate.getTime() < new Date().getTime()) {
+				j1Result = insertJ(SRC_URL_J1, "J1", 18);
 			}
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
-		
-		// J1
-		int j1Result = insertJ(SRC_URL_J1, "J1", 18);
-		// J2
-		int j2Result = insertJ(SRC_URL_J2, "J2", 22);
-		// ナビスコカップ
-		int nabiscoResult = insertNabisco();
-		if (j1Result == 0 && j2Result == 0 && nabiscoResult ==0) {
-			return 0;
-		} else {
+			// J2
+			Date j2OpenDate = DateUtils.parseDate(J2_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			int j2Result = 0;
+			if (j2OpenDate.getTime() < new Date().getTime()) {
+				j2Result = insertJ(SRC_URL_J2, "J2", 22);
+			}
+			// ナビスコカップ
+			Date nabiscoOpenDate = DateUtils.parseDate(NABISCO_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			int nabiscoResult = 0;
+			if (nabiscoOpenDate.getTime() < new Date().getTime()) {
+				nabiscoResult = insertNabisco();
+			}
+			//ACL
+			Date aclOpenDate = DateUtils.parseDate(ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			int aclResult = 0;
+			if (aclOpenDate.getTime() < new Date().getTime()) {
+				aclResult = insertACL();
+			}
+			
+			if (j1Result == 0 && j2Result == 0 && nabiscoResult ==0 && aclResult == 0) {
+				return 0;
+			} else {
+				return -1;
+			}
+		} catch(ParseException ex) {
 			return -1;
 		}
 	}
@@ -95,6 +123,9 @@ public class StandingsSaver {
 	private int insertJ(String srcUrl, String league, int teamCount) {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
+		logger.info("----------------------------------------");
+		logger.info(srcUrl);
+		logger.info("----------------------------------------");
 		GetMethodWebRequest req = new GetMethodWebRequest(srcUrl);
 		try {
 			WebResponse res = wc.getResponse(req);
@@ -105,23 +136,23 @@ public class StandingsSaver {
             Object[][] insertDataList = new Object[teamCount][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			for(int r=1; r<rows.length; r++) {
-				System.out.println("-----------------------------");
+				System.out.println("-----------------------------" + tables[0].getRows()[1]);
 				String rank = tables[0].getCellAsText(r, 0);
-				String team = tables[0].getCellAsText(r, 3);
-				String point = tables[0].getCellAsText(r, 4);
-				String games = tables[0].getCellAsText(r, 5);
-				String win = tables[0].getCellAsText(r, 6);
-				String draw = tables[0].getCellAsText(r, 7);
-				String lose = tables[0].getCellAsText(r, 8);
-				String gotGoal = tables[0].getCellAsText(r, 9);
-				String lostGoal = tables[0].getCellAsText(r, 10);
-				String diff = tables[0].getCellAsText(r, 11);
+				String team = tables[0].getTableCell(r, 1).getText();
+				String point = tables[0].getCellAsText(r, 2);
+				String games = tables[0].getCellAsText(r, 3);
+				String win = tables[0].getCellAsText(r, 4);
+				String draw = tables[0].getCellAsText(r, 5);
+				String lose = tables[0].getCellAsText(r, 6);
+				String gotGoal = tables[0].getCellAsText(r, 7);
+				String lostGoal = tables[0].getCellAsText(r, 8);
+				String diff = tables[0].getCellAsText(r, 9);
 				System.out.println(rank + " : " + team);
 				int c = 0;
 				insertDataList[r-1] = new Object[14];
 				insertDataList[r-1][c++] = season;
 				insertDataList[r-1][c++] = league;
-				insertDataList[r-1][c++] = "J1".equals(league)? "1st" : null;	//TODO ステージ
+				insertDataList[r-1][c++] = "J1".equals(league)? "1st" : "-";	//TODO ステージ(1st, 2nd, total)
 				insertDataList[r-1][c++] = r;
 				insertDataList[r-1][c++] = rank;
 				insertDataList[r-1][c++] = team;
@@ -150,14 +181,14 @@ public class StandingsSaver {
 
 	/**
 	 * ナビスコカップ順位表URLにアクセスして解析し、nabiscoStandingsテーブルにINSERTする。
-	 * @param srcUrl
-	 * @param league
-	 * @param teamCount
 	 * @return
 	 */
 	private int insertNabisco() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
+		logger.info("----------------------------------------");
+		logger.info(SRC_URL_NABISCO);
+		logger.info("----------------------------------------");
 		GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL_NABISCO);
 		try {
 			WebResponse res = wc.getResponse(req);
@@ -214,4 +245,74 @@ public class StandingsSaver {
 		return 0;
 	}
 
+	/**
+	 * ACL順位表URLにアクセスして解析し、aclStandingsテーブルにINSERTする。
+	 * @return
+	 */
+	private int insertACL() {
+		WebConversation wc = new WebConversation();
+		HttpUnitOptions.setScriptingEnabled(false);
+		try {
+			logger.info("----------------------------------------");
+			logger.info(SRC_URL_ACL1);
+			logger.info(SRC_URL_ACL2);
+			logger.info(SRC_URL_ACL3);
+			logger.info(SRC_URL_ACL4);
+			logger.info("----------------------------------------");
+			String[] urlList = new String[] {SRC_URL_ACL1, SRC_URL_ACL2, SRC_URL_ACL3, SRC_URL_ACL4};
+			String[] groupNameList = new String[] {"E", "F", "G", "H"};
+            String insertSql = "INSERT INTO aclStandings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            Object[][] insertDataList = new Object[ACL_TEAM_COUNT][];
+            String season = new SimpleDateFormat("yyyy").format(new Date());
+            
+            int rowIdx = 0;
+			for(int g=0; g<urlList.length; g++) {
+				String url = urlList[g].replaceAll("<YEAR>", season);
+				GetMethodWebRequest req = new GetMethodWebRequest(url);
+				WebResponse res = wc.getResponse(req);
+				WebTable[] tables = res.getTables();
+				WebTable table = tables[0];
+				TableRow[] rows = table.getRows();
+				for(int r=1; r<rows.length; r++) {
+					System.out.println("-----------------------------");
+					String rank = table.getCellAsText(r, 0).replace("-", "1");
+					String team = table.getCellAsText(r, 1);
+					String point = table.getCellAsText(r, 2);
+					String games = table.getCellAsText(r, 3);
+					String win = table.getCellAsText(r, 4);
+					String draw = table.getCellAsText(r, 5);
+					String lose = table.getCellAsText(r, 6);
+					String gotGoal = table.getCellAsText(r, 7);
+					String lostGoal = table.getCellAsText(r, 8);
+					String diff = table.getCellAsText(r, 9);
+					String group = groupNameList[g];
+					System.out.println(group + "-" + rank + " : " + team);
+					int c = 0;
+					insertDataList[rowIdx] = new Object[13];
+					insertDataList[rowIdx][c++] = season;
+					insertDataList[rowIdx][c++] = group;	//グループ
+					insertDataList[rowIdx][c++] = r;
+					insertDataList[rowIdx][c++] = rank;
+					insertDataList[rowIdx][c++] = team;
+					insertDataList[rowIdx][c++] = point;
+					insertDataList[rowIdx][c++] = games;
+					insertDataList[rowIdx][c++] = win;
+					insertDataList[rowIdx][c++] = draw;
+					insertDataList[rowIdx][c++] = lose;
+					insertDataList[rowIdx][c++] = gotGoal;
+					insertDataList[rowIdx][c++] = lostGoal;
+					insertDataList[rowIdx][c++] = diff;
+					rowIdx++;
+				}
+			}
+			
+			QueryRunner qr = DB.createQueryRunner();
+			qr.update("DELETE FROM aclStandings WHERE season=" + season);
+            int[] resultCount = qr.batch(insertSql, insertDataList);
+            logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
+		} catch (Exception e) {
+			logger.error("ACL順位表抽出エラー", e);
+		}
+		return 0;
+	}
 }
