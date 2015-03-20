@@ -87,7 +87,7 @@ public class FCTokyoResultsSaver {
 					}
 					continue;
 				}
-				String gameNumber = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));
+				String gameNumber = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));
 				if((compeIdx == 0 || compeIdx == 1 || compeIdx == 2) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
 					gameNumber = "第" + gameNumber + "節";
 				}
@@ -95,28 +95,25 @@ public class FCTokyoResultsSaver {
 					gameNumber += "回戦";
 				}
 				String compe = compeList[compeIdx] + " " + gameNumber;
-				String gameDateView = (String)((Map)gameItems.get(1)).get("p");
+				String gameDateView = (String)((Map)gameItems.get(1)).get("content");
 				if(gameDateView == null && (Map)((Map)gameItems.get(1)).get("span") != null) {
 					gameDateView = (String)((Map)((Map)gameItems.get(1)).get("span")).get("content");
 				}
+				gameDateView = gameDateView.replaceAll("\r", "").replaceAll("\n", "");
 				String gameDate = null;
 				if(gameDateView != null && gameDateView.contains("(")) {
-					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("(")).replace("月", "/").replace("日", "");
+					gameDate = season + "/" + gameDateView.substring(0, 
+							gameDateView.indexOf("(")).replace("月", "/").replace("日", "");
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)gameItems.get(2)).get("p");
-				String stadium = (String)((Map)gameItems.get(4)).get("p");
+				String time = (String)((Map)gameItems.get(2)).get("content");
+				String stadium = (String)((Map)gameItems.get(4)).get("content");
 				if(stadium == null) {
 					stadium = (String)((Map)((Map)gameItems.get(4)).get("span")).get("content");
 				}
-				if(stadium != null) {
-					stadium = StringUtils.replace(stadium, "\r\n", " ");
-					stadium = StringUtils.replace(stadium, "\r", " ");
-					stadium = StringUtils.replace(stadium, "\n", " ");
-				}
 				String homeAway = "#ffffff".equals((String)((Map)gameItems.get(0)).get("bgcolor"))? "H" : "A";
-				String vsTeam = (String)((Map)gameItems.get(3)).get("p");
+				String vsTeam = (String)((Map)gameItems.get(3)).get("content");
 				if(vsTeam == null && ((Map)gameItems.get(3)).get("span") != null) {
 					vsTeam = (String)((Map)((Map)gameItems.get(3)).get("span")).get("content");
 				}
@@ -125,16 +122,36 @@ public class FCTokyoResultsSaver {
 				}
 //				String tv = ((Map)gameItems.get(7)).get("span") != null? 
 //						(String)((Map)((List)((Map)gameItems.get(7)).get("span")).get(0)).get("content") : null;
-				String tv = null;	//TODO TV
+				String tv = null;
 				Map resultMap = (Map)((Map)gameItems.get(5)).get("a");
 				String result = null;
 				String score = null;
 				String detailUrl = null;
 				if(resultMap != null) {
-					result = ((String)resultMap.get("content")).substring(1, 2);
-					score = ((String)resultMap.get("content")).replaceAll(result, "-");
+					score = (String)resultMap.get("content");
+					int idx = score.indexOf("-");
+					int myScore = score.indexOf(0, idx);
+					int vsScore = score.indexOf(idx + 1);
+					if (myScore < vsScore) {
+						result = "●";
+					} else if (vsScore < myScore) {
+						result = "○";
+					} else {
+						result = "△";
+					}
 					detailUrl = (String)resultMap.get("href");
 				}
+				compe = StringUtils.replace(compe, "\r\n", "");
+				gameDate = StringUtils.replace(gameDate, "\r\n", "");
+				gameDateView = StringUtils.replace(gameDateView, "\r\n", "");
+				time = StringUtils.replace(time, "\r\n", "");
+				stadium = StringUtils.replace(stadium, "\r\n", "");
+				vsTeam = StringUtils.replace(vsTeam, "\r\n", "");
+				tv = StringUtils.replace(tv, "\r\n", "");
+				result = StringUtils.replace(result, "\r\n", "");
+				score = StringUtils.replace(score, "\r\n", "");
+				detailUrl = StringUtils.replace(detailUrl, "\r\n", "");
+
 				int c = 0;
 				Object[] oneRec = new Object[12];
 				oneRec[c++] = season;

@@ -35,7 +35,7 @@ public class AntlersResultsSaver {
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from"
 			+ "%20html%20where%20url%3D%22http%3A%2F%2Fwww.so-net.ne.jp%2Fantlers%2Fgames%22%20"
-			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'result_table'%5D%2Ftable%2Ftr%22&format=json&callback=";
+			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'result_table'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -81,14 +81,14 @@ public class AntlersResultsSaver {
 				}
 				//System.out.println("★" + ((Map)gameItems.get(0)).get("p"));
 				String compe = "";
-				if (((Map)gameItems.get(0)).get("p") instanceof String) {
+				if (gameItems.get(0) instanceof String) {
 					compe = compeList[compeIdx] + "/" + 
-							StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));
-				} else if(((Map)gameItems.get(0)).get("p") instanceof Map) {
+							StringUtils.trimToEmpty((String)gameItems.get(0));
+				} else if(gameItems.get(0) instanceof Map) {
 					compe = compeList[compeIdx] + "/" + 
-							StringUtils.trimToEmpty((String)((Map)((Map)gameItems.get(0)).get("p")).get("content"));
+							StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));
 				}
-				Object gameDateViewTmp = ((Map)gameItems.get(1)).get("p");
+				Object gameDateViewTmp = gameItems.get(1);
 				String gameDateView = null;
 				if (gameDateViewTmp instanceof String) {
 					gameDateView = (String)gameDateViewTmp;
@@ -96,29 +96,45 @@ public class AntlersResultsSaver {
 					gameDateView = (String)((Map)gameDateViewTmp).get("content");
 				}
 				gameDateView = gameDateView.replaceAll("・祝", "").replace(".", "/").replaceAll("※.*", "")
-						.replaceAll("\r", "").replaceAll("\n", "");
+						.replaceAll("\r", "").replaceAll("\n", "").trim();
 				String gameDate = null;
 				if (gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)gameItems.get(2)).get("p");
-				String stadium = (String)((Map)gameItems.get(3)).get("p");
-				String homeAway = (String)((Map)gameItems.get(4)).get("p");
-				String vsTeam = (String)((Map)gameItems.get(5)).get("p");
+				String time = (String)gameItems.get(2);
+				String stadium = (String)gameItems.get(3);
+				String homeAway = (String)gameItems.get(4);
+				String vsTeam = (String)gameItems.get(5);
 				String tv = null;
-				Map resultMap = (Map)((Map)gameItems.get(6)).get("a");
 				String result = null;
 				String score = null;
 				String detailUrl = null;
-//				System.out.println("★" + resultMap);
+				Map resultMap = null;
+				if (gameItems.get(6) instanceof String) {
+//					System.out.println("🌟" + gameItems.get(6));
+				} else {
+					resultMap = (Map)((Map)gameItems.get(6)).get("a");
+				}
 				if (resultMap != null) {
 					score = ((String)resultMap.get("content")).replaceAll(" ", "");
 					result = score.substring(0, 1);
 					score = score.substring(1);
 					detailUrl = "http://www.so-net.ne.jp" + (String)resultMap.get("href");
 				}
+				compe = StringUtils.trim(StringUtils.replace(compe, "\n", ""));
+				gameDate = StringUtils.trim(StringUtils.replace(gameDate, "\n", ""));
+				gameDateView = StringUtils.trim(StringUtils.replace(gameDateView, "\n", ""));
+				time = StringUtils.trim(StringUtils.replace(time, "\n", ""));
+				stadium = StringUtils.trim(StringUtils.replace(stadium, "\n", ""));
+				vsTeam = StringUtils.trim(StringUtils.replace(vsTeam, "\n", ""));
+				homeAway = StringUtils.trim(StringUtils.replace(homeAway, "\n", ""));
+				tv = StringUtils.trim(StringUtils.replace(tv, "\n", ""));
+				result = StringUtils.trim(StringUtils.replace(result, "\n", ""));
+				score = StringUtils.trim(StringUtils.replace(score, "\n", ""));
+				detailUrl = StringUtils.trim(StringUtils.replace(detailUrl, "\n", ""));
+
 				int c = 0;
 				Object[] oneRec = new Object[12];
 				oneRec[c++] = season;
@@ -134,7 +150,7 @@ public class AntlersResultsSaver {
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
-				logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}
 			

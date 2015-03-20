@@ -34,7 +34,7 @@ public class VisselResultsSaver {
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20"
 			+ "from%20html%20where%20url%3D%22http%3A%2F%2Fwww.vissel-kobe.co.jp%2Fmatch%2F%22%20"
-			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40id%3D'tab1'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
+			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40id%3D'tab1'%5D%2Fsection%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -51,6 +51,7 @@ public class VisselResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
+		logger.info(SRC_URL);
 		GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL);
 		try {
 			StopWatch sw = new StopWatch();
@@ -90,14 +91,14 @@ public class VisselResultsSaver {
 				if ("プレシーズンマッチ".equals(compeName) || compeName == null) {
 					compe = compeName;
 				} else {
-					if (((Map)gameItems.get(1)).get("p") instanceof Map) {
-						compe = compeName + "/" + ((String)((Map)((Map)gameItems.get(1)).get("p")).get("content"))
+					if (((Map)gameItems.get(1)).get("content") instanceof Map) {
+						compe = compeName + "/" + ((String)((Map)((Map)gameItems.get(1)).get("content")).get("content"))
 								.replaceAll("\n", "").replaceAll(" ", "");
 					} else {
-						compe = compeName + "/" + StringUtils.trimToEmpty((String)((Map)gameItems.get(1)).get("p"));
+						compe = compeName + "/" + StringUtils.trimToEmpty((String)((Map)gameItems.get(1)).get("content"));
 					}
 				}
-				String gameDateView = ((String)((Map)((Map)gameItems.get(2)).get("p")).get("content"))
+				String gameDateView = ((String)((Map)gameItems.get(2)).get("content"))
 						.replaceAll("・祝", "").replaceAll("・休", "").replace("\n", "")
 						.replace(" ", "").replace("（", "(").replace("）", ")");
 				String gameDate = null;
@@ -106,14 +107,14 @@ public class VisselResultsSaver {
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)gameItems.get(3)).get("p");
+				String time = (String)((Map)gameItems.get(3)).get("content");
 				String stadium = (String)((Map)((Map)gameItems.get(5)).get("a")).get("content");
 //				System.out.println("★" + (Map)gameItems.get(5));
 				String homeAway = null;
 				if (((Map)(Map)gameItems.get(5)).get("span") != null) {
 					homeAway = (String)((Map)((Map)gameItems.get(5)).get("span")).get("content");
 				}
-				String vsTeam = (String)((Map)gameItems.get(4)).get("p");
+				String vsTeam = (String)((Map)gameItems.get(4)).get("content");
 				String tv = null;
 				Map resultMap = (Map)((Map)gameItems.get(6)).get("a");
 				String result = null;

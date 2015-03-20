@@ -34,7 +34,7 @@ public class SanfrecceResultsSaver {
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html"
 			+ "%20where%20url%3D%22http%3A%2F%2Fwww.sanfrecce.co.jp%2Finfo%2Fgame_schedule%2F%22%20"
-			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'section'%5D%2Ftable%2Ftr%22&format=json&callback=";
+			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'section'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -76,20 +76,13 @@ public class SanfrecceResultsSaver {
 					continue;
 				}
 				String compe = null;
-				if (((Map)gameItems.get(0)).get("p") instanceof Map) {
-					String matchNo = ((String)((Map)((Map)gameItems.get(0)).get("p")).get("content")).replaceAll("※.*", "");
-					compe = compeList[compeIdx] 
-							+ ("/" + matchNo)
-							+ (NumberUtils.isDigits(matchNo) ? "節" : "");
-				} else {
-					String matchNo = ((String)((Map)gameItems.get(0)).get("p")).replaceAll("※.*", "");
-					compe = compeList[compeIdx]
-							+ ("/" + matchNo)
-							+ (NumberUtils.isDigits(matchNo) ? "節" : "");
-				}
-				String gameDateView = ((String)((Map)gameItems.get(1)).get("p"))
+				String matchNo = ((String)gameItems.get(0)).replaceAll("※.*", "");
+				compe = compeList[compeIdx]
+						+ ("/" + matchNo)
+						+ (NumberUtils.isDigits(matchNo) ? "節" : "");
+				String gameDateView = ((String)gameItems.get(1))
 						.replaceAll("祝", "").replace("・", "").replace("()", "").replace("\n", "");
-				System.out.println("★" + gameDateView);
+//				System.out.println("★" + gameDateView);
 				String gameDate = null;
 				if (gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("))
@@ -97,17 +90,20 @@ public class SanfrecceResultsSaver {
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)gameItems.get(2)).get("p");
+				String time = (String)gameItems.get(2);
 				String stadium = "";
-				if (((Map)gameItems.get(5)).get("a") != null) {
+				if (gameItems.get(5) instanceof Map && ((Map)gameItems.get(5)).get("a") != null) {
 					stadium = (String)((Map)((Map)gameItems.get(5)).get("a")).get("content");
 				} else {
-					stadium = (String)((Map)gameItems.get(5)).get("p");
+					stadium = (String)gameItems.get(5);
 				}
 				String homeAway = "エディオンスタジアム広島".equals(stadium) ? "H" : "A";
-				String vsTeam = (String)((Map)gameItems.get(3)).get("p");
-				String tv = (String)((Map)gameItems.get(6)).get("p");;
-				Map resultMap = (Map)((Map)gameItems.get(4)).get("a");
+				String vsTeam = (String)gameItems.get(3);
+				String tv = (String)gameItems.get(6);
+				Map resultMap = null;
+				if (gameItems.get(4) instanceof Map) {
+					resultMap = (Map)((Map)gameItems.get(4)).get("a");
+				}
 				String result = null;
 				String score = null;
 				String detailUrl = null;
@@ -140,7 +136,7 @@ public class SanfrecceResultsSaver {
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
-				logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}
 			

@@ -9,6 +9,7 @@ import java.util.Map;
 import net.arnx.jsonic.JSON;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -33,7 +34,7 @@ public class RedsResultsSaver {
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20"
 			+ "html%20WHERE%20url%3D'http%3A%2F%2Fwww.urawa-reds.co.jp%2Fgame%2F'%20and%20"
-			+ "xpath%3D%22%2F%2Fdiv%5B%40class%3D'mainContentColumn'%5D%2Ftable%2Ftr%22&format=json&callback=";
+			+ "xpath%3D%22%2F%2Fdiv%5B%40class%3D'mainContentColumn'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -80,10 +81,14 @@ public class RedsResultsSaver {
 					continue;
 				}
 				String compe = "";
-				if (((Map)gameItems.get(0)).get("p") instanceof Map) {
-					compe = ((String)((Map)((Map)gameItems.get(0)).get("p")).get("content")).replaceAll("\n", "");
-				} else {
-					compe = (String)((Map)gameItems.get(0)).get("p");
+				if (gameItems.get(0) instanceof Map) {
+					if (((Map)gameItems.get(0)).get("content") instanceof Map) {
+						compe = ((String)((Map)((Map)gameItems.get(0)).get("content")).get("content")).replaceAll("\n", "");
+					} else {
+						compe = (String)((Map)gameItems.get(0)).get("content");
+					}
+				} else if (gameItems.get(0) instanceof String) {
+					compe = (String)gameItems.get(0);
 				}
 				if ("大会/節".equals(compe) || "Jリーグ・スカパー！ニューイヤーカップ".equals(compe)) {
 					continue;
@@ -92,13 +97,19 @@ public class RedsResultsSaver {
 						.replaceAll("Ｊリーグヤマザキナビスコカップ", "ナビスコ")
 						.replaceAll("ACLノックアウトステージ　", "ACL").replaceAll("　", "");
 				String gameDateView = null;
-				if (((Map)gameItems.get(1)).get("p") instanceof Map) {
-					gameDateView = ((String)((Map)((Map)gameItems.get(1)).get("p")).get("content"))
-							.replaceAll("\n", "").replaceAll("<br/>", "").replaceAll("※.*", "");
-				} else {
-					gameDateView = ((String)((Map)gameItems.get(1)).get("p")).replaceAll("※.*", "");
+				if (gameItems.get(1) instanceof Map) {
+					if (((Map)gameItems.get(1)).get("content") instanceof Map) {
+						gameDateView = (String)((Map)((Map)gameItems.get(1)).get("content")).get("content");
+					} else {
+						gameDateView = ((String)((Map)gameItems.get(1)).get("content"));
+					}
+				} else if (gameItems.get(1) instanceof String) {
+					gameDateView = ((String)gameItems.get(1));
 				}
-				//System.out.println("★" + gameDateView);
+				if (StringUtils.isNotBlank(gameDateView)) {
+					gameDateView = gameDateView.replaceAll("\n", "").replaceAll("<br/>", "").replaceAll("※.*", "");
+				}
+				System.out.println("日●" + gameDateView);
 				String gameDate = null;
 				if(gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
@@ -107,30 +118,31 @@ public class RedsResultsSaver {
 				}
 //				System.out.println("時間★" + ((Map)gameItems.get(2)).get("p"));
 				String time = null;
-				if (((Map)gameItems.get(2)).get("p") instanceof Map) {
+				if (((Map)gameItems.get(2)).get("content") instanceof Map) {
 					time = "時間未定";
 				} else {
-					time = (String)((Map)gameItems.get(2)).get("p");
+					time = ((String)((Map)gameItems.get(2)).get("content")).replace("　現地時刻", "(現地)");
 //					System.out.println("★時間=" + time);
 				}
 				String homeAway = "";
 				if (((Map)game).get("class") != null) {
 					homeAway = ((String)((Map)game).get("class")).startsWith("home")? "HOME" : "AWAY";
 				}
-				String vsTeam = (String)((Map)gameItems.get(3)).get("p");
+				String vsTeam = (String)((Map)gameItems.get(3)).get("content");
 				String stadium = "";
 				String tv = null;
-				if (gameItems.get(4) != null && ((Map)gameItems.get(4)).get("p") != null) {
-//					System.out.println("スタジアム★" + ((Map)gameItems.get(4)).get("p"));
-					if (((Map)gameItems.get(4)).get("p") instanceof String) {
-						stadium = (String)((Map)gameItems.get(4)).get("p");
+				if (gameItems.get(4) != null && gameItems.get(4) instanceof Map &&
+						((Map)gameItems.get(4)).get("content") != null) {
+System.out.println("スタジアム🌟" + ((Map)gameItems.get(4)).get("content"));
+					if (((Map)gameItems.get(4)).get("content") instanceof String) {
+						stadium = (String)((Map)gameItems.get(4)).get("content");
 					} else {
-						stadium = (String)((Map)((Map)gameItems.get(4)).get("p")).get("content");
-						int idx = stadium.indexOf("\n");
-						if (idx != -1) {
-							tv = stadium.substring(idx + 1);
-							stadium = stadium.substring(0, idx);
-						}
+						stadium = (String)((Map)((Map)gameItems.get(4)).get("content")).get("content");
+					}
+					int idx = stadium.indexOf("\n");
+					if (idx != -1) {
+						tv = stadium.substring(idx + 1);
+						stadium = stadium.substring(0, idx);
 					}
 					if ("未定".equals(stadium)) {
 						stadium = "会場未定";
@@ -144,10 +156,10 @@ public class RedsResultsSaver {
 					result = ((String)resultMap.get("content")).substring(0, 1);
 					score = ((String)resultMap.get("content")).substring(1);					
 					detailUrl = (String)resultMap.get("href");
-				} else if (((Map)gameItems.get(5)).get("p") != null){
+				} else if (((Map)gameItems.get(5)).get("content") != null){
 					// 親善試合などでスコアにリンクがない場合
-					result = ((String)((Map)gameItems.get(5)).get("p")).substring(0, 1);
-					score = ((String)((Map)gameItems.get(5)).get("p")).substring(1);
+					result = ((String)((Map)gameItems.get(5)).get("content")).substring(0, 1);
+					score = ((String)((Map)gameItems.get(5)).get("content")).substring(1);
 				}
 				int c = 0;
 				Object[] oneRec = new Object[12];

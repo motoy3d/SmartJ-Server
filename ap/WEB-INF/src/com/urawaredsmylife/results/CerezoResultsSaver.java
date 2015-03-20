@@ -1,5 +1,6 @@
 package com.urawaredsmylife.results;
 
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import net.arnx.jsonic.JSON;
 
+import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.StopWatch;
@@ -31,11 +33,11 @@ public class CerezoResultsSaver {
 	 */
 	private static final String SRC_URL_BASE = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20"
 			+ "from%20html%20where%20url%3D%22http%3A%2F%2Fwww.cerezo.co.jp%2Fgame_schedule1.asp"
-			+ "%3Fcode_s%3D{COMPE_ID}%22%20and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'game_table'%5D%2Ftr%22&format=json&callback=";
+			+ "%3Fcode_s%3D{COMPE_ID}%22%20and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'game_table'%5D%2Ftbody%2Ftr%22&format=json&callback=";
 	private static final String COMPE_ID_J = "101100";
-	private static final String COMPE_ID_NABISCO = "101101";
-	private static final String COMPE_ID_TENNOHAI = "101102";
-	private static final String COMPE_ID_ACL = "101106";
+//	private static final String COMPE_ID_NABISCO = "101101";
+//	private static final String COMPE_ID_TENNOHAI = "101102";
+//	private static final String COMPE_ID_ACL = "101106";
 
 	/** チームID */
 	private static final String teamId = "cerezo";
@@ -62,7 +64,8 @@ public class CerezoResultsSaver {
 			String resultsTable = teamId + "Results";
 			QueryRunner qr = DB.createQueryRunner();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-			qr.update("DELETE FROM " + resultsTable + " WHERE season=" + season);
+            Connection conn = DB.getConnection(false);
+			qr.update(conn, "DELETE FROM " + resultsTable + " WHERE season=" + season);
             int minusIdx = 0;
 			for(int compeIdx=0; compeIdx<htmls.length; compeIdx++) {
 	            minusIdx = (compeIdx == 1 || compeIdx == 2)? 1 : 0;
@@ -95,7 +98,7 @@ public class CerezoResultsSaver {
 					
 					String compe = "";
 					if (minusIdx == 0) {
-						compe = (String)((Map)gameItems.get(0)).get("p");
+						compe = (String)gameItems.get(0);
 						boolean isR = compe.startsWith("R");
 						if (isR) {
 							if (prevCompe.equals(compe)) {
@@ -113,8 +116,8 @@ public class CerezoResultsSaver {
 						compe = compeList[compeIdx];
 					}
 					
-					String gameDateView = ((String)((Map)gameItems.get(1 - minusIdx)).get("p"))
-							+ "(" + ((String)((Map)gameItems.get(2 - minusIdx)).get("p")).replace("･祝", "") + ")";
+					String gameDateView = ((String)gameItems.get(1 - minusIdx))
+							+ "(" + ((String)gameItems.get(2 - minusIdx)).replace("･祝", "") + ")";
 					String gameDate = null;
 					if(gameDateView.contains("(")) {//半角(
 						gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
@@ -124,14 +127,9 @@ public class CerezoResultsSaver {
 					if(!"".equals(gameDate)) {
 						gameDate = gameDate.replaceAll("月", "/").replaceAll("日", "");
 					}
-					String time = ((String)((Map)gameItems.get(3 - minusIdx)).get("p")).replace("：", ":");
-					String stadium = "";
-					if(((Map)gameItems.get(5 - minusIdx)).get("a") != null) {
-						stadium = (String)((Map)((Map)gameItems.get(5 - minusIdx)).get("a")).get("content");
-					} else {
-						stadium = (String)((Map)gameItems.get(5 - minusIdx)).get("p");
-					}
-					String vsTeam = (String)((Map)gameItems.get(4 - minusIdx)).get("p");
+					String time = ((String)gameItems.get(3 - minusIdx)).replace("：", ":");
+					String stadium = (String)gameItems.get(5 - minusIdx);
+					String vsTeam = (String)gameItems.get(4 - minusIdx);
 					String tv = "";
 					Map resultMap = (Map)gameItems.get(6 - minusIdx) == null? 
 							null : (Map)((Map)gameItems.get(6 - minusIdx)).get("a");
@@ -167,9 +165,10 @@ public class CerezoResultsSaver {
 					logger.warn("日程データが取得出来ませんでした " + compeList[compeIdx]);
 					continue;
 				}
-	            int[] resultCount = qr.batch(insertSql, insertDataList.toArray(new Object[insertDataList.size()][]));
+	            int[] resultCount = qr.batch(conn, insertSql, insertDataList.toArray(new Object[insertDataList.size()][]));
 	            logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 			}
+			DbUtils.commitAndCloseQuietly(conn);
 		} catch (Exception e) {
 			logger.error("試合日程・結果抽出エラー", e);
 		}

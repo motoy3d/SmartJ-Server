@@ -36,7 +36,7 @@ public class FrontaleResultsSaver {
 	private static final String SRC_HTML_J1_2nd = "j_league_2nd.html";
 	private static final String SRC_HTML_NABISCO = "yamazaki_nabisco.html";
 	private static final String SRC_HTML_TENNOHAI = "emperors_cup.html";
-	private static final String SRC_HTML_ACL = "acl.html";
+//	private static final String SRC_HTML_ACL = "acl.html";
 
 	/** テーブル名 */
 	private static final String TABLE = "frontaleResults";
@@ -61,7 +61,7 @@ public class FrontaleResultsSaver {
 		try {
 			QueryRunner qr = DB.createQueryRunner();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-			qr.update("DELETE FROM " + TABLE + " WHERE season=" + season);
+            List<Object[]> insertDataList = new ArrayList<Object[]>();
 			for(int compeIdx=0; compeIdx<htmls.length; compeIdx++) {
 				String srcHtml = htmls[compeIdx];
 				String tableId = tableIds[compeIdx];
@@ -77,11 +77,10 @@ public class FrontaleResultsSaver {
 				System.out.println((sw.getTime()/1000.0) + "秒");
 				Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 				logger.info(json.toString());
-				List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
+				List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.
+						get("query")).get("results")).get("tr");
 				logger.info(gameList.getClass().toString());
 				
-	            String insertSql = "INSERT INTO " + TABLE + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-	            List<Object[]> insertDataList = new ArrayList<Object[]>();
 				for(int r=0; r<gameList.size(); r++) {
 					Object game = gameList.get(r);
 	//				System.out.println("xx=" + ((Map)game));
@@ -89,36 +88,39 @@ public class FrontaleResultsSaver {
 					List<Object> gameItems = (List<Object>)((Map)game).get("td");
 					
 					logger.info("★" + gameItems.get(0));
-					
-					Object compeSrc = ((Map)gameItems.get(0)).get("p");
-					if (compeSrc == null) {
-						compeSrc = ((Map)gameItems.get(0)).get("strong");
-					}
+					String gameDateView = null;
 					String compe = "";
-					if(compeSrc instanceof String) {
-						compe = compeList[compeIdx] + "/" + StringUtils.trimToEmpty((String)compeSrc);
-					} else if(compeSrc instanceof Map) {
-						compeSrc = ((Map)compeSrc).get("content");
-						compe = compeList[compeIdx] + " " + StringUtils.trimToEmpty((String)compeSrc);
-					}
-					if(compe.contains("\n")) {
-//						System.out.println("改行あり！！！");
-						compe = compe.replaceAll("\n", "");
+					if (gameItems.get(0) instanceof String) {
+						compe = compeList[compeIdx] + "/" + gameItems.get(0);
+					} else {
+						Object compeSrc = ((Map)gameItems.get(0)).get("content");
+						if (compeSrc == null) {
+							compeSrc = ((Map)gameItems.get(0)).get("strong");
+						}
+						if(compeSrc instanceof String) {
+							compe = compeList[compeIdx] + "/" + StringUtils.trimToEmpty((String)compeSrc);
+						} else if(compeSrc instanceof Map) {
+							compeSrc = ((Map)compeSrc).get("content");
+							compe = compeList[compeIdx] + " " + StringUtils.trimToEmpty((String)compeSrc);
+						}
+						if(compe.contains("\n")) {
+	//						System.out.println("改行あり！！！");
+							compe = compe.replaceAll("\n", "");
+						}
 					}
 					if(compeIdx == 0 || compeIdx == 1) {
 						compe += "節";
 					}
-					Object gameDateViewTmp = ((Map)gameItems.get(2)).get("p");
-					System.out.println(">>>>> " + gameDateViewTmp);
-					String gameDateView = null;
-					if (gameDateViewTmp instanceof String) {
-						gameDateView = ((String)gameDateViewTmp);
-					} else if (gameDateViewTmp instanceof Map) {
-						gameDateView = (String)((Map)gameDateViewTmp).get("content");
+					if (gameItems.get(2) instanceof Map) {
+						gameDateView = (String)((Map)gameItems.get(2)).get("content");
+					} else {
+						gameDateView = ((String)gameItems.get(2));
 					}
+					System.out.println(">>>>> " + gameDateView);
 					gameDateView = gameDateView.replaceAll("（", "(").replaceAll("）", ")").replaceAll("・祝", "").replaceAll("\n", "")
 							.replaceAll("※.*", "");
 					String gameDate = null;
+					
 					if(gameDateView.contains("(")) {//半角(
 						gameDate = gameDateView.substring(0, gameDateView.indexOf("(")).replaceAll("月", "/").replaceAll("日", "");
 						if ("1/1".equals(gameDate)) {	//翌年の天皇杯決勝
@@ -132,16 +134,29 @@ public class FrontaleResultsSaver {
 					if(!"".equals(gameDate)) {
 						gameDate = gameDate.replaceAll("月", "/").replaceAll("日", "");
 					}
-					String time = (String)((Map)gameItems.get(3)).get("p");
-					String stadium = "";
-					if(((Map)gameItems.get(4)).get("a") != null) {
-						stadium = (String)((Map)((Map)gameItems.get(4)).get("a")).get("content");
+					String time = null;
+					if (gameItems.get(3) instanceof Map) {
+						time = (String)((Map)gameItems.get(3)).get("content");
 					} else {
-						stadium = (String)((Map)gameItems.get(4)).get("p");
+						time = (String)gameItems.get(3);
 					}
-					String vsTeam = ((String)((Map)gameItems.get(1)).get("p")).replaceAll("※.*", "");
+					String stadium = "";
+					if(gameItems.get(4) instanceof Map) {
+						if(((Map)gameItems.get(4)).get("a") != null) {
+							stadium = (String)((Map)((Map)gameItems.get(4)).get("a")).get("content");
+						} else {
+							stadium = (String)((Map)gameItems.get(4)).get("p");
+						}
+					}
+					String vsTeam = null;
+					if (gameItems.get(1) instanceof Map) {
+						vsTeam = ((String)((Map)gameItems.get(1)).get("content")).replaceAll("※.*", "");
+					} else if (gameItems.get(1) instanceof String){
+						vsTeam = (String)gameItems.get(1);
+					}
+//					System.out.println("🌟" + vsTeam);
 					String tv = "";
-					String resultOrg = (String)((Map)gameItems.get(5)).get("p");
+					String resultOrg = (String)((Map)gameItems.get(5)).get("content");
 					String result = null;
 					String score = null;
 					Map detailUrlMap = (Map)((Map)gameItems.get(7)).get("a");
@@ -175,11 +190,13 @@ public class FrontaleResultsSaver {
 					logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + isHome + ", " 
 							+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 				}
-				
-				if(insertDataList.isEmpty()) {
-					logger.warn("日程データが取得出来ませんでした " + compeList[compeIdx]);
-					continue;
-				}
+			}
+			// 各大会をまとめて登録
+			if(insertDataList.isEmpty()) {
+				logger.warn("日程データが取得出来ませんでした ");
+			} else {
+				qr.update("DELETE FROM " + TABLE + " WHERE season=" + season);
+	            String insertSql = "INSERT INTO " + TABLE + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
 	            int[] resultCount = qr.batch(insertSql, insertDataList.toArray(new Object[insertDataList.size()][]));
 	            logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 			}

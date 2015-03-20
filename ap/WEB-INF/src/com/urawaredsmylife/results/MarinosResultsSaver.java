@@ -63,7 +63,8 @@ public class MarinosResultsSaver {
 			
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 			logger.info(json.toString());
-			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
+			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).
+					get("results")).get("tr");
 			logger.info(gameList.getClass().toString());
 			
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
@@ -72,6 +73,9 @@ public class MarinosResultsSaver {
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 //				System.out.println("xx=" + ((Map)game));
+				if (game == null) {
+					continue;
+				}
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				if(gameItems == null) {
 					continue;
@@ -114,9 +118,10 @@ public class MarinosResultsSaver {
 				if (gameDateViewTmp instanceof List) {
 					time = (String)((Map)((List)gameDateViewTmp).get(1)).get("content");
 				}
-				String stadium = (String)((List)((Map)gameItems.get(4)).get("p")).get(1);
-				String homeAway = (String)((Map)((List)((Map)gameItems.get(4)).get("p")).get(0)).get("span");
-				String vsTeam = (String)((Map)gameItems.get(3)).get("p");
+				String stadium = StringUtils.trim((String)((List)((Map)gameItems.get(4)).get("p")).get(1));
+				String homeAway = StringUtils.deleteWhitespace(
+						(String)((Map)((List)((Map)gameItems.get(4)).get("p")).get(0)).get("span"));
+				String vsTeam = StringUtils.deleteWhitespace((String)((Map)gameItems.get(3)).get("content"));
 //				String tv = (String)((Map)((Map)((Map)gameItems.get(7)).get("p")).get("span")).get("content");
 				String tv = null;
 				String result = null;

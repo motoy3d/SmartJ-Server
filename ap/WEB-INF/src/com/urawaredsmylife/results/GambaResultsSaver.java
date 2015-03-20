@@ -35,7 +35,7 @@ public class GambaResultsSaver {
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from"
 			+ "%20html%20where%20url%3D%22http%3A%2F%2Fwww.gamba-osaka.net%2Fgame%2F%22%20"
-			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'schedule_month_area'%5D%2Ftable%2Ftr%22&format=json&callback=";
+			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'schedule_month_area'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -60,9 +60,10 @@ public class GambaResultsSaver {
 			sw.stop();
 			System.out.println((sw.getTime()/1000.0) + "秒");
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
-			logger.info(json.toString());
-			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
-			logger.info(gameList.getClass().toString());
+//			logger.info(json.toString());
+			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query"))
+					.get("results")).get("tr");
+//			logger.info(gameList.getClass().toString());
 			
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
@@ -102,10 +103,10 @@ public class GambaResultsSaver {
 						compeName = "天皇杯";
 					}
 				}
-				String compe = compeName + "/" + StringUtils.trimToEmpty((String)((Map)gameItems.get(3)).get("p"));
+				String compe = compeName + "/" + StringUtils.trimToEmpty((String)((Map)gameItems.get(3)).get("content"));
 				compe = compe.replaceAll(" ステージ", "");
 				
-				Object gameDateViewTmp = ((Map)gameItems.get(0)).get("p");
+				Object gameDateViewTmp = ((Map)gameItems.get(0)).get("content");
 				String gameDateView = null;
 				if (gameDateViewTmp instanceof String) {
 					gameDateView = ((String)gameDateViewTmp);
@@ -126,44 +127,45 @@ public class GambaResultsSaver {
 					gameDate = "";	//未定等
 				}
 				
-				Object timeTmp = ((Map)gameItems.get(1)).get("p");
+				Object timeTmp = ((Map)gameItems.get(1)).get("content");
 				String time = null;
 				if (timeTmp instanceof String) {
 					time = (String)timeTmp;
 				} else if (timeTmp instanceof Map) {
 					time = (String)((Map)timeTmp).get("content");
 				}
-				time = time.replaceAll("\r", "").replaceAll("\n", "").replaceAll(" ", "");
+				time = StringUtils.deleteWhitespace(time);
 				String stadium = null;
 				if (true) {
 					Map stadiumTmp = (Map)((Map)gameItems.get(6)).get("a");
 					if (stadiumTmp != null) {
 						stadium = (String)stadiumTmp.get("content");
 					} else {
-						stadium = (String)((Map)gameItems.get(6)).get("p");
+						stadium = (String)((Map)gameItems.get(6)).get("content");
 						if ("未定".equals(stadium)) {
 							stadium = "会場未定";
 						}
-					}					
+					}
 				}
+				stadium = StringUtils.deleteWhitespace(stadium);
 				String homeAway = ((String)((Map)((Map)gameItems.get(5)).get("img")).get("src"))
 						.endsWith("icon_home_s.png")? "H" : "A";
-				List resultMapList = (List)((Map)((Map)((Map)gameItems.get(4)).get("table")).get("tr")).get("td");
-				String homeTeam = (String)((Map)resultMapList.get(0)).get("p");
-				String awayTeam = (String)((Map)resultMapList.get(4)).get("p");
+				List resultMapList = (List)((Map)((Map)((Map)((Map)gameItems.get(4)).get("table")).get("tbody")).get("tr")).get("td");
+				String homeTeam = StringUtils.deleteWhitespace((String)((Map)resultMapList.get(0)).get("content"));
+				String awayTeam = StringUtils.deleteWhitespace((String)((Map)resultMapList.get(4)).get("content"));
 				boolean isGambaHome = "Ｇ大阪".equals(homeTeam);
 				String vsTeam = isGambaHome ? awayTeam : homeTeam;
 				if(TEAM_NAMES.containsKey(vsTeam)) {
 					vsTeam = TEAM_NAMES.get(vsTeam);
 				}
-				String tv = (String)((Map)gameItems.get(7)).get("p");
+				String tv = (String)((Map)gameItems.get(7)).get("content");
 				Map resultMap = (Map)((Map)resultMapList.get(2)).get("a");
 				String result = null;
 				String score = null;
 				String detailUrl = null;
 //				System.out.println("★" + resultMap);
 				if (resultMap != null && resultMap.get("content") != null) {
-					score = ((String)resultMap.get("content")).replaceAll(" ", "");
+					score = StringUtils.deleteWhitespace(((String)resultMap.get("content")).replaceAll(" ", ""));
 					int homeScore = Integer.parseInt(score.substring(0, score.indexOf("-")));
 					int awayScore = Integer.parseInt(score.substring(score.indexOf("-") + 1));
 					if(awayScore < homeScore) {
@@ -191,7 +193,7 @@ public class GambaResultsSaver {
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
-				logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}
 			

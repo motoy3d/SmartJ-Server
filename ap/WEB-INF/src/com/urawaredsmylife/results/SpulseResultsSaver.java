@@ -34,7 +34,7 @@ public class SpulseResultsSaver {
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20"
 			+ "where%20url%3D%22http%3A%2F%2Fwww.s-pulse.co.jp%2Fgames%2F%22%20"
-			+ "and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'general-table2'%5D%2Ftr%22&format=json&callback=";
+			+ "and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'general-table2'%5D%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -84,10 +84,10 @@ public class SpulseResultsSaver {
 					logger.info("ヘッダ行");
 					continue;
 				}
-				String compe = compeList[compeIdx] + " " + StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));
-				String gameDateTime = (String)((Map)((Map)gameItems.get(1)).get("p")).get("content");
-				String gameDateView = gameDateTime.split("\n")[0].replace("（", "(").replace("）", ")");
-				String time = gameDateTime.split("\n")[1];
+				String compe = compeList[compeIdx] + " " + StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));
+				String gameDateTime = (String)((Map)gameItems.get(1)).get("content");
+				String time = gameDateTime.split("）")[1];
+				String gameDateView = gameDateTime.split("）")[0].replace("（", "(").replace("）", ")") + "）";
 				String gameDate = null;
 				if(gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("))
@@ -95,13 +95,14 @@ public class SpulseResultsSaver {
 				} else {
 					gameDate = "";	//未定等
 				}
-				String stadium = (String)((Map)gameItems.get(3)).get("p");
+				String stadium = (String)gameItems.get(3);
 				String homeAway = "spulse".equals((String)((Map)game).get("class"))? "H" : "A";
-				String vsTeam = (String)((Map)gameItems.get(2)).get("p");
-				Object tvObj = ((Map)gameItems.get(5)).get("p");
+				String vsTeam = (String)gameItems.get(2);
+				Object tvObj = ((Map)gameItems.get(5)).get("content");
 				String tv = null;
 				if (tvObj != null) {
 					tv = tvObj instanceof String? (String)tvObj : (String)((Map)tvObj).get("content");
+					tv = StringUtils.replace(tv, "\n", " ");
 				}
 				Map resultMap = (Map)((Map)gameItems.get(4)).get("a");
 				String result = null;
@@ -122,12 +123,12 @@ public class SpulseResultsSaver {
 				oneRec[c++] = stadium;
 				oneRec[c++] = "H".equals(homeAway);
 				oneRec[c++] = vsTeam;
-				oneRec[c++] = tv;
+				oneRec[c++] = StringUtils.replace(tv, "\n", " ");
 				oneRec[c++] = result;
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
-				logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}
 			

@@ -11,7 +11,6 @@ import net.arnx.jsonic.JSON;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
@@ -24,6 +23,7 @@ import com.urawaredsmylife.util.DB;
 /**
  * ベガルタ仙台公式サイトから試合日程・結果を取得してDBに保存する。
  * 本処理はバッチで定期的に実行する。
+ * ACL参加の場合等は、compeName制御を要変更
  * @author motoy3d
  */
 public class VegaltaResultsSaver {
@@ -71,37 +71,49 @@ public class VegaltaResultsSaver {
             String season = new SimpleDateFormat("yyyy").format(new Date());
             String[] compeList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
             int compeIdx = 0;
-			for(int r=1; r<gameList.size(); r++) {
+			for(int r=0; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				if (gameItems == null) {
 					if (((Map)game).get("th") != null) {
-						compeIdx++;
+						compeIdx++;	//公式サイトでthはなくなったが、復活するかもしれないので残す
 					}
 					continue;
 				}
-				String compe = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));				
+				String compe = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));
+				if (compe.toUpperCase().startsWith("1ST")) {
+					compeIdx = 0;
+				} else if (compe.toUpperCase().startsWith("2ND")) {
+					compeIdx = 1;
+				} else if (compe.toUpperCase().startsWith("YN")) {
+					compeIdx = 2;
+				} else {
+					compeIdx = 3;	//ACL参加の場合等は要変更
+				}
+				
 				String compeName = compeList[compeIdx];
-				if (NumberUtils.isDigits(compe)) {
+				if (compe.startsWith("1ST") || compe.startsWith("2ND") || compe.startsWith("YN")) {
+					compe = compe.replace("1ST", "").replace("2ND", "").replace("YN", "");
 					if(compe.startsWith("0")) {
 						compe = compe.substring(1);
 					}
 					compe = "第" + compe + "節";
 				}
 				compe = compeName + (compe.equals("")? "" : "/" + compe);
-				String gameDateView = ((String)((Map)gameItems.get(1)).get("p")).replaceAll("（", "(").replaceAll("）", ")");
+				String gameDateView = ((String)((Map)gameItems.get(1)).get("content")).replaceAll("（", "(").replaceAll("）", ")");
 				String gameDate = null;
-				if (gameDateView.contains("(")) {
-					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("))
-							.replace("月", "/").replace("日", "");
+				if (gameDateView.contains("月")) {
+					gameDate = season + "/" + gameDateView.replace("月", "/").replace("日", "");
+					String day = (String)((Map)gameItems.get(2)).get("content");
+					gameDateView += "(" + day + ")";
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)gameItems.get(2)).get("p");
-				String stadium = (String)((Map)gameItems.get(4)).get("p");
+				String time = (String)((Map)gameItems.get(3)).get("content");
+				String stadium = (String)((Map)gameItems.get(5)).get("content");
 				String homeAway = (String)((Map)game).get("class");
-				String vsTeam = (String)((Map)gameItems.get(3)).get("p");
-				Object tvTmp = ((Map)gameItems.get(5)).get("p");
+				String vsTeam = (String)((Map)gameItems.get(4)).get("content");
+				Object tvTmp = ((Map)gameItems.get(6)).get("content");
 				String tv = null;
 				if (tvTmp instanceof String) {
 					tv = (String)tvTmp;
@@ -109,8 +121,8 @@ public class VegaltaResultsSaver {
 					tv = (String)((Map)tvTmp).get("content");
 				}
 				Map resultMap = null;
-				if (gameItems.size() >= 7) {
-					resultMap = (Map)((Map)gameItems.get(6)).get("a");
+				if (gameItems.size() >= 8) {
+					resultMap = (Map)((Map)gameItems.get(7)).get("a");
 				}
 				String result = null;
 				String score = null;
@@ -145,7 +157,7 @@ public class VegaltaResultsSaver {
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
-				logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+				logger.info(compe + ", " + gameDate + ","  + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}
 			

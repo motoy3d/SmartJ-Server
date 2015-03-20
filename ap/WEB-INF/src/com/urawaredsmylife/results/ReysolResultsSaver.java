@@ -74,7 +74,7 @@ public class ReysolResultsSaver {
             String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
 			for(int compeIdx = 0; compeIdx<gameGroupList.size(); compeIdx++) {
-				Object tmp = ((Map)gameGroupList.get(compeIdx)).get("tr");
+				Object tmp = ((Map)((Map)gameGroupList.get(compeIdx)).get("tbody")).get("tr");
 				List<Object> gameList = null;
 				if (tmp instanceof Map) {
 					gameList = new ArrayList<>();
@@ -90,12 +90,19 @@ public class ReysolResultsSaver {
 						logger.info("日程候補：" + gameItems.get(0));
 						continue;
 					}
-//					if (((Map)game).get("th") == null) {
-//						logger.info("??：" + game + " ★gameItems.size()=" + gameItems.size());
-//						continue;
-//					}
+					if (((Map)game).get("th") == null) {
+						logger.info("??：" + game + " ★gameItems.size()=" + gameItems.size());
+						continue;
+					}
 					String compeName = compeList[compeIdx];
-					String compe = (String)((Map)((Map)game).get("th")).get("p");
+					Object th = ((Map)game).get("th");
+//	System.out.println("🌟" + th + ", gameItems.size=" + gameItems.size());
+					String compe = "";
+					if (th instanceof String) {
+						compe = (String)th;
+					} else if (th instanceof Map) {
+						compe = (String)((Map)th).get("content");
+					}
 					if (NumberUtils.isDigits(compe)) {
 						compe = "第" + compe + "節";
 					}
@@ -108,7 +115,7 @@ public class ReysolResultsSaver {
 						detailUrl = "http://www.reysol.co.jp/game/results/" + 
 								(String)((Map)((Map)gameItems.get(0)).get("a")).get("href");
 					} else {
-						Object gameDateViewTmp = ((Map)gameItems.get(0)).get("p");
+						Object gameDateViewTmp = ((Map)gameItems.get(0)).get("content");
 						if (gameDateViewTmp instanceof String) {
 							gameDateView = (String)gameDateViewTmp;
 						} else if (gameDateViewTmp instanceof Map) {
@@ -127,11 +134,29 @@ public class ReysolResultsSaver {
 						continue;
 					}
 					String time = null;
-					if (gameItems.get(1) != null && ((Map)gameItems.get(1)).get("p") != null) {
-						time = ((String)((Map)gameItems.get(1)).get("p")).replace("：", ":").replaceAll("※.*", "");
+					Object timeObj = gameItems.get(1);
+					if (timeObj != null) {
+						if (timeObj instanceof String) {
+							time = ((String)timeObj);
+						} else if (timeObj instanceof Map) {
+							time = (String)((Map)timeObj).get("content");
+							if (time == null) {
+								time = (String)((Map)((Map)timeObj).get("span")).get("content");
+							}
+						}
+						if (time != null) {
+							time = time.replace("：", ":").replaceAll("※.*", "");
+						} else {
+							System.out.println("●" + timeObj);
+						}
 					}
-					String stadium = (String)((Map)gameItems.get(2)).get("p");
-					Object vsTeamTmp = ((Map)gameItems.get(3)).get("p");
+					String stadium = null;
+					if (gameItems.get(2) instanceof String) {
+						stadium = (String)gameItems.get(2);
+					} else if (gameItems.get(2) instanceof Map) {
+						stadium = (String)((Map)gameItems.get(2)).get("content");
+					}
+					Object vsTeamTmp = gameItems.get(3);
 					String vsTeam = null;
 					if (vsTeamTmp instanceof String) {
 						vsTeam = (String)vsTeamTmp;
@@ -148,15 +173,21 @@ public class ReysolResultsSaver {
 					} else {
 						tv = (String)((Map)gameItems.get(4)).get("p");
 					}
-					String result = StringUtils.trimToNull(((String)((Map)gameItems.get(5)).get("p"))
-							.replaceAll(" ", ""));	//←普通の半角スペースとは違うらしい
+					String result = "";
+					if (gameItems.get(5) instanceof String) {
+						result = StringUtils.trimToNull(((String)gameItems.get(5))
+								.replaceAll(" ", ""));	//←普通の半角スペースとは違うらしい
+					} else if (gameItems.get(5) instanceof Map) {
+						result = StringUtils.trimToNull(((String)((Map)gameItems.get(5)).get("content"))
+								.replaceAll(" ", ""));	//←普通の半角スペースとは違うらしい
+					}
 //					System.out.println("★結果 [" + result + "]");
 					String score = null;
-					if (((Map)gameItems.get(6)).get("p") instanceof Map) {
-						score = ((String)((Map)((Map)gameItems.get(6)).get("p")).get("content"))
+					if (gameItems.get(6) instanceof Map) {
+						score = ((String)((Map)gameItems.get(6)).get("content"))
 								.replaceAll(" ", "");
 					} else {
-						score = (String)((Map)gameItems.get(6)).get("p");
+						score = (String)gameItems.get(6);
 					}
 					score = toHankakuNum(score);
 					if ("-".equals(score) || " ".equals(score)|| StringUtils.isBlank(score)) {
