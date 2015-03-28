@@ -15,7 +15,9 @@ import com.meterware.httpunit.TableRow;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import com.urawaredsmylife.util.Const;
 import com.urawaredsmylife.util.DB;
+import com.urawaredsmylife.util.TeamUtils;
 
 /**
  * YahooスポーツからJリーグ、ナビスコカップの順位表を取得してDBに保存する。
@@ -35,15 +37,6 @@ public class StandingsSaver {
 	private static final String SRC_URL_ACL3 = "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/146/";
 	private static final String SRC_URL_ACL4 = "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/147/";
 	
-	/**
-	 * 開幕日
-	 */
-	// 日程修正
-	private static final String J1_OPEN_DATE = "2015/03/07";
-	private static final String J2_OPEN_DATE = "2015/03/08";
-	// 日程修正
-	private static final String NABISCO_OPEN_DATE = "2015/03/18";
-	private static final String ACL_OPEN_DATE = "2015/02/24";
 
 	/**
 	 * ナビスコカップ参加チーム数（年によって変わる可能性あり）
@@ -79,25 +72,25 @@ public class StandingsSaver {
 	private int extractStandings() {
 		try {
 			// J1
-			Date j1OpenDate = DateUtils.parseDate(J1_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			Date j1OpenDate = DateUtils.parseDate(Const.J1_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int j1Result = 0;
 			if (j1OpenDate.getTime() < new Date().getTime()) {
 				j1Result = insertJ(SRC_URL_J1, "J1", 18);
 			}
 			// J2
-			Date j2OpenDate = DateUtils.parseDate(J2_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			Date j2OpenDate = DateUtils.parseDate(Const.J2_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int j2Result = 0;
 			if (j2OpenDate.getTime() < new Date().getTime()) {
 				j2Result = insertJ(SRC_URL_J2, "J2", 22);
 			}
 			// ナビスコカップ
-			Date nabiscoOpenDate = DateUtils.parseDate(NABISCO_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			Date nabiscoOpenDate = DateUtils.parseDate(Const.NABISCO_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int nabiscoResult = 0;
 			if (nabiscoOpenDate.getTime() < new Date().getTime()) {
 				nabiscoResult = insertNabisco();
 			}
 			//ACL
-			Date aclOpenDate = DateUtils.parseDate(ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int aclResult = 0;
 			if (aclOpenDate.getTime() < new Date().getTime()) {
 				aclResult = insertACL();
@@ -132,7 +125,7 @@ public class StandingsSaver {
 			WebTable[] tables = res.getTables();
 			System.out.println(tables);
 			TableRow[] rows = tables[0].getRows();
-            String insertSql = "INSERT INTO standings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            String insertSql = "INSERT INTO standings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             Object[][] insertDataList = new Object[teamCount][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			for(int r=1; r<rows.length; r++) {
@@ -149,12 +142,13 @@ public class StandingsSaver {
 				String diff = tables[0].getCellAsText(r, 9);
 				System.out.println(rank + " : " + team);
 				int c = 0;
-				insertDataList[r-1] = new Object[14];
+				insertDataList[r-1] = new Object[15];
 				insertDataList[r-1][c++] = season;
 				insertDataList[r-1][c++] = league;
 				insertDataList[r-1][c++] = "J1".equals(league)? "1st" : "-";	//TODO ステージ(1st, 2nd, total)
 				insertDataList[r-1][c++] = r;
 				insertDataList[r-1][c++] = rank;
+				insertDataList[r-1][c++] = TeamUtils.getTeamId(team);
 				insertDataList[r-1][c++] = team;
 				insertDataList[r-1][c++] = point;
 				insertDataList[r-1][c++] = games;

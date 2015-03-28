@@ -31,6 +31,7 @@ create table standings(
   ,stage varchar(5) comment '1st/2nd/total'
   ,seq int
   ,rank int
+  ,team_id varchar(20)
   ,team_name varchar(50)
   ,point int
   ,games int

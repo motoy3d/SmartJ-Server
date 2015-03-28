@@ -23,6 +23,7 @@ import com.urawaredsmylife.util.DB;
 /**
  * アルビレックス新潟公式サイトから試合日程・結果を取得してDBに保存する。
  * 本処理はバッチで定期的に実行する。
+ * TODO 天皇杯が始まったら変更
  * @author motoy3d
  *
  */
@@ -33,7 +34,9 @@ public class AlbirexResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20html%20WHERE%20url%3D'http%3A%2F%2Fwww.albirex.co.jp%2Fgames%2Fold'%20and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'game-archives-section'%5D%2Ftable%2Ftr%22&format=json&diagnostics=true&callback=";
+	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20html"
+			+ "%20WHERE%20url%3D'http%3A%2F%2Fwww.albirex.co.jp%2Fgames%2Fold'%20and%20"
+			+ "xpath%3D%22%2F%2Fdiv%5B%40class%3D'game-archives-section'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&diagnostics=true&callback=";
 
 	/**
 	 * コンストラクタ
@@ -58,7 +61,7 @@ public class AlbirexResultsSaver {
 			sw.stop();
 			System.out.println((sw.getTime()/1000.0) + "秒");
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
-			logger.info(json.toString());
+//			logger.info(json.toString());
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
 			logger.info("gameList.size() = " + gameList.size());
 			
@@ -69,41 +72,57 @@ public class AlbirexResultsSaver {
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
-System.out.println("game=" + ((Map)game));
+//System.out.println("game=" + ((Map)game));
 				List<Object> gameItems = (List<Object>)((Map)game).get("th");
 				if(gameItems == null) {
 					System.out.println("continue...............");
 					continue;
 				}
-				if ("節".equals((String)((Map)gameItems.get(0)).get("p"))) {
+				if ("bg".equals((String)((Map)game).get("class"))) {
 					compeIdx++;
 					System.out.println("continue............... compeIdx=" + compeIdx);
 					continue;
 				}
-				if(compeIdx == 3) { //プレシーズン
+				if(compeIdx == 3) { //プレシーズン //TODO 天皇杯が始まったら変更
 					break;
 				}
-				String compe = compeList[compeIdx] + " " + StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));
-				String gameDateView = (String)((Map)gameItems.get(1)).get("p");
+				String compe = compeList[compeIdx] + " " + StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));
+				String gameDateView = StringUtils.trim((String)((Map)gameItems.get(1)).get("content"));
+				String[] dateAndTime = gameDateView.split("\n");
 				String gameDate = null;
 				if(gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
 				} else {
 					gameDate = "";	//未定等
 				}
-				String time = (String)((Map)gameItems.get(2)).get("p");
-				String stadium = (String)((Map)gameItems.get(3)).get("p");
+				gameDateView = dateAndTime[0];
+				String time = dateAndTime != null && 2 <= dateAndTime.length? dateAndTime[1].trim() : "";
+				List vsTeamObj = null;
+				String vsTeam = null;
+				if (((Map)gameItems.get(2)).get("table") != null) {
+					vsTeamObj = (List)((Map)((Map)((Map)((Map)gameItems.get(2)).get("table")).get("tbody")).get("tr")).get("td");
+					vsTeam = ((String)((Map)vsTeamObj.get(1)).get("content")).trim();
+				}
 				String homeAway = (String)((Map)gameItems.get(4)).get("p");
-				String vsTeam = (String)((Map)gameItems.get(5)).get("p");
-				String tv = (String)((Map)gameItems.get(6)).get("p");
-				Map resultMap = (Map)((Map)gameItems.get(7)).get("a");
+				String stadium = null;
+				List stadiumDiv = (List)((Map)gameItems.get(3)).get("div");
+				if (stadiumDiv != null) {
+					homeAway = (String)((Map)((Map)stadiumDiv.get(0)).get("img")).get("alt");
+					stadium = StringUtils.trim((String)((Map)stadiumDiv.get(1)).get("content"));
+				}
+				String tv = null;
+				Map resultMap = (Map)((Map)gameItems.get(5)).get("a");
 				String result = null;
 				String score = null;
 				String detailUrl = null;
 				if(resultMap != null) {
 					result = ((String)resultMap.get("content")).substring(0, 1);
-					score = ((String)resultMap.get("content")).substring(1);					
-					detailUrl = (String)resultMap.get("href");
+					score = ((String)resultMap.get("content")).substring(1);
+					//if ("away".equals(homeAway)) { //公式サイトでaltが全部homeになっているのでスタジアム名で判定
+					if (!"デンカＳ".equals(stadium)) {
+						score = StringUtils.reverse(score);
+					}
+					detailUrl = "http://www.albirex.co.jp" + (String)resultMap.get("href");
 				}
 				int c = 0;
 				Object[] oneRec = new Object[12];
@@ -113,7 +132,8 @@ System.out.println("game=" + ((Map)game));
 				oneRec[c++] = gameDateView;
 				oneRec[c++] = time;
 				oneRec[c++] = stadium;
-				oneRec[c++] = "H".equals(homeAway);
+//				oneRec[c++] = "home".equals(homeAway);
+				oneRec[c++] = "デンカＳ".equals(stadium);
 				oneRec[c++] = vsTeam;
 				oneRec[c++] = tv;
 				oneRec[c++] = result;

@@ -1,7 +1,9 @@
 package com.urawaredsmylife.service;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +12,11 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 
 import com.urawaredsmylife.dto.NoDataResult;
+import com.urawaredsmylife.util.Const;
 import com.urawaredsmylife.util.DB;
 
 /**
@@ -57,6 +61,18 @@ public class ConfigService {
 			conf.put("jcategory", team.get("category"));
 			conf.put("adType", team.get("adType"));
 			conf.put("aclFlg", team.get("aclFlg"));
+			
+			// 現在のステージ
+			try {
+				Date secondStageOpenDate = DateUtils.parseDate(
+						Const.J1_SECOND_STAGE_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+				if (new Date().getTime() < secondStageOpenDate.getTime()) {
+					conf.put("currentStage", "1st");
+				} else {
+					conf.put("currentStage", "2nd");
+				}
+			} catch (ParseException e) {
+			}
 			
 			resultList.add(conf);
 			return resultList;

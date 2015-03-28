@@ -33,6 +33,9 @@ public class ResultsService {
 			QueryRunner qr = DB.createQueryRunner();
 			String season = (String)params.get("season");
 			String teamId = StringUtils.defaultIfEmpty((String)params.get("teamId"), "reds");
+			if (StringUtils.isNotBlank((String)params.get("otherTeamId"))) {
+				teamId = (String)params.get("otherTeamId");
+			}
 			String table = teamId + "Results";
 			String sql = "SELECT * FROM " + table + " WHERE season=" + season + " ORDER BY game_date1";
 			logger.info(sql);

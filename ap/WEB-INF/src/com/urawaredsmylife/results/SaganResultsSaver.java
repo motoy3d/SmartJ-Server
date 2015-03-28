@@ -129,10 +129,10 @@ public class SaganResultsSaver {
 						Map div = (Map)item5.get("div");
 						resultsTmp = (List)((Map)((Map)((Map)div.get("table"))
 								.get("tbody")).get("tr")).get("td");
-//					} else if (item5.get("div") instanceof List) {
-//						List divList = (List)item5.get("div");
-//						resultsTmp = (List)((Map)((Map)((Map)((Map)divList.get(1)).get("table"))
-//								.get("tbody")).get("tr")).get("td");
+					} else if (item5.get("div") instanceof List) {
+						List divList = (List)item5.get("div");
+						resultsTmp = (List)((Map)((Map)((Map)((Map)divList.get(1)).get("table"))
+								.get("tbody")).get("tr")).get("td");
 					}
 					System.out.println("🌟" + resultsTmp);
 					Map vsTeamMap = (Map)resultsTmp.get(2);

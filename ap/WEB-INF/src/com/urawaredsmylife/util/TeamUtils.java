@@ -1,6 +1,7 @@
 package com.urawaredsmylife.util;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -31,12 +32,12 @@ public class TeamUtils {
 		TEAMS.put("ventforet", "ヴァンフォーレ甲府");
 		TEAMS.put("bellmare", "湘南ベルマーレ");
 		TEAMS.put("torinita", "大分トリニータ");
-		TEAMS.put("sanga", "京都サンガF.C");
+		TEAMS.put("sanga", "京都サンガF.C.");
 		TEAMS.put("jef", "ジェフユナイテッド千葉");
 		TEAMS.put("verdy", "東京ヴェルディ");
 		TEAMS.put("montedio", "モンテディオ山形");
 		TEAMS.put("yokohamafc", "横浜FC");
-		TEAMS.put("tochigi", "栃木FC");
+		TEAMS.put("tochigi", "栃木SC");
 		TEAMS.put("giravanz", "ギラヴァンツ北九州");
 		TEAMS.put("fagiano", "ファジアーノ岡山");
 		TEAMS.put("hollyhock", "水戸ホーリーホック");
@@ -70,4 +71,19 @@ public class TeamUtils {
 	public static final String getTeamName(String teamId) {
 		return TEAMS.get(teamId);
 	}
+
+	/**
+	 * チーム名に該当するチームIDを返す。
+	 */
+	public static final String getTeamId(String teamName) {
+		Iterator<String> keys = TEAMS.keySet().iterator();
+		while(keys.hasNext()) {
+			String teamId = keys.next();
+			if (teamName.equals(TEAMS.get(teamId))) {
+				return teamId;
+			}
+		}
+		return null;
+	}
+
 }
