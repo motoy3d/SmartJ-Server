@@ -19,6 +19,7 @@ import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.urawaredsmylife.util.DB;
+import com.urawaredsmylife.util.Mail;
 
 /**
  * サガン鳥栖公式サイトから試合日程・結果を取得してDBに保存する。
@@ -209,6 +210,7 @@ public class SaganResultsSaver {
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("試合日程・結果抽出エラー", e);
+			Mail.send(e);
 		}
 		return 0;
 	}

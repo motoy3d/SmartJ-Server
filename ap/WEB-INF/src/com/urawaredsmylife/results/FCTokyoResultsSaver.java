@@ -20,6 +20,7 @@ import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.urawaredsmylife.util.DB;
+import com.urawaredsmylife.util.Mail;
 
 /**
  * FC東京公式サイトから試合日程・結果を取得してDBに保存する。
@@ -129,16 +130,29 @@ public class FCTokyoResultsSaver {
 				String detailUrl = null;
 				if(resultMap != null) {
 					score = (String)resultMap.get("content");
-					int idx = score.indexOf("-");
-					int myScore = score.indexOf(0, idx);
-					int vsScore = score.indexOf(idx + 1);
-					if (myScore < vsScore) {
-						result = "●";
-					} else if (vsScore < myScore) {
-						result = "○";
-					} else {
+					int idx = score.indexOf("○");
+					if (idx == -1) {
+						idx = score.indexOf("△");
 						result = "△";
+						score = score.replace("△", "-");
+					} else if (idx == -1) {
+						idx = score.indexOf("●");
+						result = "●";
+						score = score.replace("●", "-");
+					} else {
+						result = "○";
+						score = score.replace("○", "-");
 					}
+//					int myScore = Integer.parseInt(score.substring(0, idx));
+//					int vsScore = Integer.parseInt(score.substring(idx + 1));
+//					logger.info("＞＞＞" + myScore + "-" + vsScore + " [" + score + "]");
+//					if (myScore < vsScore) {
+//						result = "●";
+//					} else if (vsScore < myScore) {
+//						result = "○";
+//					} else {
+//						result = "△";
+//					}
 					detailUrl = (String)resultMap.get("href");
 				}
 				compe = StringUtils.replace(compe, "\r\n", "");
@@ -181,6 +195,7 @@ public class FCTokyoResultsSaver {
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("試合日程・結果抽出エラー " + teamId, e);
+			Mail.send(e);
 		}
 		return 0;
 	}

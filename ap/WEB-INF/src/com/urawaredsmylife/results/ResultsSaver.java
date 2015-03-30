@@ -55,9 +55,9 @@ public class ResultsSaver {
 		//セレッソ大阪
 		CerezoResultsSaver cerezoSaver = new CerezoResultsSaver();
 		cerezoSaver.extractResults();
-		//大宮アルディージャ
-		ArdijaResultsSaver ardijaSaver = new ArdijaResultsSaver();
-		ardijaSaver.extractResults();
+		//TODO 大宮アルディージャ
+//		ArdijaResultsSaver ardijaSaver = new ArdijaResultsSaver();
+//		ardijaSaver.extractResults();
 		//ヴァンフォーレ甲府
 		VentforetResultsSaver ventforetSaver = new VentforetResultsSaver();
 		ventforetSaver.extractResults();
@@ -67,9 +67,9 @@ public class ResultsSaver {
 		//柏レイソル
 		ReysolResultsSaver reysolSaver = new ReysolResultsSaver();
 		reysolSaver.extractResults();
-		//徳島ヴォルティス
-		VortisResultsSaver vortisSaver = new VortisResultsSaver();
-		vortisSaver.extractResults();
+		//TODO 徳島ヴォルティス
+//		VortisResultsSaver vortisSaver = new VortisResultsSaver();
+//		vortisSaver.extractResults();
 		logger.info("######## 日程・結果データ取得　終了 #########");
 	}
 }

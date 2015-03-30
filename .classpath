@@ -28,5 +28,11 @@
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/el-api.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/dsn.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/gimap.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/imap.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/mailapi.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/pop3.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/smtp.jar"/>
 	<classpathentry kind="output" path="ap/WEB-INF/classes"/>
 </classpath>

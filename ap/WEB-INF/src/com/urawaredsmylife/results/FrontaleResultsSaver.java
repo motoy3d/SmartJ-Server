@@ -19,6 +19,7 @@ import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.urawaredsmylife.util.DB;
+import com.urawaredsmylife.util.Mail;
 
 /**
  * 川崎フロンターレ公式サイトから試合日程・結果を取得してDBに保存する。
@@ -86,7 +87,10 @@ public class FrontaleResultsSaver {
 	//				System.out.println("xx=" + ((Map)game));
 					boolean isHome = "home_game".equals(((Map)game).get("class"));
 					List<Object> gameItems = (List<Object>)((Map)game).get("td");
-					
+					if (gameItems == null) {
+//						System.out.println("🌟" + game);
+						continue;
+					}
 					logger.info("★" + gameItems.get(0));
 					String gameDateView = null;
 					String compe = "";
@@ -202,6 +206,7 @@ public class FrontaleResultsSaver {
 			}
 		} catch (Exception e) {
 			logger.error("試合日程・結果抽出エラー", e);
+			Mail.send(e);
 		}
 		return 0;
 	}

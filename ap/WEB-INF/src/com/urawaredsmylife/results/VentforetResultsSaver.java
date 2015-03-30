@@ -19,6 +19,7 @@ import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.urawaredsmylife.util.DB;
+import com.urawaredsmylife.util.Mail;
 
 /**
  * ヴァンフォーレ甲府公式サイトから試合日程・結果を取得してDBに保存する。
@@ -34,7 +35,7 @@ public class VentforetResultsSaver {
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from"
 			+ "%20html%20where%20url%3D%22http%3A%2F%2Fwww.ventforet.jp%2Fgames%22%20and%20"
-			+ "xpath%3D%22%2F%2Fdiv%5B%40class%3D'game-day'%5D%2Ftable%2Ftr%22&format=json&callback=";
+			+ "xpath%3D%22%2F%2Fdiv%5B%40class%3D'game-day'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -77,10 +78,10 @@ public class VentforetResultsSaver {
 					continue;
 				}
 				String compe = compeList[compeIdx] + "/" 
-						+ StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p")).replaceAll("※.*", "");
-				String gameDateView = ((String)((Map)gameItems.get(1)).get("p"))
-						.replaceAll("・祝", "").replaceAll("・休", "");
-				String time = gameDateView.substring(gameDateView.indexOf(" ") + 1);
+						+ StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content")).replaceAll("※.*", "");
+				String gameDateView = ((String)((Map)gameItems.get(1)).get("content"))
+						.replaceAll("・祝", "").replaceAll("・休", "").replace("                       ", "");
+				String time = gameDateView.substring(gameDateView.indexOf(")") + 1);
 				gameDateView = gameDateView.substring(0, gameDateView.indexOf(" "));
 				
 				String gameDate = null;
@@ -89,7 +90,7 @@ public class VentforetResultsSaver {
 				} else {
 					gameDate = "";	//未定等
 				}
-				String stadium = (String)((Map)gameItems.get(3)).get("p");
+				String stadium = (String)((Map)gameItems.get(3)).get("content");
 				String homeAway = null;
 				if (((Map)(Map)gameItems.get(3)).get("img") != null) {
 					homeAway = (String)((Map)((Map)gameItems.get(3)).get("img")).get("alt");
@@ -98,14 +99,14 @@ public class VentforetResultsSaver {
 				if (((Map)gameItems.get(2)).get("div") != null) {
 					List<Object> vsList = (List)((Map)gameItems.get(2)).get("div");
 					if (vsList != null) {
-						vsTeam = (String)((Map)vsList.get(1)).get("p");
+						vsTeam = (String)((Map)vsList.get(1)).get("content");
 					}
 				}
 				String tv = null;
 				if (((Map)gameItems.get(4)).get("div") != null) {
 					List<Object> tvList = (List)((Map)gameItems.get(4)).get("div");
 					if (tvList != null) {
-						tv = (String)((Map)tvList.get(0)).get("p");
+						tv = (String)((Map)tvList.get(0)).get("content");
 					}
 				}
 				Map resultMap = (Map)((Map)gameItems.get(5)).get("a");
@@ -140,6 +141,19 @@ public class VentforetResultsSaver {
 					}
 					detailUrl = "http://www.ventforet.jp" + (String)resultMap.get("href");
 				}
+
+				compe = StringUtils.trim(StringUtils.replace(compe, "\n", ""));
+				gameDate = StringUtils.trim(StringUtils.replace(gameDate, "\n", ""));
+				gameDateView = StringUtils.trim(StringUtils.replace(gameDateView, "\n", ""));
+				time = StringUtils.trim(StringUtils.replace(time, "\n", ""));
+				stadium = StringUtils.trim(StringUtils.replace(stadium, "\n", ""));
+				vsTeam = StringUtils.trim(StringUtils.replace(vsTeam, "\n", ""));
+				homeAway = StringUtils.trim(StringUtils.replace(homeAway, "\n", ""));
+				tv = StringUtils.trim(StringUtils.replace(tv, "\n", ""));
+				result = StringUtils.trim(StringUtils.replace(result, "\n", ""));
+				score = StringUtils.trim(StringUtils.replace(score, "\n", ""));
+				detailUrl = StringUtils.trim(StringUtils.replace(detailUrl, "\n", ""));
+
 				int c = 0;
 				Object[] oneRec = new Object[12];
 				oneRec[c++] = season;
@@ -155,7 +169,7 @@ public class VentforetResultsSaver {
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
-				logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}
 			
@@ -169,6 +183,7 @@ public class VentforetResultsSaver {
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("試合日程・結果抽出エラー " + teamId, e);
+			Mail.send(e);
 		}
 		return 0;
 	}
