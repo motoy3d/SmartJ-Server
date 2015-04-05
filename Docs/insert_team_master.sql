@@ -5,7 +5,7 @@ insert into teamMaster values('marinos', '横浜F・マリノス', 'J1', '#fmari
 insert into teamMaster values('fctokyo', 'FC東京', 'J1', '#fctokyo -f_c_tokyo -twiccer', 170342542, 2, now());
 insert into teamMaster values('grampus', '名古屋グランパス', 'J1', '#grampus -ngygrampus -twiccer', 170535113, 2, now());
 insert into teamMaster values('spulse', '清水エスパルス', 'J1', '#spulse -spulses -twiccer', 170624677, 2, now());
-insert into teamMaster values('gamba', 'ガンバ大阪', 'J1', '#gamba -gamgambao -twiccer', 171197134, 2, now());
+insert into teamMaster values('gamba', 'ガンバ大阪', 'J1', '#gamba -gamgambao -twiccer -karaagechan2012', 171197134, 2, now());
 insert into teamMaster values('antlers', '鹿島アントラーズ', 'J1', '#antlers -antlersksm -twiccer -aaantlers09 -kashima_sponsor', null, 2, now());
 insert into teamMaster values('vissel', 'ヴィッセル神戸', 'J1', '#vissel -visselk -twiccer', 171709329, 2, now());
 insert into teamMaster values('sanfrecce', 'サンフレッチェ広島', 'J1', '#sanfrecce -sanfrecceh -twiccer', 171709349, 2, now());

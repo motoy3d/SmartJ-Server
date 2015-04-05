@@ -151,6 +151,9 @@ public class ReysolResultsSaver {
 							System.out.println("●" + timeObj);
 						}
 					}
+					if (StringUtils.isNotBlank(time)) {
+						time = time.replaceAll("\r\n","").replaceAll(" ", "").replace("JPN", "(日本時間") + ")";
+					}
 					String stadium = null;
 					if (gameItems.get(2) instanceof String) {
 						stadium = (String)gameItems.get(2);
