@@ -70,6 +70,13 @@ public class ResultsSaver {
 		//TODO 徳島ヴォルティス
 //		VortisResultsSaver vortisSaver = new VortisResultsSaver();
 //		vortisSaver.extractResults();
+		//松本山雅FC
+		YamagaResultsSaver yamagaSaver = new YamagaResultsSaver();
+		yamagaSaver.extractResults();
+		//モンテディオ山形
+		MontedioResultsSaver montedioSaver = new MontedioResultsSaver();
+		montedioSaver.extractResults();
+
 		logger.info("######## 日程・結果データ取得　終了 #########");
 	}
 }

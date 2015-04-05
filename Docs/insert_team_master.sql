@@ -17,3 +17,6 @@ insert into teamMaster values('sagan', 'サガン鳥栖', 'J1', '#sagantosu -tos
 insert into teamMaster values('reysol', '柏レイソル', 'J1', '#reysol -reysolksw -kashiwa_sponsor -twiccer', 171709341, 2, now());
 insert into teamMaster values('vortis', '徳島ヴォルティス', 'J1', '#vortis -vortis_sponsor -twiccer', 175190201, 2, now());
 
+insert into teamMaster values('yamaga', '松本山雅FC', 'J1', false, '#yamaga -twiccer', null, 2, now());
+insert into teamMaster values('montedio', 'モンテディオ山形', 'J1', false, '#montedio -yamagatasponsor -montedioymgt  -twiccer', null, 2, now());
+insert into teamMaster values('bellmare', '湘南ベルマーレ', 'J1', false, '#bellmare -shonan_sponsor -twiccer', null, 2, now());
