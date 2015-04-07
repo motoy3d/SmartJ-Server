@@ -64,8 +64,14 @@ public class MarinosResultsSaver {
 			
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 			logger.info(json.toString());
-			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).
-					get("results")).get("tr");
+			List<Object> gameList = null;
+			try {
+				gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).
+						get("results")).get("tr");
+			} catch(NullPointerException ex) {
+				logger.warn("マリノス日程取得失敗(NullPointer)");
+				return -1;
+			}
 			logger.info(gameList.getClass().toString());
 			
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";

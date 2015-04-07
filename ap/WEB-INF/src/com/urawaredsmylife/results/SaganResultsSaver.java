@@ -181,8 +181,8 @@ public class SaganResultsSaver {
 					vsTeam = vsTeam.substring(6);
 					
 					stadium = StringUtils.trim((String)((Map)((Map)item5).get("p")).get("content"));
-					System.out.println("💢" + stadium);
-}
+//					System.out.println("💢" + stadium);
+				}
 				int c = 0;
 				Object[] oneRec = new Object[12];
 				oneRec[c++] = season;

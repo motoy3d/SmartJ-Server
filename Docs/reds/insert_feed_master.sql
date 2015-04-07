@@ -1,6 +1,6 @@
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/chessboard/rss20.xml','FORZA 浦和レッズ','FORZA 浦和レッズ',now());
 insert into redsFeedMaster values(default,'http://sanukireds.ashita-sanuki.jp/index.rdf','J for 2014','J for 2014',now());
-insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_eyes/INDEX7/','REDSPRESS EYES','レッズプレス！！',now());
+//insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_eyes/INDEX7/','REDSPRESS EYES','レッズプレス！！',now());
 insert into redsFeedMaster values(default,'http://gdata.youtube.com/feeds/base/users/URAWAREDSBBB/uploads?alt=rss&v=2&orderby=published&client=ytapi-youtube-profile','Uploads by URAWAREDSBBB','Uploads by URAWAREDSBBB',now());
 insert into redsFeedMaster values(default,'http://uragi.com/atom.xml','浦議','浦議',now());
 insert into redsFeedMaster values(default,'http://pipes.yahoo.com/pipes/pipe.run?_id=19673e3f31f52639233561b39f6dacff&_render=rss','UrawaReds','',now());
@@ -10,11 +10,11 @@ insert into redsFeedMaster values(default,'http://api.plaza.rakuten.ne.jp/superk
 insert into redsFeedMaster values(default,'http://blog.livedoor.jp/no3_12/index.rdf','じゅにじゅに','じゅにじゅに',now());
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/escudero-001/rss20.xml','セルヒオ・アリエル・エスクデロオフィシャルブログ Powered by Ameba','セルヒオ・アリエル・エスクデロオフィシャルブログ',now());
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/reds-internet-club/rss20.xml','レッズインターネットクラブ | 浦和レッズブログ','レッズインターネットクラブ',now());
-insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_kobore/INDEX7/','レッズプレス　こぼれ話','レッズプレス！！',now());
-insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_misitemuryo/INDEX7/','レッズプレス　その他','レッズプレス！！',now());
-insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_heartbeat/INDEX7/','レッズプレス　ハートビート','レッズプレス！！',now());
-insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_renshurepo/INDEX7/','レッズプレス　練習レポート','レッズプレス！！',now());
-insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_redsnews/INDEX7/','レッズプレス！！','レッズプレス！！',now());
+//insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_kobore/INDEX7/','レッズプレス　こぼれ話','レッズプレス！！',now());
+//insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_misitemuryo/INDEX7/','レッズプレス　その他','レッズプレス！！',now());
+//insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_heartbeat/INDEX7/','レッズプレス　ハートビート','レッズプレス！！',now());
+//insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_renshurepo/INDEX7/','レッズプレス　練習レポート','レッズプレス！！',now());
+//insert into redsFeedMaster values(default,'http://www.redspress.jp/index/reds_redsnews/INDEX7/','レッズプレス！！','レッズプレス！！',now());
 insert into redsFeedMaster values(default,'http://gree.jp/kato_nobuhiro/blog/52c25fee41274e650e9988155e94e9f7.rdf','加藤順大 公式ブログ - GREE','加藤順大 公式ブログ',now());
 insert into redsFeedMaster values(default,'http://gree.jp/haraguchi_genki/blog/e973e67405e976972e349a39c47ce392.rdf','原口元気 公式ブログ - GREE','原口元気 公式ブログ',now());
 insert into redsFeedMaster values(default,'http://www.plus-blog.sportsnavi.com/redine/atom/feed.xml','地球は青い！','地球は青い！',now());
@@ -59,5 +59,9 @@ insert into redsFeedMaster values(default,'http://blogs.yahoo.co.jp/grazieurawa'
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/minazuki1961/rss20.xml','突き上げた拳の向こうに','突き上げた拳の向こうに',now());
 insert into redsFeedMaster values(default,'http://blogs.yahoo.co.jp/grazieurawa/rss.xml','grazieurawaの 浦和レッズダイアリー','grazieurawaの 浦和レッズダイアリー',now());
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/seiizu777/rss20.xml','レッズ好きのブログ','レッズ好きのブログ',now());
+insert into redsFeedMaster values(default,'http://blogs.yahoo.co.jp/amamin2000/rss.xml','ビールが主食～あまぱぱ【拉麺男】YOU-SUCK!!参戦記♪','ビールが主食～あまぱぱ【拉麺男】YOU-SUCK!!参戦記♪',now());
+insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/redstrust/rss20.xml','redstrustの浦和レッズつれづれ','redstrustの浦和レッズつれづれ',now());
+insert into redsFeedMaster values(default,'http://feeds.feedburner.com/pride-of-urawa','Keep on Jumpin''','Keep on Jumpin''',now());
+insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/mono-komo/rss20.xml','浦和レッズとあなたに乾杯','浦和レッズとあなたに乾杯',now());
 
 insert into redsFeedMaster values(default,'http','xx','xx',now());
