@@ -1,5 +1,7 @@
 package com.urawaredsmylife;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
@@ -8,6 +10,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import net.arnx.jsonic.JSON;
 
@@ -59,7 +63,7 @@ public class FeedEntrySaver {
 	 * NGワード（エントリタイトルに含まれていたら保存しない）
 	 */
 	private static final String[] NG_WORDS = new String[] {
-		"レディース", "なでしこ", "PR:", ": PR"
+		"レディース", "なでしこ", "PR:", ": PR", "ラーメン", "拉麺"
 	};
 	/**
 	 * チームID
@@ -96,7 +100,7 @@ public class FeedEntrySaver {
 	/**
 	 * feed_masterからフィードリストを取得して、
 	 * google feed apiを使用して各フィードのエントリリストを取得し、
-	 * entryテーブルに格納する。
+	 * 各チームごとのentryテーブルに格納する。
 	 * 本処理はバッチで定期的に実行する。
 	 * 
 	 * @param params
@@ -203,16 +207,20 @@ public class FeedEntrySaver {
 			}
 			siteName = siteName.replace("（", "").replace("）", "");
 			// 既に同一URLが登録済みの場合は登録しない
-			String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable + " WHERE entry_url=?";
-			Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), e.getLink());
+			String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable 
+					+ " WHERE entry_url=? OR entry_title=?";
+			Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), e.getLink(), entryTitle);
 			Long cnt = (Long)cntMap.get("CNT");
 			if(cnt == 0) {
-				String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, now())";
+				String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+				ImageInfo img = getImageInContent(e.getContent());
 				Object[] inseartParams = new Object[] {
 						e.getLink()
 						,entryTitle
 						,e.getContent()
-						,null	//TODO image_url
+						,img.url
+						,img.width
+						,img.height
 						,targetFeed.getFeedId()
 						,siteName
 						,pubDate
@@ -274,8 +282,72 @@ public class FeedEntrySaver {
 //				System.out.println("結果３＝" + h1[0].getNode().getChildNodes());
 //			}
 		} catch (Exception e) {
-			logger.error("サイト名抽出エラー", e);
+			logger.warn("サイト名抽出エラー", e);
 		}
 		return "";
+	}
+	
+	/**
+	 * コンテンツ内のイメージ情報を返す。
+	 * @param content
+	 * @return
+	 */
+	private ImageInfo getImageInContent(String content) {
+		ImageInfo img = new ImageInfo();
+        int imgTagIdx = content.indexOf("<img");
+        if(imgTagIdx != -1) {
+	        int srcIdx = content.indexOf("src=", imgTagIdx);
+	        if(srcIdx != -1) {
+	            int urlStartIdx = srcIdx + 5;
+	            int urlEndIdx = content.indexOf('"', urlStartIdx);
+	            String imgUrl = content.substring(urlStartIdx, urlEndIdx);
+	            imgUrl = imgUrl.replaceAll("&amp;", "&");
+	            if(imgUrl.endsWith(".gif") ||
+	                    imgUrl.indexOf("http://hbb.afl.rakuten.co.jp") == 0 ||
+	                    imgUrl.indexOf("http://uragi.com/bfb320100.jpg") == 0 ||
+	                    imgUrl.indexOf("http://counter2.blog.livedoor.com") == 0 ||
+	                    imgUrl.indexOf("fbcdn") != -1 || //facebook(直接表示できない)
+	                    imgUrl.indexOf("http://measure.kuchikomi.ameba.jp") == 0 || //ameba
+	                    imgUrl.indexOf("rssad") != -1 || //rssad(直接表示できない)
+                		imgUrl.endsWith("money_yen.png") ||  //浦和フットボール通信
+                		imgUrl.endsWith("/btn_share_now.png") || //なう
+                		imgUrl.endsWith("/btn_share_mixi.png")  //mixi
+                ) {
+	                imgUrl = "";
+	            } else {
+	        		try {
+	        			URL u = new URL(imgUrl);
+	        			BufferedImage bimg = ImageIO.read(u);
+	        			if (bimg != null) {
+		        			img.url = imgUrl;
+			        		img.width = bimg.getWidth();
+			        		img.height = bimg.getHeight();
+	        			}
+	        		} catch (IOException e) {
+	        			throw new RuntimeException(e);
+	        		}
+	            }
+	        }
+        }
+		return img;
+	}
+	
+	/**
+	 * コンテンツの中のイメージ情報
+	 * @author motoy3d
+	 */
+	class ImageInfo {
+		/**
+		 * イメージURL
+		 */
+		public String url;
+		/**
+		 * width
+		 */
+		public int width;
+		/**
+		 * height
+		 */
+		public int height;
 	}
 }
