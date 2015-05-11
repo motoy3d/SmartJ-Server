@@ -11,6 +11,7 @@ import net.arnx.jsonic.JSON;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -30,15 +31,13 @@ import com.urawaredsmylife.util.Mail;
 public class CerezoResultsSaver {
 	private Logger logger = Logger.getLogger(CerezoResultsSaver.class.getName());
 	/**
-	 * 取得元URL
+	 * 結果取得元URL
 	 */
-	private static final String SRC_URL_BASE = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20"
-			+ "from%20html%20where%20url%3D%22http%3A%2F%2Fwww.cerezo.co.jp%2Fgame_schedule1.asp"
-			+ "%3Fcode_s%3D{COMPE_ID}%22%20and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'game_table'%5D%2Ftbody%2Ftr%22&format=json&callback=";
-	private static final String COMPE_ID_J = "101100";
-//	private static final String COMPE_ID_NABISCO = "101101";
-//	private static final String COMPE_ID_TENNOHAI = "101102";
-//	private static final String COMPE_ID_ACL = "101106";
+	private static final String SRC_URL_BASE1 = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22https%3A%2F%2Fwww.cerezo.co.jp%2Fmatches%2Fresult%2Ftop-teams%22%20and%20xpath%3D%22%2F%2Ful%5B%40class%3D'list'%5D%2Fli%22&format=json&callback=";
+	/**
+	 * 予定取得元URL
+	 */
+	private static final String SRC_URL_BASE2 = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22https%3A%2F%2Fwww.cerezo.co.jp%2Fmatches%2Ftop-teams%22%20and%20xpath%3D%22%2F%2Ful%5B%40class%3D'list'%5D%22&format=json&callback=";
 
 	/** チームID */
 	private static final String teamId = "cerezo";
@@ -57,21 +56,16 @@ public class CerezoResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-//		String[] htmls = new String[] {COMPE_ID_J, COMPE_ID_NABISCO, COMPE_ID_TENNOHAI, COMPE_ID_ACL};
-		String[] htmls = new String[] {COMPE_ID_J/*, COMPE_ID_TENNOHAI*/};
-//        String[] compeList = new String[]{"J", "YNC", "天皇杯", "ACL"};
-		String[] compeList = new String[]{"J", "天皇杯"};
 		try {
 			String resultsTable = teamId + "Results";
 			QueryRunner qr = DB.createQueryRunner();
             String season = new SimpleDateFormat("yyyy").format(new Date());
             Connection conn = DB.getConnection(false);
 			qr.update(conn, "DELETE FROM " + resultsTable + " WHERE season=" + season);
-            int minusIdx = 0;
-			for(int compeIdx=0; compeIdx<htmls.length; compeIdx++) {
-	            minusIdx = (compeIdx == 1 || compeIdx == 2)? 1 : 0;
-				String compeId = htmls[compeIdx];
-				String srcUrl = SRC_URL_BASE.replace("{COMPE_ID}", compeId);
+			boolean isSchedule = false;
+            String[] urls = new String[] {SRC_URL_BASE1, SRC_URL_BASE2};
+			for(int idx=0; idx<urls.length; idx++) {
+				String srcUrl = urls[idx];
 				logger.info("####################################");
 				logger.info(srcUrl);
 				logger.info("####################################");
@@ -83,66 +77,108 @@ public class CerezoResultsSaver {
 				System.out.println((sw.getTime()/1000.0) + "秒");
 				Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 				logger.info(json.toString());
-				List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json
-						.get("query")).get("results")).get("tr");
+				Map<String, Object> results = (Map<String, Object>)((Map<String, Object>)json
+						.get("query")).get("results");
+				List<Object> gameList = (List<Object>)results.get("li");
+				if (gameList == null) {	//予定の方はulが入る
+					List ulList = (List)results.get("ul");
+					gameList = new ArrayList();
+					for(Object ul : ulList) {
+						gameList.addAll((List<Object>)((Map)ul).get("li"));
+					}
+					isSchedule = true;
+				}
 				logger.info(gameList.getClass().toString());
 				
 	            String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
 	            List<Object[]> insertDataList = new ArrayList<Object[]>();
-	            int leg = 1;
-	            String prevCompe = "";
-				for(int r=1; r<gameList.size(); r++) {
-					Object game = gameList.get(r);
-	//				System.out.println("xx=" + ((Map)game));
-					boolean isHome = "home_game".equals(((Map)game).get("class"));
-					List<Object> gameItems = (List<Object>)((Map)game).get("td");
-					
+				for(int r=0; r<gameList.size(); r++) {
+					Map game = (Map)gameList.get(r);
+					List list1 = (List)((Map)game.get("div")).get("div");
+					String gameDateTime = "";
+					boolean isHome = false;
+					String gameDateView = "";
+					String time = "";
+					String gameDate = "";
 					String compe = "";
-					if (minusIdx == 0) {
-						compe = (String)gameItems.get(0);
-						boolean isR = compe.startsWith("R");
-						if (isR) {
-							if (prevCompe.equals(compe)) {
-								leg = 2;
-							} else {
-								leg = 1;
-							}
-						}
-						prevCompe = compe;
-						compe = compeList[compeIdx] + "/" + compe + (isR? "-" + leg : "");
-						if(compeIdx == 0 || (compeIdx == 3 && !isR)) {
-							compe += "節";
-						}
+					String stadium = "";
+					String vsTeam = "";
+					String score = "";
+					String result = "";
+					String detailUrl = "";
+					List teamAndResultList = null;
+					boolean isFirst = false;
+					// 最初の１件とそれ以降で構造が違う
+					List spanList = null;
+					List list2 = null;
+					Map gameDateCompeStadiumMap = null;
+					if (((Map)list1.get(0)).get("div") instanceof List) {
+						list2 = (List)((Map)list1.get(0)).get("div");
+						spanList = (List)((Map)list2.get(0)).get("span");
+						gameDateCompeStadiumMap = (Map)spanList.get(0);
+						isFirst = true;
 					} else {
-						compe = compeList[compeIdx];
+						if (isSchedule) {
+							gameDateCompeStadiumMap = (Map)((Map)((Map)list1.get(0)).get("div")).get("span");
+						} else {
+							spanList = (List)((Map)((Map)list1.get(0)).get("div")).get("span");
+							gameDateCompeStadiumMap = (Map)spanList.get(0);
+						}
 					}
 					
-					String gameDateView = ((String)gameItems.get(1 - minusIdx))
-							+ "(" + ((String)gameItems.get(2 - minusIdx)).replace("･祝", "") + ")";
-					String gameDate = null;
-					if(gameDateView.contains("(")) {//半角(
-						gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
+					gameDateTime = (String)((Map)gameDateCompeStadiumMap.get("time")).get("content");
+					isHome = "home-game".equals((String)gameDateCompeStadiumMap.get("class"));					
+					gameDateView = gameDateTime.substring(0, gameDateTime.indexOf(")") + 1);
+					time = StringUtils.deleteWhitespace(gameDateTime.substring(gameDateTime.indexOf(")") + 1));
+					gameDate = gameDateView.substring(0, gameDateView.indexOf("(")).replaceAll("\\.", "/");
+					// compe, stadium
+//					if (spanList != null) {
+						List list3 = (List)((Map)gameDateCompeStadiumMap.get("span")).get("span");
+						compe = StringUtils.deleteWhitespace((String)((Map)list3.get(0)).get("content"));
+						compe = compe.replace("明治安田生命", "").replace("リーグ", "/");
+						if (isFirst) {
+							stadium = ((String)((Map)list3.get(1)).get("content")).trim();
+						} else {
+							vsTeam = ((String)((Map)list3.get(1)).get("content")).trim();
+						}
+//					} else {
+						//TODO
+//					}
+					
+					logger.info("▲" + compe + ", " + gameDateView + ", " + gameDate + ", " + time + ", " + stadium + ", " + isHome + ", " 
+							+ vsTeam + ", " + ", " + result + ", " + score /*+ ", " + detailUrl*/);
+
+					// vsTeam, result
+					if (isFirst && !isSchedule) {
+						teamAndResultList = (List)((Map)((Map)((Map)list2.get(0)).get("div")).get("strong")).get("span");
+					}
+					Integer leftScore = null;
+					Integer rightScore = null;
+					if (teamAndResultList != null) {
+						vsTeam = StringUtils.deleteWhitespace((String)((Map)teamAndResultList.get(0)).get("content"));
+						Map scoreMap = (Map)teamAndResultList.get(1);
+						score = (String)((Map)scoreMap.get("span")).get("content")
+								+ scoreMap.get("content");
+						leftScore = Integer.parseInt(score.substring(0, score.indexOf(" ")));
+						rightScore = Integer.parseInt(score.substring(score.indexOf("-")+2));
 					} else {
-						gameDate = "";	//未定等
+						if (!isSchedule) {
+							List scoreList = (List)((Map)((Map)spanList.get(1)).get("span")).get("span");
+							leftScore = Integer.parseInt((String)((Map)scoreList.get(0)).get("content"));
+							rightScore = Integer.parseInt((String)((Map)scoreList.get(1)).get("content"));
+						}
 					}
-					if(!"".equals(gameDate)) {
-						gameDate = gameDate.replaceAll("月", "/").replaceAll("日", "");
+					if (leftScore != null) {
+						if (leftScore > rightScore) {
+							result = isHome? "○" : "●";
+						} else if (leftScore < rightScore) {
+							result = isHome? "●" : "○";
+						} else {
+							result = "△";
+						}
+						score = isHome? leftScore + " - " + rightScore : rightScore + " - " + leftScore;
 					}
-					String time = ((String)gameItems.get(3 - minusIdx)).replace("：", ":");
-					String stadium = (String)gameItems.get(5 - minusIdx);
-					String vsTeam = (String)gameItems.get(4 - minusIdx);
 					String tv = "";
-					Map resultMap = (Map)gameItems.get(6 - minusIdx) == null? 
-							null : (Map)((Map)gameItems.get(6 - minusIdx)).get("a");
-					String result = null;
-					String score = null;
-					String detailUrl = null;
-					if (resultMap != null) {
-						score = ((String)resultMap.get("content")).replaceAll(" ", "");
-						result = score.substring(0, 1);
-						score = score.substring(1);
-						detailUrl = "http://www.cerezo.co.jp" + ((String)resultMap.get("href"));
-					}
 					int c = 0;
 					Object[] oneRec = new Object[12];
 					oneRec[c++] = season;
@@ -158,12 +194,12 @@ public class CerezoResultsSaver {
 					oneRec[c++] = score;
 					oneRec[c++] = detailUrl;
 					insertDataList.add(oneRec);
-					logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + isHome + ", " 
-							+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
+					logger.info("■" + compe + ", " + gameDateView + ", " + gameDate + ", " + time + ", " + stadium + ", " + isHome + ", " 
+							+ vsTeam + ", " + tv + ", " + result + ", " + score /*+ ", " + detailUrl*/);
 				}
 				
 				if(insertDataList.isEmpty()) {
-					logger.warn("日程データが取得出来ませんでした " + compeList[compeIdx]);
+					logger.warn("日程データが取得出来ませんでした ");
 					continue;
 				}
 	            int[] resultCount = qr.batch(conn, insertSql, insertDataList.toArray(new Object[insertDataList.size()][]));

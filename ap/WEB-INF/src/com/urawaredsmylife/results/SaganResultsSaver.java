@@ -77,7 +77,6 @@ public class SaganResultsSaver {
 			for(int r=0; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 //				System.out.println("xx=" + ((Map)game));
-				boolean isHome = "home_game".equals(((Map)game).get("class"));
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				if (gameItems == null) {
 					continue;
@@ -86,23 +85,20 @@ public class SaganResultsSaver {
 				String compeName = "";
 				Map compeImgTmp = (Map)((Map)gameItems.get(3)).get("img");
 				if (compeImgTmp != null) {
-					String compeImg = (String)((Map)compeImgTmp).get("src");
-					if (compeImg.endsWith("j1-1.png") || compeImg.endsWith("j1-2.png")) {
+					String compeImgAlt = (String)((Map)compeImgTmp).get("alt");
+					System.out.println("compeImg = " + compeImgAlt);
+					if (compeImgAlt.endsWith("J1リーグ")) {
 						compeName = "J1";
-					} else if (compeImg.endsWith("j2.png")) {
+					} else if (compeImgAlt.endsWith("J2リーグ")) {
 						compeName = "J2";
-					} else if (compeImg.endsWith("nabisco.png")) {
+					} else if (compeImgAlt.endsWith("ナビスコカップ")) {
 						compeName = "ナビスコ";
-					} else if (compeImg.endsWith("acl.png")) {
+					} else if (compeImgAlt.endsWith("ACL") || compeImgAlt.endsWith("チャンピオンズリーグ")) {
 						compeName = "ACL";
-					} else if (compeImg.endsWith("tennohai.png")) {
+					} else if (compeImgAlt.endsWith("天皇杯")) {
 						compeName = "天皇杯";	//天皇杯にはリンクがなかったが念のためこちらにも
-					} else if (compeImg.endsWith("b_logo_xerox.png")) {
+					} else if (compeImgAlt.endsWith("XEROX SUPER CUP")) {
 						compeName = "FUJI XEROX SUPER CUP";
-					} else if (compeImg.endsWith("b_logo_panasoniccup.png")) {
-						compeName = "Panasonic CUP";
-					} else if (compeImg.endsWith("b_logo_suruga.png")) {
-						compeName = "スルガ銀行チャンピオンシップ";
 					}
 				}
 
@@ -115,6 +111,10 @@ public class SaganResultsSaver {
 						+ "(" + day + ")";
 				String gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
 				String time = ((String)((Map)gameItems.get(2)).get("content")).replace("：", ":");
+				Object homeAway = ((Map)((Map)gameItems.get(8)).get("span")).get("content");
+//				System.out.println("HOME/AWAY = " + homeAway);
+				boolean isHome = "HOME".equals(homeAway);
+
 				String stadium = "";
 				String vsTeam = null;
 				String tv = "";
@@ -136,7 +136,8 @@ public class SaganResultsSaver {
 								.get("tbody")).get("tr")).get("td");
 					}
 					System.out.println("🌟" + resultsTmp);
-					Map vsTeamMap = (Map)resultsTmp.get(2);
+					Map vsTeamMap = (Map)resultsTmp.get(isHome? 2 : 0);
+					System.out.println("      対戦チーム=" + vsTeamMap);
 					vsTeam = (String)((Map)vsTeamMap).get("content");
 					vsTeam = StringUtils.deleteWhitespace(vsTeam.replaceAll("\n", ""));
 					
@@ -155,19 +156,25 @@ public class SaganResultsSaver {
 //					System.out.println("------------------------");
 					
 					//なぜかスペースが消せないので文字数で切る
-					vsTeam = vsTeam.substring(3);
+					if (isHome) {
+						vsTeam = vsTeam.substring(3);
+					}
 					Map resultMap = (Map)((Map)(Map)resultsTmp.get(1)).get("a");
 					if (resultMap != null) {
 						score = StringUtils.deleteWhitespace(((String)resultMap.get("content")).replaceAll("−", "-"));
 						System.out.println("スコア " + score + ", " + StringUtils.contains(score, " "));
 						// 得点から勝敗を抽出。ホームが左になっている
-						int saganScore = Integer.parseInt(score.substring(0, score.indexOf("-") - 1));
-						int vsScore = Integer.parseInt(score.substring(score.indexOf("-") + 2));
-						score = saganScore + "-" + vsScore;
-						if (vsScore < saganScore) {
-							result = "○";
-						} else if (saganScore < vsScore) {
-							result = "●";
+						int homeScore = Integer.parseInt(score.substring(0, score.indexOf("-") - 1));
+						int awayScore = Integer.parseInt(score.substring(score.indexOf("-") + 2));
+						if (isHome) {
+							score = homeScore + "-" + awayScore;
+						} else {
+							score = awayScore + "-" + homeScore;
+						}
+						if (awayScore < homeScore) {
+							result = isHome? "○" : "●";
+						} else if (homeScore < awayScore) {
+							result = isHome? "●" : "○";
 						} else {
 							result = "△";
 						}
