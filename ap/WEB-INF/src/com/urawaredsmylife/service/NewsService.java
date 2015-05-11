@@ -57,6 +57,9 @@ public class NewsService {
 					+ ", site_name"
 					+ ", DATE_FORMAT(published_date, '%Y/%m/%d %T') published_date"
 					+ ", UNIX_TIMESTAMP(published_date) as published_date_num"
+					+ ", IFNULL(image_url, '') image_url"
+					+ ", image_width"
+					+ ", image_height"
 					+ " FROM " + table
 					+ " WHERE feed_id NOT IN (SELECT feed_id FROM " + avoidTable + ")";
 			if(maxDatetime != null) {
