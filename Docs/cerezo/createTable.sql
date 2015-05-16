@@ -76,3 +76,18 @@ create table cerezoResults(
  ,up_date timestamp
  ,primary key(season, game_date1)
 );
+
+/**
+ * 動画
+ */
+create table cerezoVideo(
+ video_id varchar(20)
+ ,video_title varchar(200)
+ ,game_date date
+ ,thumbnail_url varchar(100)
+ ,view_count int
+ ,like_count int
+ ,dislike_count int
+ ,up_date timestamp
+ ,primary key(video_id, game_date)
+);

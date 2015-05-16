@@ -185,6 +185,9 @@ public class FeedEntrySaver {
 			if(e.getLink().startsWith("http://web.gekisaka.jp")) {
 				siteName = "ゲキサカ";
 			}
+			else if(e.getLink().startsWith("http://www.nikkansports.com")) {
+				siteName = "日刊スポーツ";
+			}
 			if(StringUtils.isBlank(siteName)) {
 				siteName = extractSiteName(e.getLink());
 			}
@@ -213,7 +216,7 @@ public class FeedEntrySaver {
 			Long cnt = (Long)cntMap.get("CNT");
 			if(cnt == 0) {
 				String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-				ImageInfo img = getImageInContent(e.getContent());
+				ImageInfo img = getImageInContent(e.getLink(), e.getContent());
 				Object[] inseartParams = new Object[] {
 						e.getLink()
 						,entryTitle
@@ -289,10 +292,11 @@ public class FeedEntrySaver {
 	
 	/**
 	 * コンテンツ内のイメージ情報を返す。
+	 * @param sourceUrl
 	 * @param content
 	 * @return
 	 */
-	private ImageInfo getImageInContent(String content) {
+	private ImageInfo getImageInContent(String sourceUrl, String content) {
 		ImageInfo img = new ImageInfo();
         int imgTagIdx = content.indexOf("<img");
         if(imgTagIdx != -1) {
@@ -316,6 +320,11 @@ public class FeedEntrySaver {
 	                imgUrl = "";
 	            } else {
 	        		try {
+	        			if (imgUrl.startsWith("/")) {
+	        				int idx1 = sourceUrl.indexOf("//");
+							imgUrl = sourceUrl.substring(0, sourceUrl.indexOf("/", idx1+2)) + imgUrl;
+	        				logger.debug("🌟" + imgUrl);
+	        			}
 	        			URL u = new URL(imgUrl);
 	        			BufferedImage bimg = ImageIO.read(u);
 	        			if (bimg != null) {
@@ -324,7 +333,7 @@ public class FeedEntrySaver {
 			        		img.height = bimg.getHeight();
 	        			}
 	        		} catch (IOException e) {
-	        			throw new RuntimeException(e);
+	        			logger.warn("image loading exception", e);
 	        		}
 	            }
 	        }

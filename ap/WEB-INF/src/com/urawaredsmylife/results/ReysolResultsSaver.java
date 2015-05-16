@@ -139,11 +139,13 @@ public class ReysolResultsSaver {
 					if (timeObj != null) {
 						if (timeObj instanceof String) {
 							time = ((String)timeObj);
+							System.out.println("time 1 = " + time);
 						} else if (timeObj instanceof Map) {
 							time = (String)((Map)timeObj).get("content");
 							if (time == null) {
 								time = (String)((Map)((Map)timeObj).get("span")).get("content");
 							}
+							System.out.println("time 2 = " + time);
 						}
 						if (time != null) {
 							time = time.replace("：", ":").replaceAll("※.*", "");
@@ -152,7 +154,8 @@ public class ReysolResultsSaver {
 						}
 					}
 					if (StringUtils.isNotBlank(time)) {
-						time = time.replaceAll("\r\n","").replaceAll(" ", "").replace("JPN", "(日本時間") + ")";
+						time = time.replaceAll("\r\n","").replaceAll(" ", "").replace("JPN", "(日本時間)");
+						System.out.println("time 3 = " + time);
 					}
 					String stadium = null;
 					if (gameItems.get(2) instanceof String) {
