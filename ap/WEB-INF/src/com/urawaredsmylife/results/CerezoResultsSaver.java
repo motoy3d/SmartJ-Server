@@ -84,6 +84,7 @@ public class CerezoResultsSaver {
 					List ulList = (List)results.get("ul");
 					gameList = new ArrayList();
 					for(Object ul : ulList) {
+//						System.out.println("●" + gameList.size() + "    " + ((Map)ul).get("li"));
 						gameList.addAll((List<Object>)((Map)ul).get("li"));
 					}
 					isSchedule = true;
@@ -116,6 +117,7 @@ public class CerezoResultsSaver {
 						list2 = (List)((Map)list1.get(0)).get("div");
 						spanList = (List)((Map)list2.get(0)).get("span");
 						gameDateCompeStadiumMap = (Map)spanList.get(0);
+//						System.out.println("🌟" + (Map)list1.get(0));
 						isFirst = true;
 					} else {
 						if (isSchedule) {
@@ -127,35 +129,63 @@ public class CerezoResultsSaver {
 					}
 					
 					gameDateTime = (String)((Map)gameDateCompeStadiumMap.get("time")).get("content");
-					isHome = "home-game".equals((String)gameDateCompeStadiumMap.get("class"));					
 					gameDateView = gameDateTime.substring(0, gameDateTime.indexOf(")") + 1);
 					time = StringUtils.deleteWhitespace(gameDateTime.substring(gameDateTime.indexOf(")") + 1));
 					gameDate = gameDateView.substring(0, gameDateView.indexOf("(")).replaceAll("\\.", "/");
 					// compe, stadium
-//					if (spanList != null) {
-						List list3 = (List)((Map)gameDateCompeStadiumMap.get("span")).get("span");
-						compe = StringUtils.deleteWhitespace((String)((Map)list3.get(0)).get("content"));
-						compe = compe.replace("明治安田生命", "").replace("リーグ", "/");
+					Object object = gameDateCompeStadiumMap.get("span");
+					List list3 = null;
+					if (object instanceof Map) {
+						throw new RuntimeException("このパターンはなくなったはず(セレッソ日程)");
+//						System.out.println("¥n¥n¥n¥n¥n¥n######################このパターンもあるのか？¥n¥n¥n¥n¥n¥n");
+//						list3 = (List)((Map)object).get("span");
+//						compe = StringUtils.deleteWhitespace((String)((Map)list3.get(0)).get("content"));
+//						if (isFirst) {
+//							stadium = ((String)((Map)list3.get(1)).get("content")).trim();
+//						} else {
+//							vsTeam = ((String)((Map)list3.get(1)).get("content")).trim();
+//							System.out.println("🔵vsTeam1=" + vsTeam);
+//						}
+					} else {
+						list3 = (List)object;
+//						System.out.println("＞＞＞＞　" + list3);
+						stadium = ((String)((Map)list3.get(0)).get("content")).trim().replace("@ ", "");
 						if (isFirst) {
-							stadium = ((String)((Map)list3.get(1)).get("content")).trim();
+							compe = StringUtils.deleteWhitespace((String)((Map)list3.get(1)).get("content"));
 						} else {
-							vsTeam = ((String)((Map)list3.get(1)).get("content")).trim();
+							List spanList2 = (List)((Map)list3.get(1)).get("span");
+							compe = (String)((Map)spanList2.get(0)).get("content");
+							vsTeam = (String)((Map)spanList2.get(1)).get("content");
+//							System.out.println("🔶vsTeam1=" + vsTeam);
 						}
-//					} else {
-						//TODO
-//					}
+//						System.out.println("パターン違い🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟");
+					}
+					compe = compe.replace("明治安田生命", "").replace("リーグ", "/").trim().replaceAll(" ", "");
 					
-					logger.info("▲" + compe + ", " + gameDateView + ", " + gameDate + ", " + time + ", " + stadium + ", " + isHome + ", " 
-							+ vsTeam + ", " + ", " + result + ", " + score /*+ ", " + detailUrl*/);
+					isHome = "home-game".equals((String)gameDateCompeStadiumMap.get("class"));
+					if ("unclassified-game".equals((String)gameDateCompeStadiumMap.get("class"))) {
+						if ("キンチョウスタジアム".equals(stadium) || "ヤンマースタジアム長居".equals(stadium)) {
+//							System.out.println("🔴unclassified-game");
+							isHome = true;
+						}
+					}
+					
+//					logger.info("▲" + compe + ", " + gameDateView + ", " + gameDate + ", " + time + ", " + stadium + ", " + isHome + ", " 
+//							+ vsTeam + ", " + ", " + result + ", " + score /*+ ", " + detailUrl*/);
 
 					// vsTeam, result
-					if (isFirst && !isSchedule) {
-						teamAndResultList = (List)((Map)((Map)((Map)list2.get(0)).get("div")).get("strong")).get("span");
+					if (isFirst /*&& !isSchedule*/) {
+						if (isSchedule) {
+							vsTeam = (String)((Map)((Map)list2.get(0)).get("div")).get("strong");
+						} else {
+							teamAndResultList = (List)((Map)((Map)((Map)list2.get(0)).get("div")).get("strong")).get("span");
+						}
 					}
 					Integer leftScore = null;
 					Integer rightScore = null;
 					if (teamAndResultList != null) {
-						vsTeam = StringUtils.deleteWhitespace((String)((Map)teamAndResultList.get(0)).get("content"));
+						vsTeam = (String)((Map)teamAndResultList.get(0)).get("content");
+//						System.out.println("🔴vsTeam2=" + vsTeam);
 						Map scoreMap = (Map)teamAndResultList.get(1);
 						score = (String)((Map)scoreMap.get("span")).get("content")
 								+ scoreMap.get("content");
@@ -178,6 +208,7 @@ public class CerezoResultsSaver {
 						}
 						score = isHome? leftScore + " - " + rightScore : rightScore + " - " + leftScore;
 					}
+					vsTeam = StringUtils.deleteWhitespace(vsTeam);
 					String tv = "";
 					int c = 0;
 					Object[] oneRec = new Object[12];
