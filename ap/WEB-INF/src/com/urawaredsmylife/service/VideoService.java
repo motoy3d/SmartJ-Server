@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.urawaredsmylife.dto.NoDataResult;
@@ -27,11 +28,17 @@ public class VideoService {
 	public Object find(Map<String, Object> params) {
 		try {
 			QueryRunner qr = DB.createQueryRunner();
-//			String season = (String)params.get("season");
 			String teamId = (String)params.get("teamId");
 			String gameDate = (String)params.get("gameDate");
-			String youtubeUrlBase = "https://www.youtube.com/watch?v=";
-			String sql = "SELECT CONCAT('" + youtubeUrlBase + "', video_id) video_url"
+			String otherTeamId = (String)params.get("otherTeamId");
+			if (StringUtils.isNotBlank(otherTeamId)) {
+				teamId = otherTeamId;
+			}
+//			String youtubeUrlBase = "https://www.youtube.com/watch?v=";
+	        String youtubeUrlBase1 = "http://www.youtube.com/embed/";
+	        String youtubeUrlBase2 = "?fs=1&autoplay=1";
+
+			String sql = "SELECT CONCAT('" + youtubeUrlBase1 + "', video_id, '" + youtubeUrlBase2 + "') video_url"
 					+ ",video_title, thumbnail_url, view_count, like_count, dislike_count FROM " + teamId + "Video"
 					+ " WHERE game_date=" + DB.quote(gameDate)
 					+ " ORDER BY view_count DESC";
