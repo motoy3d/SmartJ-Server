@@ -242,7 +242,10 @@ public class YouTubeSaver {
 		        }
 				logger.info("    " /*+ publishedAt + "  "*/ + title + "  " + thumbnail.getUrl() 
 						+ "   viewCount:" + viewCount + "  " + videoId);
-				// DB保存
+				// DBから一旦削除して保存
+				String deleteSql = "DELETE FROM " + teamId + "Video WHERE video_id=" + DB.quote(videoId);
+				qr.update(deleteSql);
+				
 				String insertSql = "INSERT IGNORE INTO " + teamId + "Video VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 				qr.update(insertSql, videoId, title, gameDate, thumbnail.getUrl(), 
 						viewCount, likeCount, dislikeCount, new Date());
