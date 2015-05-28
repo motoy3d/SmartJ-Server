@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,15 @@ public class FeedEntrySaver {
 	 * Google Feed API のURLベース
 	 */
 	private static final String URL_BASE = "https://ajax.googleapis.com/ajax/services/feed/load?" 
-			+ "v=1.0&q=%s&num=10&userip=%s";
+			+ "v=1.0&q=%s&num=%s&userip=%s";
+	/**
+	 * デフォルトのフィード取得件数
+	 */
+	private static final int DEFAULT_FEED_COUNT = 10;
+	/**
+	 * Yahoo Pipesのフィード取得件数
+	 */
+	private static final int PIPES_FEED_COUNT = 50;
 	/**
 	 * NGサイト（保存しない）
 	 */
@@ -116,11 +125,12 @@ public class FeedEntrySaver {
 			List<Feed> feedList = getFeedListFromDB(qr);
 			for(Feed targetFeed : feedList) {
 				String feedUrl = targetFeed.getFeedUrl();
-//if(!targetFeed.getFeedUrl().equals("http://www.plus-blog.sportsnavi.com/feed/stag/9/rss2_0.xml")) {
-//	continue;
-//}
+				int feedCount = DEFAULT_FEED_COUNT;
+				if (feedUrl.startsWith("http://pipes.yahoo.com")) {
+					feedCount = PIPES_FEED_COUNT;
+				}
 				feedUrl = URLEncoder.encode(feedUrl, "UTF-8");
-				URL url = new URL(String.format(URL_BASE, feedUrl, ipAddress));
+				URL url = new URL(String.format(URL_BASE, feedUrl, String.valueOf(feedCount), ipAddress));
 				logger.info("targetFeed=" + targetFeed.getTitle() + " : " + url.toString());
 				URLConnection connection = url.openConnection();
 				connection.addRequestProperty("Referer", "http://motoy3d.blogspot.jp");
@@ -195,13 +205,15 @@ public class FeedEntrySaver {
 			if (pubDate == null) {
 				pubDate = new Date();
 			}
-			logger.info(e.getPublishedDate() + "  " + entryTitle + "   " + siteName);
+			logger.info("■" + new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle + "  -  " + siteName);
 			if(ArrayUtils.contains(NG_SITES, siteName)) {
+				logger.info("NGサイト:" + siteName);
 				continue;
 			}
 			boolean isNg = false;
 			for(String ng : NG_WORDS) {
 				if(entryTitle.contains(ng)) {
+					logger.info("NGワード:" + entryTitle);
 					isNg = true; break;
 				}
 			}
