@@ -111,19 +111,28 @@ public class ReysolResultsSaver {
 					
 					String gameDateView = null;
 					String detailUrl = null;
+					System.out.println("gameItems.get(0) " + gameItems.get(0));
 					if (((Map)gameItems.get(0)).get("a") != null) {
 						gameDateView = (String)((Map)((Map)gameItems.get(0)).get("a")).get("content");
 						detailUrl = "http://www.reysol.co.jp/game/results/" + 
 								(String)((Map)((Map)gameItems.get(0)).get("a")).get("href");
+//						System.out.println("gameDateView 0 = " + gameDateView);
 					} else {
 						Object gameDateViewTmp = ((Map)gameItems.get(0)).get("content");
+						if (gameDateViewTmp == null && ((Map)gameItems.get(0)).get("p") != null) {
+							gameDateViewTmp = ((Map)((Map)gameItems.get(0)).get("p")).get("content");
+						}
+//						System.out.println(">> gameDateViewTmp = " + gameDateViewTmp);
 						if (gameDateViewTmp instanceof String) {
 							gameDateView = (String)gameDateViewTmp;
+//							System.out.println("gameDateView 1 = " + gameDateView);
 						} else if (gameDateViewTmp instanceof Map) {
-//							System.out.println("★" + gameDateViewTmp);
 							gameDateView = (String)((Map)gameDateViewTmp).get("content");
+//							System.out.println("gameDateView 2 = " + gameDateView);
 						}
 					}
+//					System.out.println("gameDateView 3 = " + gameDateView);
+
 					gameDateView = gameDateView.replace("･祝", "").replace("･休", "").replace("（", "(").replace("）", ")")
 							.replaceAll("\n", "").trim();
 					String gameDate = null;
@@ -154,7 +163,7 @@ public class ReysolResultsSaver {
 						}
 					}
 					if (StringUtils.isNotBlank(time)) {
-						time = time.replaceAll("\r\n","").replaceAll(" ", "").replace("JPN", "(日本時間)");
+						time = time.replaceAll("\r\n","").replaceAll(" ", "").replace("JPN", "(日本時間)").replace("★", "");
 						System.out.println("time 3 = " + time);
 					}
 					String stadium = null;

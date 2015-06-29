@@ -72,7 +72,7 @@ public class FeedEntrySaver {
 	 * NGワード（エントリタイトルに含まれていたら保存しない）
 	 */
 	private static final String[] NG_WORDS = new String[] {
-		"レディース", "なでしこ", "PR:", ": PR", "ラーメン", "拉麺"
+		"レディース", "なでしこ", "PR:", ": PR", "ラーメン", "拉麺", "ヴァンラーレ"
 	};
 	/**
 	 * チームID
@@ -198,11 +198,14 @@ public class FeedEntrySaver {
 			else if(e.getLink().startsWith("http://www.nikkansports.com")) {
 				siteName = "日刊スポーツ";
 			}
+			else if(e.getLink().startsWith("http://www.soccerdigestweb.com/")) {
+				siteName = "サッカーダイジェストWeb";
+			}
 			if(StringUtils.isBlank(siteName)) {
 				siteName = extractSiteName(e.getLink());
 			}
 			Date pubDate = e.getPublishedDate();
-			if (pubDate == null) {
+			if (pubDate == null || e.getLink().startsWith("http://www.soccerdigestweb.com/")) {
 				pubDate = new Date();
 			}
 			logger.info("■" + new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle + "  -  " + siteName);

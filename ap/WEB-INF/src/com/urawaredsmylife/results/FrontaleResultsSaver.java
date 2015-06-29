@@ -158,6 +158,9 @@ public class FrontaleResultsSaver {
 					} else if (gameItems.get(1) instanceof String){
 						vsTeam = (String)gameItems.get(1);
 					}
+					if (StringUtils.isBlank(vsTeam)) {
+						continue;
+					}
 //					System.out.println("🌟" + vsTeam);
 					String tv = "";
 					String resultOrg = (String)((Map)gameItems.get(5)).get("content");

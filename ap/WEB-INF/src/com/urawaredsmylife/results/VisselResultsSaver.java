@@ -109,7 +109,10 @@ public class VisselResultsSaver {
 					gameDate = "";	//未定等
 				}
 				String time = (String)((Map)gameItems.get(3)).get("content");
-				String stadium = (String)((Map)((Map)gameItems.get(5)).get("a")).get("content");
+				String stadium = null;
+				if (((Map)gameItems.get(5)).get("a") != null) {
+					stadium = (String)((Map)((Map)gameItems.get(5)).get("a")).get("content");
+				}
 //				System.out.println("★" + (Map)gameItems.get(5));
 				String homeAway = null;
 				if (((Map)(Map)gameItems.get(5)).get("span") != null) {

@@ -84,7 +84,7 @@ public class AlbirexResultsSaver {
 					System.out.println("continue............... compeIdx=" + compeIdx);
 					continue;
 				}
-				if(compeIdx == 3) { //プレシーズン //TODO 天皇杯が始まったら変更
+				if(compeIdx >= 3) { //プレシーズン //TODO 天皇杯が始まったら変更
 					break;
 				}
 				String compe = compeList[compeIdx] + " " + StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));

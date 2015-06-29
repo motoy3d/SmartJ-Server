@@ -181,6 +181,7 @@ public class FCTokyoResultsSaver {
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
+				System.out.println("time === [" + time + "]");
 				logger.info("■" + compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}

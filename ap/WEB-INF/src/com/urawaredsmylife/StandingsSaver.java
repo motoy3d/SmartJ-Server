@@ -199,15 +199,15 @@ public class StandingsSaver {
 				for(int r=1; r<rows.length; r++) {
 					System.out.println("-----------------------------");
 					String rank = table.getCellAsText(r, 0);
-					String team = table.getCellAsText(r, 2);
-					String point = table.getCellAsText(r, 3);
-					String games = table.getCellAsText(r, 4);
-					String win = table.getCellAsText(r, 5);
-					String draw = table.getCellAsText(r, 6);
-					String lose = table.getCellAsText(r, 7);
-					String gotGoal = table.getCellAsText(r, 8);
-					String lostGoal = table.getCellAsText(r, 9);
-					String diff = table.getCellAsText(r, 10);
+					String team = table.getCellAsText(r, 1);
+					String point = table.getCellAsText(r, 2);
+					String games = table.getCellAsText(r, 3);
+					String win = table.getCellAsText(r, 4);
+					String draw = table.getCellAsText(r, 5);
+					String lose = table.getCellAsText(r, 6);
+					String gotGoal = table.getCellAsText(r, 7);
+					String lostGoal = table.getCellAsText(r, 8);
+					String diff = table.getCellAsText(r, 9);
 					String group = g == 0? "A" : "B";
 					System.out.println(group + "-" + rank + " : " + team);
 					int c = 0;
