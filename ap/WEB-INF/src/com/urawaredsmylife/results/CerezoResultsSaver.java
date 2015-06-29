@@ -127,6 +127,10 @@ public class CerezoResultsSaver {
 							gameDateCompeStadiumMap = (Map)spanList.get(0);
 						}
 					}
+					if (!isSchedule) {
+						detailUrl = (String)((Map)((Map)list1.get(1)).get("a")).get("href");
+//						System.out.println("🔵" + detailUrl);
+					}
 					
 					gameDateTime = (String)((Map)gameDateCompeStadiumMap.get("time")).get("content");
 					gameDateView = gameDateTime.substring(0, gameDateTime.indexOf(")") + 1);
@@ -137,15 +141,6 @@ public class CerezoResultsSaver {
 					List list3 = null;
 					if (object instanceof Map) {
 						throw new RuntimeException("このパターンはなくなったはず(セレッソ日程)");
-//						System.out.println("¥n¥n¥n¥n¥n¥n######################このパターンもあるのか？¥n¥n¥n¥n¥n¥n");
-//						list3 = (List)((Map)object).get("span");
-//						compe = StringUtils.deleteWhitespace((String)((Map)list3.get(0)).get("content"));
-//						if (isFirst) {
-//							stadium = ((String)((Map)list3.get(1)).get("content")).trim();
-//						} else {
-//							vsTeam = ((String)((Map)list3.get(1)).get("content")).trim();
-//							System.out.println("🔵vsTeam1=" + vsTeam);
-//						}
 					} else {
 						list3 = (List)object;
 //						System.out.println("＞＞＞＞　" + list3);
@@ -168,11 +163,9 @@ public class CerezoResultsSaver {
 //							System.out.println("🔴unclassified-game");
 							isHome = true;
 						}
-					}
-					
+					}					
 //					logger.info("▲" + compe + ", " + gameDateView + ", " + gameDate + ", " + time + ", " + stadium + ", " + isHome + ", " 
 //							+ vsTeam + ", " + ", " + result + ", " + score /*+ ", " + detailUrl*/);
-
 					// vsTeam, result
 					if (isFirst /*&& !isSchedule*/) {
 						if (isSchedule) {
