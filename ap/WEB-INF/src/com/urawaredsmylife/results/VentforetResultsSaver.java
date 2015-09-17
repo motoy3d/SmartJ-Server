@@ -67,7 +67,7 @@ public class VentforetResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ナビスコ", "プレシーズン"};
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ナビスコ", "天皇杯", "プレシーズン"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -88,7 +88,7 @@ public class VentforetResultsSaver {
 				if (gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
 				} else {
-					gameDate = "";	//未定等
+					gameDate = null;	//未定等
 				}
 				String stadium = (String)((Map)gameItems.get(3)).get("content");
 				String homeAway = null;

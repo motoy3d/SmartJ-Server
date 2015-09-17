@@ -37,7 +37,6 @@ public class AntlersResultsSaver {
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from"
 			+ "%20html%20where%20url%3D%22http%3A%2F%2Fwww.so-net.ne.jp%2Fantlers%2Fgames%22%20"
 			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'result_table'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
-
 	/**
 	 * コンストラクタ
 	 * @param teamId
@@ -68,14 +67,14 @@ public class AntlersResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ACL", "ナビスコ", "天皇杯"};
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ナビスコ", "天皇杯", "ACL"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				if (gameItems == null) {
 					compeIdx++;
-					if(compeIdx == 3) { //プレシーズン
+					if(compeIdx == 5) { //プレシーズン
 						break;
 					}
 					continue;

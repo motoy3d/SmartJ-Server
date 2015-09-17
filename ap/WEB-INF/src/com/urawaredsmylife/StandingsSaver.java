@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
@@ -29,7 +30,9 @@ public class StandingsSaver {
 	/**
 	 * 順位表URL
 	 */
-	private static final String SRC_URL_J1 = "http://soccer.yahoo.co.jp/jleague/standings/j1";
+	private static final String SRC_URL_J1_1st = "http://soccer.yahoo.co.jp/jleague/standings/j1/1st";
+	private static final String SRC_URL_J1_2nd = "http://soccer.yahoo.co.jp/jleague/standings/j1/2nd";
+	private static final String SRC_URL_J1_ALL = "http://soccer.yahoo.co.jp/jleague/standings/j1/all";
 	private static final String SRC_URL_J2 = "http://soccer.yahoo.co.jp/jleague/standings/j2";
 	private static final String SRC_URL_NABISCO = "http://soccer.yahoo.co.jp/jleague/standings/jleaguecup";
 	private static final String SRC_URL_ACL1 = "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/144/";
@@ -73,15 +76,20 @@ public class StandingsSaver {
 		try {
 			// J1
 			Date j1OpenDate = DateUtils.parseDate(Const.J1_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			Date j1SecondStageOpenDate = DateUtils.parseDate(Const.J1_SECOND_STAGE_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int j1Result = 0;
 			if (j1OpenDate.getTime() < new Date().getTime()) {
-				j1Result = insertJ(SRC_URL_J1, "J1", 18);
+				j1Result = insertJ(SRC_URL_J1_1st, "J1", "1st", 18);
+			}
+			if (j1SecondStageOpenDate.getTime() < new Date().getTime()) {
+				j1Result = insertJ(SRC_URL_J1_2nd, "J1", "2nd", 18);
+				j1Result = insertJ(SRC_URL_J1_ALL, "J1", "total", 18);
 			}
 			// J2
 			Date j2OpenDate = DateUtils.parseDate(Const.J2_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int j2Result = 0;
 			if (j2OpenDate.getTime() < new Date().getTime()) {
-				j2Result = insertJ(SRC_URL_J2, "J2", 22);
+				j2Result = insertJ(SRC_URL_J2, "J2", "", 22);
 			}
 			// ナビスコカップ
 			Date nabiscoOpenDate = DateUtils.parseDate(Const.NABISCO_OPEN_DATE, new String[] {"yyyy/MM/dd"});
@@ -110,10 +118,11 @@ public class StandingsSaver {
 	 * Jリーグ順位表URLにアクセスして解析し、standingsテーブルにINSERTする。
 	 * @param srcUrl
 	 * @param league
+	 * @param stage
 	 * @param teamCount
 	 * @return
 	 */
-	private int insertJ(String srcUrl, String league, int teamCount) {
+	private int insertJ(String srcUrl, String league, String stage, int teamCount) {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
 		logger.info("----------------------------------------");
@@ -123,7 +132,7 @@ public class StandingsSaver {
 		try {
 			WebResponse res = wc.getResponse(req);
 			WebTable[] tables = res.getTables();
-			System.out.println(tables);
+			System.out.println("tables=" + ToStringBuilder.reflectionToString(tables));
 			TableRow[] rows = tables[0].getRows();
             String insertSql = "INSERT INTO standings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             Object[][] insertDataList = new Object[teamCount][];
@@ -145,7 +154,7 @@ public class StandingsSaver {
 				insertDataList[r-1] = new Object[15];
 				insertDataList[r-1][c++] = season;
 				insertDataList[r-1][c++] = league;
-				insertDataList[r-1][c++] = "J1".equals(league)? "1st" : "-";	//TODO ステージ(1st, 2nd, total)
+				insertDataList[r-1][c++] = "J1".equals(league)? stage : "-";	//TODO ステージ(1st, 2nd, total)
 				insertDataList[r-1][c++] = r;
 				insertDataList[r-1][c++] = rank;
 				insertDataList[r-1][c++] = TeamUtils.getTeamId(team);
@@ -164,7 +173,11 @@ public class StandingsSaver {
 				return -1;
 			}
 			QueryRunner qr = DB.createQueryRunner();
-			qr.update("DELETE FROM standings WHERE season=" + season + " AND league='" + league + "'");
+			String delSql = "DELETE FROM standings WHERE season=" + season + " AND league='" + league + "'"
+					+ (StringUtils.isNotBlank(stage)? " AND stage='" + stage + "'" : "");
+			logger.info("J2削除=" + delSql);
+			int deletedCount = qr.update(delSql);
+			logger.info("J2削除件数: " + deletedCount);
             int[] resultCount = qr.batch(insertSql, insertDataList);
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {

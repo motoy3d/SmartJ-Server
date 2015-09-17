@@ -120,7 +120,12 @@ public class ReysolResultsSaver {
 					} else {
 						Object gameDateViewTmp = ((Map)gameItems.get(0)).get("content");
 						if (gameDateViewTmp == null && ((Map)gameItems.get(0)).get("p") != null) {
-							gameDateViewTmp = ((Map)((Map)gameItems.get(0)).get("p")).get("content");
+							System.out.println("gameDateView 6 = " + ((Map)gameItems.get(0)).get("p"));
+							if (((Map)gameItems.get(0)).get("p") instanceof String) {
+								gameDateViewTmp = (String)((Map)gameItems.get(0)).get("p");
+							} else {
+								gameDateViewTmp = ((Map)((Map)gameItems.get(0)).get("p")).get("content");
+							}
 						}
 //						System.out.println(">> gameDateViewTmp = " + gameDateViewTmp);
 						if (gameDateViewTmp instanceof String) {

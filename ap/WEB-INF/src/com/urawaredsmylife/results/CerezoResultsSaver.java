@@ -84,8 +84,12 @@ public class CerezoResultsSaver {
 					List ulList = (List)results.get("ul");
 					gameList = new ArrayList();
 					for(Object ul : ulList) {
-//						System.out.println("●" + gameList.size() + "    " + ((Map)ul).get("li"));
-						gameList.addAll((List<Object>)((Map)ul).get("li"));
+						System.out.println("●" + gameList.size() + "    " + ((Map)ul).get("li"));
+						if (((Map)ul).get("li") instanceof List) {
+							gameList.addAll((List<Object>)((Map)ul).get("li"));
+						} else {
+							gameList.add((Map)((Map)ul).get("li"));
+						}
 					}
 					isSchedule = true;
 				}
@@ -180,8 +184,10 @@ public class CerezoResultsSaver {
 						vsTeam = (String)((Map)teamAndResultList.get(0)).get("content");
 //						System.out.println("🔴vsTeam2=" + vsTeam);
 						Map scoreMap = (Map)teamAndResultList.get(1);
-						score = (String)((Map)scoreMap.get("span")).get("content")
-								+ scoreMap.get("content");
+						List scoreList = (List)scoreMap.get("span");
+						System.out.println("🌟スコア=" + scoreList);
+						((Map)scoreList.get(0)).get("content");
+						score = ((Map)scoreList.get(0)).get("content") + " - " + ((Map)scoreList.get(1)).get("content");
 						leftScore = Integer.parseInt(score.substring(0, score.indexOf(" ")));
 						rightScore = Integer.parseInt(score.substring(score.indexOf("-")+2));
 					} else {
