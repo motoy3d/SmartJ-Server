@@ -110,6 +110,7 @@ public class RedsResultsSaver {
 				if (StringUtils.isNotBlank(gameDateView)) {
 					gameDateView = gameDateView.replaceAll("\n", "").replaceAll("<br/>", "").replaceAll("※.*", "");
 				}
+				gameDateView = gameDateView.replace("月", "/").replace("(日)", "(Sun)").replace("日", "/").replace("(Sun)", "(日)");
 				System.out.println("日●" + gameDateView);
 				String gameDate = null;
 				if(gameDateView.contains("(")) {
@@ -148,7 +149,10 @@ System.out.println("スタジアム🌟" + ((Map)gameItems.get(4)).get("content"
 					if ("未定".equals(stadium)) {
 						stadium = "会場未定";
 					}
+				} else if(gameItems.get(4) instanceof String) {
+					stadium = (String)gameItems.get(4);
 				}
+				System.out.println("スタジアム🔵" + gameItems.get(4));
 				Map resultMap = (Map)((Map)gameItems.get(5)).get("a");
 				String result = null;
 				String score = null;

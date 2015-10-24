@@ -21,6 +21,7 @@ sudo service jsvc restart
 sudo service mysqld restart
 GRANT ALL PRIVILEGES ON *.* TO redsmylife@"localhost" IDENTIFIED BY 'xmen9001' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON *.* TO redsmylife@"%.ucom.ne.jp" IDENTIFIED BY 'xmen9001' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO redsmylife@"220.148.176.81" IDENTIFIED BY 'xmen9001' WITH GRANT OPTION;
 
 ★bounceHammer(バウンスメール解析)
 /usr/local/bouncehammer

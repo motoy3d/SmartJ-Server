@@ -200,8 +200,12 @@ public class YouTubeSaver {
 			logger.info("");
 			return;
 		}
-        QueryRunner qr = DB.createQueryRunner();
-	    Iterator<SearchResult> iteratorSearchResults = searchResultList.iterator();
+		QueryRunner qr = DB.createQueryRunner();
+	    // DBから一旦削除
+		String deleteSql = "DELETE FROM " + teamId + "Video WHERE game_date=?";
+		qr.update(deleteSql, gameDate);
+
+		Iterator<SearchResult> iteratorSearchResults = searchResultList.iterator();
 	    while (iteratorSearchResults.hasNext()) {
 	        SearchResult singleVideo = iteratorSearchResults.next();
 	        ResourceId rId = singleVideo.getId();
@@ -243,8 +247,8 @@ public class YouTubeSaver {
 				logger.info("    " /*+ publishedAt + "  "*/ + title + "  " + thumbnail.getUrl() 
 						+ "   viewCount:" + viewCount + "  " + videoId);
 				// DBから一旦削除して保存
-				String deleteSql = "DELETE FROM " + teamId + "Video WHERE video_id=" + DB.quote(videoId);
-				qr.update(deleteSql);
+//				String deleteSql = "DELETE FROM " + teamId + "Video WHERE video_id=" + DB.quote(videoId);
+//				qr.update(deleteSql);
 				
 				String insertSql = "INSERT IGNORE INTO " + teamId + "Video VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 				qr.update(insertSql, videoId, title, gameDate, thumbnail.getUrl(), 

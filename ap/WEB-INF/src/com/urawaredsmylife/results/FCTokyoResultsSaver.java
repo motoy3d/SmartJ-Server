@@ -81,7 +81,10 @@ public class FCTokyoResultsSaver {
 					logger.info("#省略 " + r);
 					continue;
 				}
-				if("#808080".equals(bgcolor)) {//ヘッダは省略
+				String gameNumber = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));
+				System.out.println("🔴gameNumber=" + gameNumber);
+				if("#808080".equals(bgcolor) || "節".equals(gameNumber) 
+						|| "戦".equals(gameNumber) || "回".equals(gameNumber) || "".equals(gameNumber)) {//ヘッダは省略
 					logger.info("#ヘッダ " + r);
 					compeIdx++;
 					if(compeIdx == 4) {
@@ -89,7 +92,6 @@ public class FCTokyoResultsSaver {
 					}
 					continue;
 				}
-				String gameNumber = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));
 				if((compeIdx == 0 || compeIdx == 1 || compeIdx == 2) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
 					gameNumber = "第" + gameNumber + "節";
 				}
@@ -135,18 +137,16 @@ public class FCTokyoResultsSaver {
 				String detailUrl = null;
 				if(resultMap != null) {
 					score = (String)resultMap.get("content");
-					int idx = score.indexOf("○");
-					if (idx == -1) {
-						idx = score.indexOf("△");
+					System.out.println("◉スコア：" + score);
+					if (score.indexOf("△") != -1) {
 						result = "△";
 						score = score.replace("△", "-");
-					} else if (idx == -1) {
-						idx = score.indexOf("●");
+					} else if (score.indexOf("●") != -1) {
 						result = "●";
 						score = score.replace("●", "-");
 					} else {
 						result = "○";
-						score = score.replace("○", "-");
+						score = score.replace("○", "-").replace("○", "-");
 					}
 //					int myScore = Integer.parseInt(score.substring(0, idx));
 //					int vsScore = Integer.parseInt(score.substring(idx + 1));
@@ -186,7 +186,7 @@ public class FCTokyoResultsSaver {
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
-				System.out.println("time === [" + time + "]");
+				System.out.println("🔵" + gameDate + " " + gameDateView + " " + time + "");
 				logger.info("■" + compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}

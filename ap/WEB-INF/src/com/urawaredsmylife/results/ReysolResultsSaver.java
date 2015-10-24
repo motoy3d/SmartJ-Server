@@ -54,7 +54,7 @@ public class ReysolResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-        String[] compeList = new String[]{"ACL", "ACL", "ACL", "J1 1st", "J1 2nd", "ﾅﾋﾞｽｺ", "天皇杯"};
+        String[] compeList = new String[]{ "J1 2nd", "J1 1st", "ACL", "ACL", "ACL", "ﾅﾋﾞｽｺ", "天皇杯"};
 		try {
 			String resultsTable = teamId + "Results";
 			QueryRunner qr = DB.createQueryRunner();
@@ -182,8 +182,13 @@ public class ReysolResultsSaver {
 					if (vsTeamTmp instanceof String) {
 						vsTeam = (String)vsTeamTmp;
 					} else if (vsTeamTmp instanceof Map) {
-//						System.out.println("★vsTeamTmp=" + vsTeamTmp);
+						System.out.println("★vsTeamTmp=" + vsTeamTmp);
 						vsTeam = (String)((Map)vsTeamTmp).get("content");
+						if (StringUtils.isBlank(vsTeam) && ((Map)vsTeamTmp).get("span") instanceof Map) {
+							vsTeam = (String)((Map)((Map)vsTeamTmp).get("span")).get("content");
+						}
+					} else {
+						System.out.println("★vsTeamTmp=" + vsTeamTmp.getClass() + " / "  + vsTeamTmp);
 					}
 					if (vsTeam != null) {
 						vsTeam = vsTeam.replaceAll("\n", "").replaceAll(" ", "").replaceAll("（", "(").replaceAll("）", ")");

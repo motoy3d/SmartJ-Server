@@ -40,9 +40,9 @@ import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.RemoveUnderscoreBeanProcessor;
 
 /**
- * feed_masterからフィードリストを取得して、
+ * 各チームのxxxFeedMasterからフィードリストを取得して、
  * google feed apiを使用して各フィードのエントリリストを取得し、
- * entryテーブルに格納する。
+ * xxxEntryテーブルに格納する。
  * 本処理はバッチで定期的に実行する。
  * @author motoy3d
  *
