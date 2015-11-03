@@ -52,26 +52,22 @@ public class FeedEntrySaver {
 	/**
 	 * Google Feed API のURLベース
 	 */
-	private static final String URL_BASE = "https://ajax.googleapis.com/ajax/services/feed/load?" 
+	protected static final String URL_BASE = "https://ajax.googleapis.com/ajax/services/feed/load?" 
 			+ "v=1.0&q=%s&num=%s&userip=%s";
 	/**
 	 * デフォルトのフィード取得件数
 	 */
-	private static final int DEFAULT_FEED_COUNT = 10;
+	protected static final int DEFAULT_FEED_COUNT = 10;
 	/**
-	 * Yahoo Pipesのフィード取得件数
+	 * NGサイト名リスト（保存しない）
 	 */
-	private static final int PIPES_FEED_COUNT = 50;
-	/**
-	 * NGサイト（保存しない）
-	 */
-	private static final String[] NG_SITES = new String[] {
+	protected static final String[] NG_SITES = new String[] {
 		"（ゲキサカ）", "（SOCCER"
 	};
 	/**
 	 * NGワード（エントリタイトルに含まれていたら保存しない）
 	 */
-	private static final String[] NG_WORDS = new String[] {
+	protected static final String[] NG_WORDS = new String[] {
 		"レディース", "なでしこ", "PR:", ": PR", "ラーメン", "拉麺", "ヴァンラーレ"
 	};
 	/**
@@ -102,6 +98,12 @@ public class FeedEntrySaver {
 	 * コンストラクタ
 	 * @param teamId
 	 */
+	public FeedEntrySaver() {
+	}
+	/**
+	 * コンストラクタ
+	 * @param teamId
+	 */
 	public FeedEntrySaver(String teamId) {
 		this.teamId = teamId;
 	}
@@ -126,12 +128,9 @@ public class FeedEntrySaver {
 			for(Feed targetFeed : feedList) {
 				String feedUrl = targetFeed.getFeedUrl();
 				int feedCount = DEFAULT_FEED_COUNT;
-				if (feedUrl.startsWith("http://pipes.yahoo.com")) {
-					feedCount = PIPES_FEED_COUNT;
-				}
 				feedUrl = URLEncoder.encode(feedUrl, "UTF-8");
 				URL url = new URL(String.format(URL_BASE, feedUrl, String.valueOf(feedCount), ipAddress));
-				logger.info("targetFeed=" + targetFeed.getTitle() + " : " + url.toString());
+				logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
 				URLConnection connection = url.openConnection();
 				connection.addRequestProperty("Referer", "http://motoy3d.blogspot.jp");
 				
@@ -260,7 +259,7 @@ public class FeedEntrySaver {
 	 * @param entryUrl
 	 * @return
 	 */
-	private String extractSiteName(String entryUrl) {
+	protected String extractSiteName(String entryUrl) {
 		logger.info("extractSiteName>>>>>>>>>>" + entryUrl);
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
@@ -311,7 +310,7 @@ public class FeedEntrySaver {
 	 * @param content
 	 * @return
 	 */
-	private ImageInfo getImageInContent(String sourceUrl, String content) {
+	protected ImageInfo getImageInContent(String sourceUrl, String content) {
 		ImageInfo img = new ImageInfo();
         int imgTagIdx = content.indexOf("<img");
         if(imgTagIdx != -1) {

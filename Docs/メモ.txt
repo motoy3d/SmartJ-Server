@@ -46,3 +46,6 @@ select count(*) from saganResults;
 select count(*) from reysolResults;
 select count(*) from vortisResults;
 select count(*) from redsResults;
+select count(*) from bellmareResults;
+select count(*) from montedioResults;
+select count(*) from yamagaResults;

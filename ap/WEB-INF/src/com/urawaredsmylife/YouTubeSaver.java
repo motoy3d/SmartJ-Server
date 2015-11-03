@@ -139,7 +139,6 @@ public class YouTubeSaver {
 	        String gameDate1 = new SimpleDateFormat("yyyy/MM/dd").format(gameDate);
 	        String queryTerm1 = teamName + " " + vsTeamName + " " + gameDate1;
 	        String queryTerm2 = "スカパー ハイライト " + teamName + " " + vsTeamName + " " + compe;
-	
 	        // Define the API request for retrieving search results.
 	        YouTube.Search.List search = youtube.search().list("id,snippet");
 	
@@ -166,6 +165,12 @@ public class YouTubeSaver {
 	        search.setFields("items(id/kind,id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/high/url)");
 	        search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
 	
+			QueryRunner qr = DB.createQueryRunner();
+		    // DBから一旦削除
+			String deleteAllSql = "DELETE FROM " + teamId + "Video WHERE game_date=?";
+			logger.info("DBから一旦削除：" + deleteAllSql + " -- " + gameDate);
+			qr.update(deleteAllSql, gameDate);
+
 	        saveDb(search, teamName, vsTeamName, gameDate);
 	        
 	        search.setQ(queryTerm2);
@@ -196,14 +201,11 @@ public class YouTubeSaver {
 		// Call the API and print results.
 		SearchListResponse searchResponse = search.execute();
 		List<SearchResult> searchResultList = searchResponse.getItems();
-		if (searchResultList == null) {
+		if (searchResultList == null || searchResultList.isEmpty()) {
 			logger.info("");
 			return;
 		}
 		QueryRunner qr = DB.createQueryRunner();
-	    // DBから一旦削除
-		String deleteSql = "DELETE FROM " + teamId + "Video WHERE game_date=?";
-		qr.update(deleteSql, gameDate);
 
 		Iterator<SearchResult> iteratorSearchResults = searchResultList.iterator();
 	    while (iteratorSearchResults.hasNext()) {
@@ -246,9 +248,6 @@ public class YouTubeSaver {
 		        }
 				logger.info("    " /*+ publishedAt + "  "*/ + title + "  " + thumbnail.getUrl() 
 						+ "   viewCount:" + viewCount + "  " + videoId);
-				// DBから一旦削除して保存
-//				String deleteSql = "DELETE FROM " + teamId + "Video WHERE video_id=" + DB.quote(videoId);
-//				qr.update(deleteSql);
 				
 				String insertSql = "INSERT IGNORE INTO " + teamId + "Video VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 				qr.update(insertSql, videoId, title, gameDate, thumbnail.getUrl(), 

@@ -75,6 +75,17 @@ public class ConfigService {
 			} catch (ParseException e) {
 			}
 			
+			// NGサイトリスト(リジェクト対策)
+			String sql3 = "SELECT * FROM ngSite";
+			logger.info(sql3);
+			List<Map<String, Object>> ngSiteMapList = qr.query(sql3, new MapListHandler());
+			String[] ngSiteList = new String[ngSiteMapList.size()];
+			int idx = 0;
+			for(Map<String, Object> ng : ngSiteMapList) {
+				ngSiteList[idx++] = (String)ng.get("domain");
+			}
+			conf.put("ngSiteList", ngSiteList);
+			
 			resultList.add(conf);
 			return resultList;
 		} catch (SQLException e) {

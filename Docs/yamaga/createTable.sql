@@ -43,6 +43,8 @@ create table yamagaEntry(
  ,entry_title varchar(1000)
  ,content text
  ,image_url varchar(500)
+ ,image_width int
+ ,image_height int
  ,feed_id int
  ,site_name varchar(200)
  ,published_date datetime

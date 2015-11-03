@@ -110,7 +110,7 @@ insert into message values('albirex', 1, '最新版にアップデートお願�
 create table feedMaster(
  feed_id	 int not null auto_increment primary key
  ,feed_url varchar(200)
- ,feed_name varchar(200)
+ ,site_name varchar(200)
  ,up_date timestamp
 );
 
@@ -139,4 +139,11 @@ create table players(
  ,place varchar(20) /*出身地*/
  ,previous_team varchar(40) /*全所属*/
  ,up_date timestamp
+);
+
+/**
+ * NGサイト(Appleリジェクト対策)
+ */
+create table ngSite(
+  domain varchar(40)
 );
