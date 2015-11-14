@@ -81,25 +81,28 @@ public class CerezoResultsSaver {
 						.get("query")).get("results");
 				List<Object> gameList = (List<Object>)results.get("li");
 				if (gameList == null) {	//予定の方はulが入る
-					List ulList = (List)results.get("ul");
+					System.out.println("🔵results.get(ul).get(li)=" + ((Map)results.get("ul")).get("li"));
+					List ulList = (List)((Map)results.get("ul")).get("li");
 					gameList = new ArrayList();
 					for(Object ul : ulList) {
-						System.out.println("●" + gameList.size() + "    " + ((Map)ul).get("li"));
-						if (((Map)ul).get("li") instanceof List) {
-							gameList.addAll((List<Object>)((Map)ul).get("li"));
+//						System.out.println("●" + gameList.size() + "    " + ul);
+						if (ul instanceof List) {
+							gameList.addAll((List<Object>)((Map)ul));
 						} else {
-							gameList.add((Map)((Map)ul).get("li"));
+							gameList.add(ul);
 						}
 					}
 					isSchedule = true;
 				}
-				logger.info(gameList.getClass().toString());
+				logger.info("isSchedule=" + isSchedule + ",  " + gameList.getClass().toString());
 				
 	            String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
 	            List<Object[]> insertDataList = new ArrayList<Object[]>();
 				for(int r=0; r<gameList.size(); r++) {
+//					System.out.println("🌟gameList " + r);
 					Map game = (Map)gameList.get(r);
 					List list1 = (List)((Map)game.get("div")).get("div");
+//					System.out.println("🔴list1 " + list1);
 					String gameDateTime = "";
 					boolean isHome = false;
 					String gameDateView = "";
@@ -160,6 +163,9 @@ public class CerezoResultsSaver {
 //						System.out.println("パターン違い🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟");
 					}
 					compe = compe.replace("明治安田生命", "").replace("リーグ", "/").trim().replaceAll(" ", "");
+					if (compe.endsWith("/")) {
+						compe = compe.substring(0, compe.length()-1);
+					}
 					
 					isHome = "home-game".equals((String)gameDateCompeStadiumMap.get("class"));
 					if ("unclassified-game".equals((String)gameDateCompeStadiumMap.get("class"))) {
