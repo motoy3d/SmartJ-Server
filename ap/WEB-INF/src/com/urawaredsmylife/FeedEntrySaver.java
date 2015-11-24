@@ -327,6 +327,7 @@ public class FeedEntrySaver {
 	                    imgUrl.indexOf("fbcdn") != -1 || //facebook(直接表示できない)
 	                    imgUrl.indexOf("http://measure.kuchikomi.ameba.jp") == 0 || //ameba
 	                    imgUrl.indexOf("rssad") != -1 || //rssad(直接表示できない)
+                		imgUrl.indexOf("f.image.geki.jp") != -1 || //ゲキサカ(直接表示できない)
                 		imgUrl.endsWith("money_yen.png") ||  //浦和フットボール通信
                 		imgUrl.endsWith("/btn_share_now.png") || //なう
                 		imgUrl.endsWith("/btn_share_mixi.png")  //mixi
