@@ -62,13 +62,13 @@ public class SanfrecceResultsSaver {
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 			logger.info(json.toString());
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
-			logger.info(gameList.getClass().toString());
+			logger.info("gameList=" + gameList);
 			
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
             int compeIdx = 0;
-            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
+            String[] compeList = new String[] {"FIFAｸﾗﾌﾞﾜｰﾙﾄﾞｶｯﾌﾟ", "ﾁｬﾝﾋﾟｵﾝｼｯﾌﾟ", "J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
@@ -76,6 +76,14 @@ public class SanfrecceResultsSaver {
 					compeIdx++;
 					continue;
 				}
+				
+				
+				if (!(gameItems.get(4) instanceof Map)) {
+					System.out.println("game🌟=" + game);
+				}
+
+				
+				
 				String compe = null;
 				String matchNo = ((String)gameItems.get(0)).replaceAll("※.*", "");
 				compe = compeList[compeIdx]
@@ -102,12 +110,16 @@ public class SanfrecceResultsSaver {
 				String vsTeam = (String)gameItems.get(3);
 				String tv = (String)gameItems.get(6);
 				Map resultMap = null;
-				if (gameItems.get(4) instanceof Map) {
-					resultMap = (Map)((Map)gameItems.get(4)).get("a");
-				}
 				String result = null;
 				String score = null;
 				String detailUrl = null;
+				if (gameItems.get(4) instanceof Map) {
+					resultMap = (Map)((Map)gameItems.get(4)).get("a");
+				} else {
+					Map<String, Object> map = ((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results"));
+					System.out.println("map=" + map);
+					score = (String)gameItems.get(4);
+				}
 //				System.out.println("★" + resultMap);
 				if (resultMap != null) {
 					score = ((String)resultMap.get("content")).replaceAll(" ", "");
