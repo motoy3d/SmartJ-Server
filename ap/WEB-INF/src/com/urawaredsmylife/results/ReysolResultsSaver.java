@@ -54,7 +54,7 @@ public class ReysolResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-        String[] compeList = new String[]{ "J1 2nd", "J1 1st", "ACL", "ACL", "ACL", "ﾅﾋﾞｽｺ", "天皇杯"};
+        String[] compeList = new String[]{ "J1 1st", "J1 2nd", "ﾅﾋﾞｽｺ", "天皇杯"};
 		try {
 			String resultsTable = teamId + "Results";
 			QueryRunner qr = DB.createQueryRunner();

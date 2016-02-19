@@ -77,7 +77,7 @@ public class VisselResultsSaver {
 				String compeName = (String)((Map)((Map)gameItems.get(0)).get("img")).get("src");
 				if (compeName.endsWith("logo-presea.png")) {
 					compeName = "プレシーズンマッチ";
-				} else if (compeName.endsWith("logo-j2015.png")) {
+				} else if (compeName.contains("logo-j")) {
 					compeName = "J1";
 				} else if (compeName.endsWith("logo-ync.png")) {
 					compeName = "ナビスコ";

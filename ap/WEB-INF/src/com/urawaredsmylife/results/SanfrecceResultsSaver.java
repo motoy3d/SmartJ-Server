@@ -68,7 +68,8 @@ public class SanfrecceResultsSaver {
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
             int compeIdx = 0;
-            String[] compeList = new String[] {"FIFAｸﾗﾌﾞﾜｰﾙﾄﾞｶｯﾌﾟ", "ﾁｬﾝﾋﾟｵﾝｼｯﾌﾟ", "J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
+//            String[] compeList = new String[] {"FIFAｸﾗﾌﾞﾜｰﾙﾄﾞｶｯﾌﾟ", "ﾁｬﾝﾋﾟｵﾝｼｯﾌﾟ", "J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "FUJI XEROX SUPER CUP", "ACL"};
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
@@ -77,18 +78,16 @@ public class SanfrecceResultsSaver {
 					continue;
 				}
 				
-				
 				if (!(gameItems.get(4) instanceof Map)) {
 					System.out.println("game🌟=" + game);
 				}
 
-				
-				
 				String compe = null;
 				String matchNo = ((String)gameItems.get(0)).replaceAll("※.*", "");
-				compe = compeList[compeIdx]
-						+ ("/" + matchNo)
-						+ (NumberUtils.isDigits(matchNo) ? "節" : "");
+				compe = compeList[compeIdx];
+				if (NumberUtils.isDigits(matchNo) && !compe.contains("XEROX")) {
+					compe += ("/" + matchNo) + "節";
+				}
 				String gameDateView = ((String)gameItems.get(1))
 						.replaceAll("祝", "").replace("・", "").replace("()", "").replace("\n", "");
 //				System.out.println("★" + gameDateView);
@@ -106,7 +105,7 @@ public class SanfrecceResultsSaver {
 				} else {
 					stadium = (String)gameItems.get(5);
 				}
-				String homeAway = "エディオンスタジアム広島".equals(stadium) ? "H" : "A";
+				String homeAway = "エディオンスタジアム広島".equals(stadium) || "広島広域公園陸上競技場".equals(stadium) ? "H" : "A";
 				String vsTeam = (String)gameItems.get(3);
 				String tv = (String)gameItems.get(6);
 				Map resultMap = null;

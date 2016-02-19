@@ -77,19 +77,32 @@ public class GambaResultsSaver {
 				}
 				String compeName = "";
 				Map compeA = (Map)((Map)gameItems.get(2)).get("a");
+				System.out.println("(Map)gameItems.get(2)=" + (Map)gameItems.get(2));
+				System.out.println("compeA=" + compeA);
+				String compeImg = null;
 				if (compeA != null) {
-					String compeImg = (String)((Map)compeA.get("img")).get("src");
-					if (compeImg.endsWith("b_logo_j1meijiyasuda.png")) {
+					compeImg = (String)((Map)compeA.get("img")).get("src");
+				} else {
+					compeImg = (String)((Map)((Map)gameItems.get(2)).get("img")).get("src");
+				}
+				if (compeImg != null) {
+					System.out.println("compeImg画像=" + compeImg);
+					if (compeImg.contains("j1")) {
 						compeName = "J1";
-					} else if (compeImg.endsWith("j2.png")) {
+					} else if (compeImg.contains("j2")) {
 						compeName = "J2";
-					} else if (compeImg.endsWith("nabisco.png")) {
+					} else if (compeImg.contains("j3")) {
+						System.out.println("J3除外(U-23)");
+						continue;
+					} else if(compeImg.endsWith("b_logo_cs.png")) {
+						compeName = "ﾁｬﾝﾋﾟｵﾝｼｯﾌﾟ";
+					} else if (compeImg.contains("nabisco")) {
 						compeName = "ナビスコ";
-					} else if (compeImg.endsWith("acl.png")) {
+					} else if (compeImg.contains("acl")) {
 						compeName = "ACL";
-					} else if (compeImg.endsWith("tennohai.png")) {
+					} else if (compeImg.contains("tennohai")) {
 						compeName = "天皇杯";	//天皇杯にはリンクがなかったが念のためこちらにも
-					} else if (compeImg.endsWith("b_logo_xerox.png")) {
+					} else if (compeImg.contains("xerox")) {
 						compeName = "FUJI XEROX SUPER CUP";
 					} else if (compeImg.endsWith("b_logo_panasoniccup.png")) {
 						compeName = "Panasonic CUP";
@@ -99,13 +112,14 @@ public class GambaResultsSaver {
 				}
 				Map compeA2 = (Map)((Map)gameItems.get(2)).get("img");	//天皇杯はリンクがない
 				if (compeA2 != null) {
-					String compeImg = (String)compeA2.get("src");
-					if (compeImg.endsWith("tennohai.png")) {
+					String compeImg2 = (String)compeA2.get("src");
+					if (compeImg2.endsWith("tennohai.png")) {
 						compeName = "天皇杯";
 					}
 				}
-				String compe = compeName + "/" + StringUtils.trimToEmpty((String)((Map)gameItems.get(3)).get("content"));
-				compe = compe.replaceAll(" ステージ", "");
+				String period = StringUtils.trimToEmpty((String)((Map)gameItems.get(3)).get("content"));
+				String compe = compeName + (StringUtils.isNotBlank(period)? "/" + period : "");
+				compe = compe.replaceAll(" ステージ", "").replaceAll("ステージ", "");
 				
 				Object gameDateViewTmp = ((Map)gameItems.get(0)).get("content");
 				String gameDateView = null;
@@ -156,6 +170,10 @@ public class GambaResultsSaver {
 				String awayTeam = StringUtils.deleteWhitespace((String)((Map)resultMapList.get(4)).get("content"));
 				boolean isGambaHome = "Ｇ大阪".equals(homeTeam);
 				String vsTeam = isGambaHome ? awayTeam : homeTeam;
+				if ("Ｇ大23".equals(homeTeam) || "Ｇ大23".equals(vsTeam)) {
+					System.out.println("Ｇ大23除外");
+					continue;
+				}
 				if(TEAM_NAMES.containsKey(vsTeam)) {
 					vsTeam = TEAM_NAMES.get(vsTeam);
 				}

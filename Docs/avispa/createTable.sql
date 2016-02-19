@@ -1,7 +1,7 @@
 /**
  * 検索結果ツイート
  */
-create table antlersSearchTweets(
+create table avispaSearchTweets(
 	tweet_id long /*ツイートID*/
 	,user_name varchar(256) /*ユーザ名*/
 	,user_screen_name varchar(256) /* ユーザ表示名*/
@@ -14,7 +14,7 @@ create table antlersSearchTweets(
 /**
  * 選手・関係者ツイート
  */
-create table antlersPlayerTweets(
+create table avispaPlayerTweets(
 	tweet_id long /*ツイートID*/
 	,user_name varchar(256) /*ユーザ名*/
 	,user_screen_name varchar(256) /* ユーザ表示名*/
@@ -27,7 +27,7 @@ create table antlersPlayerTweets(
 /**
  * フィードマスター
  */
-create table antlersFeedMaster(
+create table avispaFeedMaster(
  feed_id	 int not null auto_increment primary key
  ,feed_url varchar(200)
  ,feed_name varchar(200)
@@ -37,7 +37,7 @@ create table antlersFeedMaster(
 /**
  * フィードエントリ
  */
-create table antlersEntry(
+create table avispaEntry(
  entry_id int auto_increment primary key
  ,entry_url varchar(500)
  ,entry_title varchar(1000)
@@ -52,16 +52,16 @@ create table antlersEntry(
 /**
  * ニュース一覧に表示しないフィードエントリ
  */
-create table antlersAvoidFeed(
+create table avispaAvoidFeed(
  feed_id int primary key
 );
 
 /**
  * 日程・結果
  */
-create table antlersResults(
+create table avispaResults(
  season year
- ,compe varchar(40)
+ ,compe varchar(20)
  ,game_date1 date
  ,game_date2 varchar(10)
  ,kickoff_time varchar(5)
@@ -79,7 +79,7 @@ create table antlersResults(
 /**
  * 動画
  */
-create table antlersVideo(
+create table avispaVideo(
  video_id varchar(20)
  ,video_title varchar(200)
  ,game_date date

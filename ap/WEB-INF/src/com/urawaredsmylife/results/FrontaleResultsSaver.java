@@ -78,8 +78,13 @@ public class FrontaleResultsSaver {
 				System.out.println((sw.getTime()/1000.0) + "秒");
 				Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 				logger.info(json.toString());
-				List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.
-						get("query")).get("results")).get("tr");
+				Map<String, Object> results = (Map<String, Object>)((Map<String, Object>)json.
+						get("query")).get("results");
+				if (results == null) {
+					System.out.println("結果なし");
+					continue;
+				}
+				List<Object> gameList = (List<Object>)results.get("tr");
 				logger.info(gameList.getClass().toString());
 				
 				for(int r=0; r<gameList.size(); r++) {

@@ -88,7 +88,7 @@ public class MarinosResultsSaver {
 					continue;
 				}
 				String compe = StringUtils.trimToEmpty((String)((Map)((Map)gameItems.get(1)).get("p")).get("span"))
-						.replaceAll("明治安田", "").replaceAll("ナビスコカップ", "ﾅﾋﾞｽｺ");
+						.replaceAll("明治安田", "").replaceAll("ナビスコカップ", "ﾅﾋﾞｽｺ").replaceAll("グループ", "ｸﾞﾙｰﾌﾟ");
 				System.out.println("★compe=" + compe);
 				Object compe2 = ((Map)gameItems.get(2)).get("p");
 				if(compe2 != null) {
@@ -106,7 +106,8 @@ public class MarinosResultsSaver {
 						}
 					}
 					compe = compe.replaceAll("ステージ", "").replaceAll("Ｊ１", "J1 ")
-							.replaceAll("１ｓｔ", "1st").replaceAll("２ｎｄ", "2nd").replaceAll("予選リーグ", "");
+							.replaceAll("１ｓｔ", "1st").replaceAll("２ｎｄ", "2nd").replaceAll("予選リーグ", "")
+							.replaceAll("グループ", "ｸﾞﾙｰﾌﾟL");
 				}
 				Object gameDateViewTmp = ((Map)gameItems.get(0)).get("p");
 				String gameDateView = null;

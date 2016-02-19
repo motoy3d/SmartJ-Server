@@ -108,22 +108,38 @@ public class RedsResultsSaver {
 					gameDateView = ((String)gameItems.get(1));
 				}
 				if (StringUtils.isNotBlank(gameDateView)) {
-					gameDateView = gameDateView.replaceAll("\n", "").replaceAll("<br/>", "").replaceAll("※.*", "");
+					gameDateView = gameDateView.replaceAll("\n", "").replaceAll("<br/>", "").replaceAll("\\(※.*\\)", "");
 				}
-				gameDateView = gameDateView.replace("月", "/").replace("(日)", "(Sun)").replace("日", "/").replace("(Sun)", "(日)");
-				System.out.println("日●" + gameDateView);
+//				gameDateView = gameDateView.replace("(日)", "(Sun)").replace("日", "/").replace("(Sun)", "(日)");
+				if (gameDateView.startsWith("4月20日(水)")) {
+					gameDateView = "4/20(水)";
+				}
+				int astaIndex = gameDateView.indexOf("(※");
+				if (astaIndex != -1) {
+					gameDateView = gameDateView.substring(0, astaIndex);
+				}
+				System.out.println("gameDateView=" + gameDateView);
 				String gameDate = null;
-				if(gameDateView.contains("(")) {
-					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
+				if(gameDateView.contains("(") || gameDateView.contains("（")) {
+					String md = null;
+					if (gameDateView.contains("(")) {
+						md = gameDateView.substring(0, gameDateView.indexOf("("));
+					} else {
+						md = gameDateView.substring(0, gameDateView.indexOf("（"));
+					}
+					String month = StringUtils.leftPad(md.substring(0, md.indexOf("/")), 2, '0');
+					String date = StringUtils.leftPad(md.substring(md.indexOf("/") + 1), 2, '0');
+					gameDate = season + "/" + month + "/" + date;
 				} else {
 					gameDate = "";	//未定等
 				}
+//				System.out.println("gameDate=" + gameDate);
 //				System.out.println("時間★" + ((Map)gameItems.get(2)).get("p"));
 				String time = null;
 				if (((Map)gameItems.get(2)).get("content") instanceof Map) {
 					time = "時間未定";
 				} else {
-					time = ((String)((Map)gameItems.get(2)).get("content")).replace("　現地時刻", "(現地)");
+					time = ((String)((Map)gameItems.get(2)).get("content")).replace("　現地時刻", "(現地)").replaceAll("\\(※.*\\)", "");
 //					System.out.println("★時間=" + time);
 				}
 				String homeAway = "";
@@ -141,7 +157,7 @@ System.out.println("スタジアム🌟" + ((Map)gameItems.get(4)).get("content"
 					} else {
 						stadium = (String)((Map)((Map)gameItems.get(4)).get("content")).get("content");
 					}
-					int idx = stadium.indexOf("\n");
+					int idx = stadium.indexOf("/");
 					if (idx != -1) {
 						tv = stadium.substring(idx + 1);
 						stadium = stadium.substring(0, idx);
@@ -151,6 +167,15 @@ System.out.println("スタジアム🌟" + ((Map)gameItems.get(4)).get("content"
 					}
 				} else if(gameItems.get(4) instanceof String) {
 					stadium = (String)gameItems.get(4);
+					int idx1 = stadium.indexOf("/");
+					int idx2 = stadium.indexOf("／");
+					if (idx1 != -1) {
+						tv = stadium.substring(idx1 + 1);
+						stadium = stadium.substring(0, idx1);
+					} else if (idx2 != -1) {
+						tv = stadium.substring(idx2 + 1);
+						stadium = stadium.substring(0, idx2);
+					}
 				}
 				System.out.println("スタジアム🔵" + gameItems.get(4));
 				Map resultMap = (Map)((Map)gameItems.get(5)).get("a");
@@ -170,7 +195,7 @@ System.out.println("スタジアム🌟" + ((Map)gameItems.get(4)).get("content"
 				Object[] oneRec = new Object[12];
 				oneRec[c++] = season;
 				oneRec[c++] = compe;
-				oneRec[c++] = gameDate;
+				oneRec[c++] = 0 < gameDate.length()? new SimpleDateFormat("yyyy/MM/dd").parse(gameDate) : null;
 				oneRec[c++] = gameDateView;
 				oneRec[c++] = time;
 				oneRec[c++] = stadium;
@@ -181,7 +206,7 @@ System.out.println("スタジアム🌟" + ((Map)gameItems.get(4)).get("content"
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
 				insertDataList.add(oneRec);
-				logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+				logger.info(compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 			}
 			

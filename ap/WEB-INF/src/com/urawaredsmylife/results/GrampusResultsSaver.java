@@ -137,7 +137,8 @@ public class GrampusResultsSaver {
 					String result = null;
 					String score = null;
 					String detailUrl = null;
-					if(resultMap != null) {
+					if(resultMap != null && resultMap.get("span") != null) {
+						System.out.println("🌟" + resultMap);
 						result = ((String)((Map)((List)resultMap.get("span")).get(0)).get("content")).substring(0, 1);
 						score = ((String)((Map)((List)resultMap.get("span")).get(0)).get("content")).substring(2);
 						if (score.indexOf("PK") != -1) {

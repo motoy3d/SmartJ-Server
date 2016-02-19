@@ -33,9 +33,7 @@ public class ArdijaResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20"
-			+ "where%20url%3D%22http%3A%2F%2Fwww.ardija.co.jp%2Fmatch%2F%22%20and%20"
-			+ "xpath%3D%22%2F%2Fdiv%5B%40class%3D'matchCategory'%5D%22&diagnostics=true";
+	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%0Awhere%20url%3D%22http%3A%2F%2Fwww.ardija.co.jp%2Fmatch%2F%22%20and%20%0Axpath%3D%22%2F%2Fdiv%5B%40class%3D'matchCategory'%5D%2Fdiv%22&format=json&diagnostics=true&callback=";
 
 	/**
 	 * コンストラクタ
@@ -59,20 +57,21 @@ public class ArdijaResultsSaver {
 			WebResponse res = wc.getResponse(req);
 			sw.stop();
 			System.out.println((sw.getTime()/1000.0) + "秒");
+			System.out.println(res.getText());
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 			logger.info(json.toString());
-			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
-			logger.info(gameList.getClass().toString());
+			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("div");
 			
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-			for(int r=1; r<gameList.size(); r++) {
+			for(int r=0; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("div");
 				if (gameItems == null) {
 					continue;
 				}
+				System.out.println("gameItems=" + gameItems);
 				String compeName = "";
 				if (((Map)gameItems.get(0)).get("img") != null) {
 					compeName = (String)((Map)((Map)gameItems.get(0)).get("img")).get("src");
@@ -89,15 +88,27 @@ public class ArdijaResultsSaver {
 					compeName = "";
 				}
 				String compe = "";
+				List<Map> item0DivList = (List<Map>)((Map)gameItems.get(0)).get("div");
+				Map compeMap = item0DivList.get(0);
+				compe = (String)compeMap.get("content");
 				if (!compeName.equals("")) {
-					compe = compeName + "/" + StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));
-				} else {
-					compe = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("p"));
+					compe = compeName + "/" + compe;
 				}
-				String gameDateView = ((String)((Map)((Map)gameItems.get(1)).get("p")).get("content"))
-						.replaceAll("祝", "").replaceAll("休", "");
-				String time = gameDateView.substring(gameDateView.indexOf("\n") + 1);
-				gameDateView = gameDateView.substring(0, gameDateView.indexOf("\n"));
+				if (compe.contains("1st") || compe.contains("2nd")) {
+					compe = "J1 " + compe;
+				} else {
+					//TODO 時期によって要確認
+					compe = "ﾅﾋﾞｽｺ" + compe;
+				}
+				System.out.println("compe====" + compe);
+				System.out.println("0：" + gameItems.get(0));
+				System.out.println("1：" + gameItems.get(1));
+				System.out.println("2：" + gameItems.get(2));
+				Map datetimeStadiumMap = item0DivList.get(1);
+				String gameDateView = StringUtils.deleteWhitespace(((String)datetimeStadiumMap.get("content"))
+						.replaceAll("祝", "").replaceAll("休", ""));
+				String time = gameDateView.substring(gameDateView.indexOf(")") + 1);
+				gameDateView = gameDateView.substring(0, gameDateView.indexOf(")") + 1);
 				String gameDate = null;
 				if (gameDateView.contains("(")) {
 					gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("))
@@ -105,23 +116,31 @@ public class ArdijaResultsSaver {
 				} else {
 					gameDate = "";	//未定等
 				}
+				System.out.println("日付：" + gameDateView + "   " + gameDate + "    時刻：" + time);
 				String stadium = "";
-				if (((Map)gameItems.get(4)).get("a") != null) {
-					stadium = (String)((Map)((Map)gameItems.get(4)).get("a")).get("content");
+				if (datetimeStadiumMap.get("a") != null) {
+					stadium = (String)((Map)datetimeStadiumMap.get("a")).get("content");
 				} else {
-					stadium = (String)((Map)gameItems.get(4)).get("p");
+					stadium = "";
 				}
 				String homeAway = null;
-				if (((String)((Map)gameItems.get(0)).get("class")).contains("home")) {
+				Map homeAwayMap = item0DivList.get(2);
+				if (((String)((Map)homeAwayMap).get("content")).contains("HOME")) {
 					homeAway = "HOME";
 				}
-				String vsTeam = (String)((Map)gameItems.get(3)).get("p");
+				Map vsTeamMap = (Map)gameItems.get(1);
+				List<Map> div1Map = (List<Map>)vsTeamMap.get("div");
+				Map homeTeamMap = div1Map.get(0);
+				String homeTeam = (String)homeTeamMap.get("content");
+				Map awayTeamMap = div1Map.get(5);
+				String awayTeam = (String)awayTeamMap.get("content");
+				System.out.println("home=" + homeTeam + " vs " + awayTeam);
+				
+				String vsTeam = "HOME".equals(homeAway)? awayTeam : homeTeam;
 				String tv = null;
 				Map resultMap = null;
 				if ((Map)((Map)gameItems.get(2)).get("span") != null) {
 					resultMap = (Map)((Map)((Map)gameItems.get(2)).get("span")).get("a");
-				} else if ("開催中止".equals(((Map)gameItems.get(2)).get("p"))) {
-					continue;
 				}
 				String result = null;
 				String score = null;

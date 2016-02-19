@@ -70,7 +70,8 @@ public class FCTokyoResultsSaver {
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			//TODO　決勝T行った場合と行かなかった場合で違う
-            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "ナビスコ決勝T", "天皇杯"};
+//            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "ナビスコ決勝T", "天皇杯"};
+            String[] compeList = new String[]{"ACL", "ACL", "J1 1st", "J1 2nd", "ニューイヤーカップ"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -78,13 +79,18 @@ public class FCTokyoResultsSaver {
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				String bgcolor = (String)((Map)gameItems.get(0)).get("bgcolor");
 				if(gameItems.size() != 8) {//プレシーズンやナビスコ試合なしは省略
-					logger.info("#省略 " + r);
+					logger.info("#プレシーズンやナビスコ試合なしは省略 " + r);
 					continue;
 				}
-				String gameNumber = StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));
-				System.out.println("🔴gameNumber=" + gameNumber);
+				Map gameNumberMap = (Map)gameItems.get(0);
+				String gameNumber = StringUtils.trimToEmpty((String)(gameNumberMap).get("content"));
+				if ("".equals(gameNumber) && gameNumberMap.get("span") != null) {
+					gameNumber = StringUtils.trimToEmpty((String)((Map)gameNumberMap.get("span")).get("content"));
+				}
+				System.out.println("🔴gameNumber=" + gameNumber + "   gemeNumberMap=" + gameNumberMap);
 				if("#808080".equals(bgcolor) || "節".equals(gameNumber) 
-						|| "戦".equals(gameNumber) || "回".equals(gameNumber) || "".equals(gameNumber)) {//ヘッダは省略
+						|| "戦".equals(gameNumber) || "回".equals(gameNumber) 
+						|| "".equals(gameNumber)) {//ヘッダは省略
 					logger.info("#ヘッダ " + r);
 					compeIdx++;
 					if(compeIdx == 4) {
@@ -120,7 +126,9 @@ public class FCTokyoResultsSaver {
 				if(stadium == null) {
 					stadium = (String)((Map)((Map)gameItems.get(4)).get("span")).get("content");
 				}
-				String homeAway = "#ffffff".equals((String)((Map)gameItems.get(0)).get("bgcolor"))? "H" : "A";
+				stadium = StringUtils.deleteWhitespace(stadium);
+				System.out.println("スタジアム：" + stadium);
+				String homeAway = "味の素スタジアム".equals(stadium) || "東京スタジアム".equals(stadium)? "H" : "A";
 				String vsTeam = (String)((Map)gameItems.get(3)).get("content");
 				if(vsTeam == null && ((Map)gameItems.get(3)).get("span") != null) {
 					vsTeam = (String)((Map)((Map)gameItems.get(3)).get("span")).get("content");

@@ -69,7 +69,7 @@ public class AlbirexResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[]{"J1 1st", "J1 2nd", "YNC", "YNC", "天皇杯"};
+            String[] compeList = new String[]{"J1 1st", "J1 2nd", "YNC", "天皇杯"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);

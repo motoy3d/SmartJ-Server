@@ -31,9 +31,10 @@ public class SaganResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL_BASE = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20"
-			+ "from%20html%20where%20url%3D%22http%3A%2F%2Fwww.sagan-tosu.net%2Fgame%2F%22%20and%20"
-			+ "xpath%3D%22%2F%2Fdiv%5B%40id%3D'contents'%5D%2Fsection%2Ftable%2Ftbody%2Ftr%22&format=json&diagnostics=true&callback=";
+	private static final String SRC_URL_BASE = "https://query.yahooapis.com/v1/public/yql?q="
+			+ "select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.sagan-tosu.net%2Fgame%2F%22%20"
+			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40id%3D'contents'%5D%2Fdiv%5B%40class%3D'section'%5D%2F"
+			+ "section%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 	
 	/** チームID */
 	private static final String teamId = "sagan";
@@ -68,7 +69,7 @@ public class SaganResultsSaver {
 			sw.stop();
 			System.out.println((sw.getTime()/1000.0) + "秒");
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
-//			logger.info(json.toString());
+			logger.info(json.toString());
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json
 					.get("query")).get("results")).get("tr");
 			
@@ -91,7 +92,7 @@ public class SaganResultsSaver {
 						compeName = "J1";
 					} else if (compeImgAlt.endsWith("J2リーグ")) {
 						compeName = "J2";
-					} else if (compeImgAlt.endsWith("ナビスコカップ")) {
+					} else if (compeImgAlt.endsWith("ヤマザキナビスコカップ")) {
 						compeName = "ナビスコ";
 					} else if (compeImgAlt.endsWith("ACL") || compeImgAlt.endsWith("チャンピオンズリーグ")) {
 						compeName = "ACL";
@@ -104,14 +105,18 @@ public class SaganResultsSaver {
 
 				String compe = (String)((Map)gameItems.get(4)).get("content");
 				compe = compeName + "/" + compe.replaceAll("ステージ", "").replaceAll("予選リーグ", "")
-						.replaceAll("　", " ").replaceAll("\n", "");
+						.replaceAll("　", " ").replaceAll("\n", "").replace("ヤマザキナビスコカップ", "");
 				
 				String day = (String)((Map)gameItems.get(1)).get("content");
 				String gameDateView = ((String)((Map)gameItems.get(0)).get("content")).replaceAll("\\.", "/")
 						+ "(" + day + ")";
 				String gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
 				String time = ((String)((Map)gameItems.get(2)).get("content")).replace("：", ":");
-				Object homeAway = ((Map)((Map)gameItems.get(8)).get("span")).get("content");
+				Object homeAwaySpan = ((Map)gameItems.get(7)).get("span");
+				Object homeAway = "";
+				if (homeAwaySpan != null) {
+					homeAway = ((Map)homeAwaySpan).get("content");
+				}
 //				System.out.println("HOME/AWAY = " + homeAway);
 				boolean isHome = "HOME".equals(homeAway);
 
@@ -183,10 +188,13 @@ public class SaganResultsSaver {
 				} else {
 					//結果が出ていない場合
 					vsTeam = StringUtils.trim(((String)((Map)item5).get("content")).replace("VS", ""));
-					vsTeam = StringUtils.deleteWhitespace(vsTeam.replaceAll("\n", ""));
+					vsTeam = StringUtils.trimToEmpty(StringUtils.deleteWhitespace(vsTeam.replaceAll("\n", "")));
+					if ("休み節".equals(vsTeam)) {
+						continue;
+					}
 					//なぜかスペースが消せないので文字数で切る
 					vsTeam = vsTeam.substring(6);
-					
+//					System.out.println("💢" + vsTeam);
 					stadium = StringUtils.trim((String)((Map)((Map)item5).get("p")).get("content"));
 //					System.out.println("💢" + stadium);
 				}

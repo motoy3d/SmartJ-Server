@@ -20,3 +20,6 @@ insert into teamMaster values('vortis', '徳島ヴォルティス', 'J1', '#vort
 insert into teamMaster values('yamaga', '松本山雅FC', 'J1', false, '#yamaga -twiccer', null, 2, now());
 insert into teamMaster values('montedio', 'モンテディオ山形', 'J1', false, '#montedio -yamagatasponsor -montedioymgt  -twiccer', null, 2, now());
 insert into teamMaster values('bellmare', '湘南ベルマーレ', 'J1', false, '#bellmare -shonan_sponsor -twiccer', null, 2, now());
+# team_name2カラムが追加になっている
+insert into teamMaster values('jubilo', 'ジュビロ磐田', 'ジュビロ', 'J1', false, '#jubilo -twiccer', 700772926669205504, 2, now());
+insert into teamMaster values('avispa', 'アビスパ福岡', 'アビスパ', 'J1', false, '#avispa -twiccer', null, 2, now());
