@@ -76,20 +76,28 @@ public class CerezoResultsSaver {
 				sw.stop();
 				System.out.println((sw.getTime()/1000.0) + "秒");
 				Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
-				logger.info(json.toString());
+//				logger.info(json.toString());
 				Map<String, Object> results = (Map<String, Object>)((Map<String, Object>)json
 						.get("query")).get("results");
-				List<Object> gameList = (List<Object>)results.get("li");
+				List<Object> gameList = null;
+				if (results.get("li") instanceof List) {
+					gameList = (List<Object>)results.get("li");
+				} else if (results.get("li") instanceof Map) {
+					gameList = new ArrayList<Object>();
+					gameList.add(results.get("li"));
+				}
 				if (gameList == null) {	//予定の方はulが入る
-					System.out.println("🔵results.get(ul).get(li)=" + ((Map)results.get("ul")).get("li"));
-					List ulList = (List)((Map)results.get("ul")).get("li");
+//					System.out.println("🔵results.get(ul).get(li)=" + ((Map)results.get("ul")).get("li"));
+					System.out.println("🔵results.get(ul)=" + results.get("ul"));
+					List ulList = (List)results.get("ul");
 					gameList = new ArrayList();
 					for(Object ul : ulList) {
-//						System.out.println("●" + gameList.size() + "    " + ul);
-						if (ul instanceof List) {
-							gameList.addAll((List<Object>)((Map)ul));
+						System.out.println("●" + gameList.size() + "    " + ul);
+						Object li = ((Map)ul).get("li");
+						if (li instanceof List) {
+							gameList.addAll((List<Object>)li);
 						} else {
-							gameList.add(ul);
+							gameList.add(li);
 						}
 					}
 					isSchedule = true;
@@ -101,7 +109,18 @@ public class CerezoResultsSaver {
 				for(int r=0; r<gameList.size(); r++) {
 //					System.out.println("🌟gameList " + r);
 					Map game = (Map)gameList.get(r);
+					System.out.println("🔴game.get(div)=" + game.get("div"));
 					List list1 = (List)((Map)game.get("div")).get("div");
+//					if (game.get("div") != null) {
+//						list1 = (List)((Map)game.get("div")).get("div");
+//						System.out.println("OK1");
+//					} else if (game.get("li") instanceof Map){
+//						list1 = (List)((Map)((Map)game.get("li")).get("div")).get("div");
+//						System.out.println("OK2");
+//					} else if (game.get("li") instanceof List){
+////						list1 = (List)((Map)((List)game.get("li")).get("div")).get("div");
+//						System.out.println("OK3");
+//					}
 //					System.out.println("🔴list1 " + list1);
 					String gameDateTime = "";
 					boolean isHome = false;
@@ -120,7 +139,8 @@ public class CerezoResultsSaver {
 					List spanList = null;
 					List list2 = null;
 					Map gameDateCompeStadiumMap = null;
-					if (((Map)list1.get(0)).get("div") instanceof List) {
+					//if (((Map)list1.get(0)).get("div") instanceof List) {
+					if (list1 != null && ((Map)list1.get(0)).get("div") instanceof List) {
 						list2 = (List)((Map)list1.get(0)).get("div");
 						spanList = (List)((Map)list2.get(0)).get("span");
 						gameDateCompeStadiumMap = (Map)spanList.get(0);
@@ -161,6 +181,10 @@ public class CerezoResultsSaver {
 //							System.out.println("🔶vsTeam1=" + vsTeam);
 						}
 //						System.out.println("パターン違い🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟");
+					}
+					if (compe.contains("Ｊ３") || compe.contains("J3")) {
+						logger.info("J3はスキップ");
+						continue;
 					}
 					compe = compe.replace("明治安田生命", "").replace("リーグ", "/").trim().replaceAll(" ", "");
 					if (compe.endsWith("/")) {
@@ -211,7 +235,7 @@ public class CerezoResultsSaver {
 						} else {
 							result = "△";
 						}
-						score = isHome? leftScore + " - " + rightScore : rightScore + " - " + leftScore;
+						score = isHome? leftScore + "-" + rightScore : rightScore + "-" + leftScore;
 					}
 					vsTeam = StringUtils.deleteWhitespace(vsTeam);
 					String tv = "";

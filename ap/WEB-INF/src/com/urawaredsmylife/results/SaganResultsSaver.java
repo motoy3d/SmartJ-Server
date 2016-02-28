@@ -33,8 +33,8 @@ public class SaganResultsSaver {
 	 */
 	private static final String SRC_URL_BASE = "https://query.yahooapis.com/v1/public/yql?q="
 			+ "select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.sagan-tosu.net%2Fgame%2F%22%20"
-			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40id%3D'contents'%5D%2Fdiv%5B%40class%3D'section'%5D%2F"
-			+ "section%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
+			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40id%3D'contents'%5D%2Fsection%5B%40class%3D'gameList'%5D%2F"
+			+ "table%2Ftbody%2Ftr%22&format=json&callback=";
 	
 	/** チームID */
 	private static final String teamId = "sagan";
@@ -88,22 +88,23 @@ public class SaganResultsSaver {
 				if (compeImgTmp != null) {
 					String compeImgAlt = (String)((Map)compeImgTmp).get("alt");
 					System.out.println("compeImg = " + compeImgAlt);
-					if (compeImgAlt.endsWith("J1リーグ")) {
+					if (compeImgAlt.contains("J1リーグ") || compeImgAlt.contains("Ｊ１リーグ")) {
 						compeName = "J1";
-					} else if (compeImgAlt.endsWith("J2リーグ")) {
+					} else if (compeImgAlt.contains("J2リーグ") || compeImgAlt.contains("Ｊ２リーグ")) {
 						compeName = "J2";
-					} else if (compeImgAlt.endsWith("ヤマザキナビスコカップ")) {
+					} else if (compeImgAlt.contains("ナビスコカップ")) {
 						compeName = "ナビスコ";
-					} else if (compeImgAlt.endsWith("ACL") || compeImgAlt.endsWith("チャンピオンズリーグ")) {
+					} else if (compeImgAlt.contains("ACL") || compeImgAlt.contains("チャンピオンズリーグ")) {
 						compeName = "ACL";
-					} else if (compeImgAlt.endsWith("天皇杯")) {
+					} else if (compeImgAlt.contains("天皇杯")) {
 						compeName = "天皇杯";	//天皇杯にはリンクがなかったが念のためこちらにも
-					} else if (compeImgAlt.endsWith("XEROX SUPER CUP")) {
+					} else if (compeImgAlt.contains("XEROX") || compeImgAlt.contains("ゼロックス")) {
 						compeName = "FUJI XEROX SUPER CUP";
 					}
 				}
-
+System.out.println("compeName=" + compeName);
 				String compe = (String)((Map)gameItems.get(4)).get("content");
+System.out.println("compe=" + compe);
 				compe = compeName + "/" + compe.replaceAll("ステージ", "").replaceAll("予選リーグ", "")
 						.replaceAll("　", " ").replaceAll("\n", "").replace("ヤマザキナビスコカップ", "");
 				
@@ -111,8 +112,11 @@ public class SaganResultsSaver {
 				String gameDateView = ((String)((Map)gameItems.get(0)).get("content")).replaceAll("\\.", "/")
 						+ "(" + day + ")";
 				String gameDate = season + "/" + gameDateView.substring(0, gameDateView.indexOf("("));
+				if (gameDateView.startsWith("0")) {
+					gameDateView = gameDateView.substring(1);
+				}
 				String time = ((String)((Map)gameItems.get(2)).get("content")).replace("：", ":");
-				Object homeAwaySpan = ((Map)gameItems.get(7)).get("span");
+				Object homeAwaySpan = ((Map)gameItems.get(8)).get("span");
 				Object homeAway = "";
 				if (homeAwaySpan != null) {
 					homeAway = ((Map)homeAwaySpan).get("content");
@@ -128,8 +132,9 @@ public class SaganResultsSaver {
 				String detailUrl = null;
 				
 				List resultsTmp = null;
-				//結果が出ている場合
+				// 結果
 				Map item5 = (Map)gameItems.get(5);
+				System.out.println("🔴item5 = " + item5);
 				if (((Map)item5).get("div") != null) {
 					if (item5.get("div") instanceof Map) {
 						Map div = (Map)item5.get("div");
@@ -165,7 +170,7 @@ public class SaganResultsSaver {
 						vsTeam = vsTeam.substring(3);
 					}
 					Map resultMap = (Map)((Map)(Map)resultsTmp.get(1)).get("a");
-					if (resultMap != null) {
+					if (resultMap != null && !((String)resultMap.get("content")).contains("チケット")) {
 						score = StringUtils.deleteWhitespace(((String)resultMap.get("content")).replaceAll("−", "-"));
 						System.out.println("スコア " + score + ", " + StringUtils.contains(score, " "));
 						// 得点から勝敗を抽出。ホームが左になっている
@@ -185,19 +190,18 @@ public class SaganResultsSaver {
 						}
 						detailUrl = "http://www.sagan-tosu.net/game/" + ((String)resultMap.get("href")).replaceAll("\\./","");
 					}
-				} else {
-					//結果が出ていない場合
-					vsTeam = StringUtils.trim(((String)((Map)item5).get("content")).replace("VS", ""));
-					vsTeam = StringUtils.trimToEmpty(StringUtils.deleteWhitespace(vsTeam.replaceAll("\n", "")));
-					if ("休み節".equals(vsTeam)) {
-						continue;
-					}
-					//なぜかスペースが消せないので文字数で切る
-					vsTeam = vsTeam.substring(6);
-//					System.out.println("💢" + vsTeam);
-					stadium = StringUtils.trim((String)((Map)((Map)item5).get("p")).get("content"));
-//					System.out.println("💢" + stadium);
 				}
+				if (((Map)gameItems.get(6)).get("span") instanceof String) {
+					stadium = (String)((Map)gameItems.get(6)).get("span");
+				} else if (((Map)gameItems.get(6)).get("span") instanceof Map){
+					stadium = StringUtils.deleteWhitespace((String)((Map)((Map)gameItems.get(6)).get("span")).get("content"));
+					if (stadium.contains("※")) {
+						stadium = stadium.substring(0, stadium.indexOf("※"));
+					}
+					System.out.println("🔵gameItems.get(6) = " + gameItems.get(6));
+				}
+				System.out.println("🔵stadium = " + stadium);
+				
 				int c = 0;
 				Object[] oneRec = new Object[12];
 				oneRec[c++] = season;

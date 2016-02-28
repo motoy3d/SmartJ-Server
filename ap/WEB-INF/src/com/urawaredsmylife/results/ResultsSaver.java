@@ -55,9 +55,9 @@ public class ResultsSaver {
 		//セレッソ大阪
 		CerezoResultsSaver cerezoSaver = new CerezoResultsSaver();
 		cerezoSaver.extractResults();
-		//TODO 大宮アルディージャ
-//		ArdijaResultsSaver ardijaSaver = new ArdijaResultsSaver();
-//		ardijaSaver.extractResults();
+		// 大宮アルディージャ
+		ArdijaResultsSaver ardijaSaver = new ArdijaResultsSaver();
+		ardijaSaver.extractResults();
 		//ヴァンフォーレ甲府
 		VentforetResultsSaver ventforetSaver = new VentforetResultsSaver();
 		ventforetSaver.extractResults();
@@ -73,10 +73,17 @@ public class ResultsSaver {
 		//松本山雅FC
 		YamagaResultsSaver yamagaSaver = new YamagaResultsSaver();
 		yamagaSaver.extractResults();
-		//モンテディオ山形
-		MontedioResultsSaver montedioSaver = new MontedioResultsSaver();
-		montedioSaver.extractResults();
+//		//モンテディオ山形
+//		MontedioResultsSaver montedioSaver = new MontedioResultsSaver();
+//		montedioSaver.extractResults();
+		//ジュビロ磐田
+		JubiloResultsSaver jubiloSaver = new JubiloResultsSaver();
+		jubiloSaver.extractResults();
+		//TODO アビスパ福岡
+//		AvispaResultsSaver avispaSaver = new AvispaResultsSaver();
+//		avispaSaver.extractResults();
 
+		
 		logger.info("######## 日程・結果データ取得　終了 #########");
 	}
 }

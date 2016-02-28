@@ -67,7 +67,8 @@ public class AntlersResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ナビスコ", "", "天皇杯", "ACL"};	//４つ目はプレシーズン
+            //４つ目はサテライト,５つ目はプレシーズン
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ナビスコ", "", "", "天皇杯", "ACL"};
             int compeIdx = 0;
             int newYearCupIdx = 1;
 			for(int r=1; r<gameList.size(); r++) {
@@ -75,7 +76,7 @@ public class AntlersResultsSaver {
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				if (gameItems == null) {
 					compeIdx++;
-					if(compeIdx == 5) { //プレシーズン
+					if(compeIdx == 3) { //TODO 天皇杯が始まったら要確認
 						break;
 					}
 					continue;
@@ -94,6 +95,10 @@ public class AntlersResultsSaver {
 				}
 				if (compe.startsWith("/")) {
 					compe = compe.substring(1);
+				}
+				System.out.println("🔵compe=" + compe);
+				if (StringUtils.isBlank(compe)) {
+					continue;
 				}
 				Object gameDateViewTmp = gameItems.get(1);
 				String gameDateView = null;
