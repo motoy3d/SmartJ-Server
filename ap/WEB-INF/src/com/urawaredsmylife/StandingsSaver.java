@@ -35,11 +35,10 @@ public class StandingsSaver {
 	private static final String SRC_URL_J1_ALL = "http://soccer.yahoo.co.jp/jleague/standings/j1/all";
 	private static final String SRC_URL_J2 = "http://soccer.yahoo.co.jp/jleague/standings/j2";
 	private static final String SRC_URL_NABISCO = "http://soccer.yahoo.co.jp/jleague/standings/jleaguecup";
-	private static final String SRC_URL_ACL1 = "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/144/";
-	private static final String SRC_URL_ACL2= "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/145/";
-	private static final String SRC_URL_ACL3 = "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/146/";
-	private static final String SRC_URL_ACL4 = "http://sportsnavi.yahoo.co.jp/sports/soccer/jleague/<YEAR>/ranking/147/";
-	
+	private static final String SRC_URL_ACL1 = "http://www.hochi.co.jp/soccer/data/world/acl/group_E.html";
+	private static final String SRC_URL_ACL2= "http://www.hochi.co.jp/soccer/data/world/acl/group_F.html";
+	private static final String SRC_URL_ACL3 = "http://www.hochi.co.jp/soccer/data/world/acl/group_G.html";
+	private static final String SRC_URL_ACL4 = "http://www.hochi.co.jp/soccer/data/world/acl/group_H.html";
 
 	/**
 	 * ナビスコカップ参加チーム数（年によって変わる可能性あり）
@@ -274,7 +273,7 @@ public class StandingsSaver {
             
             int rowIdx = 0;
 			for(int g=0; g<urlList.length; g++) {
-				String url = urlList[g].replaceAll("<YEAR>", season);
+				String url = urlList[g];
 				GetMethodWebRequest req = new GetMethodWebRequest(url);
 				WebResponse res = wc.getResponse(req);
 				WebTable[] tables = res.getTables();

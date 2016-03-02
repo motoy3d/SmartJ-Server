@@ -30,8 +30,8 @@ public class Mail {
 		Properties props = new Properties();
 		props.put("mail.smtp.host", HOST);
 		props.put("mail.smtp.from", FROM);
-		props.put("mail.host", HOST);
-		props.put("mail.from", FROM);
+//		props.put("mail.host", HOST);
+//		props.put("mail.from", FROM);
 		if (true) {
 			props.put("mail.debug", "true");
 		}
