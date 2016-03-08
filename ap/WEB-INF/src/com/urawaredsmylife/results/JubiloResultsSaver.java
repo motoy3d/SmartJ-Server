@@ -33,11 +33,12 @@ public class JubiloResultsSaver {
 	/** チームID */
 	private static final String teamId = "jubilo";
 	/** 試合詳細URLのベース */
-	private static final String DETAIL_URL_BASE = "http://www.jubilo-iwata.co.jp/";
+//	private static final String DETAIL_URL_BASE = "http://www.jubilo-iwata.co.jp/live/!YEAR!/";
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.jubilo-iwata.co.jp%2Fmatch%2F%22%20and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'list%20f12'%5D%2Ftbody%2Ftr%22&format=json&callback=";
+	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20"
+			+ "where%20url%3D%22http%3A%2F%2Fwww.jubilo-iwata.co.jp%2Fmatch%2F!YEAR!%2F%22%20and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'list%20f12'%5D%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -52,9 +53,11 @@ public class JubiloResultsSaver {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public int extractResults() {
+        String season = new SimpleDateFormat("yyyy").format(new Date());
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-		GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL);
+		logger.info(SRC_URL.replace("!YEAR!", season));
+		GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL.replace("!YEAR!", season));
 		try {
 			StopWatch sw = new StopWatch();
 			sw.start();
@@ -63,11 +66,10 @@ public class JubiloResultsSaver {
 			System.out.println((sw.getTime()/1000.0) + "秒");
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
-			logger.info("##### gameList\n" + gameList);
+//			logger.info("##### gameList\n" + gameList);
 
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
-            String season = new SimpleDateFormat("yyyy").format(new Date());
             String[] compeNameList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "天皇杯", "練習・親善試合"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
@@ -131,36 +133,37 @@ System.out.println("■gameDateView = [" + gameDateView + "]");
 				} else {
 					gameDate = "";	//未定等
 				}
-				System.out.println("■gameDate = [" + gameDate + "]");
+//				System.out.println("■gameDate = [" + gameDate + "]");
 				String stadium = ((String)((Map)gameItems.get(5)).get("content")).replace("\n", "").trim();
-				System.out.println("■stadium = [" + stadium + "]");
+//				System.out.println("■stadium = [" + stadium + "]");
 				Map homeAwayImg = (Map)((Map)gameItems.get(5)).get("img");
 				String homeAway = "AWAY";
 				if (homeAwayImg != null && ((String)(homeAwayImg.get("src"))).endsWith("home.png")) {
 					homeAway = "HOME";
 				}
-				System.out.println("■homeAway = [" + homeAway + "]    " + gameItems.get(5));
+//				System.out.println("■homeAway = [" + homeAway + "]    " + gameItems.get(5));
 				List vsList = (List)((Map)gameItems.get(3)).get("span");
 				String vsTeam = (String)((Map)vsList.get(1)).get("content");
 				System.out.println("■vsTeam = [" + vsTeam + "]    " + vsList.get(1));
 				String tv = (String)((Map)gameItems.get(6)).get("content");	//TODO TV
 				System.out.println("tv = [" + tv + "]    " + gameItems.get(6));
 				Map resultMap = null;
-				Object resultTmp = gameItems.get(5);
+				Object resultTmp = gameItems.get(4);
+				System.out.println("resultTmp=" + resultTmp);
 				if (resultTmp instanceof Map) {
-					resultMap = (Map)((Map)resultTmp).get("p");;
+					resultMap = (Map)((Map)resultTmp).get("a");;
 				}
 				String result = null;
 				String score = null;
 				String detailUrl = null;
-				if(resultMap != null && resultMap.get("span") != null) {
+				if(resultMap != null) {
 					System.out.println("🌟" + resultMap);
-					result = ((String)((Map)((List)resultMap.get("span")).get(0)).get("content")).substring(0, 1);
-					score = ((String)((Map)((List)resultMap.get("span")).get(0)).get("content")).substring(2);
+					result = ((String)resultMap.get("content")).substring(0, 1);
+					score = ((String)resultMap.get("content")).substring(1);
 					if (score.indexOf("PK") != -1) {
 						score = score.replace("［", "\n(").replace("］", ")").replace("：", "").replace(" ", "\n");
 					}
-					detailUrl = DETAIL_URL_BASE + (String)((Map)((Map)((List)resultMap.get("span")).get(1)).get("a")).get("href");
+					detailUrl = (String)resultMap.get("href");
 				}
 				int c = 0;
 				Object[] oneRec = new Object[12];

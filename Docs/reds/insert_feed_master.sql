@@ -63,5 +63,7 @@ insert into redsFeedMaster values(default,'http://blogs.yahoo.co.jp/amamin2000/r
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/redstrust/rss20.xml','redstrustの浦和レッズつれづれ','redstrustの浦和レッズつれづれ',now());
 insert into redsFeedMaster values(default,'http://feeds.feedburner.com/pride-of-urawa','Keep on Jumpin''','Keep on Jumpin''',now());
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/mono-komo/rss20.xml','浦和レッズとあなたに乾杯','浦和レッズとあなたに乾杯',now());
+insert into redsFeedMaster values(default,'http://lineblog.me/endowataru/index.rdf','遠藤航 公式ブログ','遠藤航 公式ブログ',now());
+
 
 insert into redsFeedMaster values(default,'http','xx','xx',now());
