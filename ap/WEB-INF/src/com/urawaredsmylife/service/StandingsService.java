@@ -150,10 +150,23 @@ public class StandingsService {
 	private String createSqlForACL(QueryRunner qr, String season,
 			String teamId) throws SQLException {
 		String teamName = TeamUtils.getTeamName(teamId);
+		if (teamId.equals("reds")) {
+			teamName = "浦和";
+		}
+		if (teamId.equals("gamba")) {
+			teamName = "Ｇ大阪";
+		}
+		if (teamId.equals("sanfrecce")) {
+			teamName = "広島";
+		}
+		if (teamId.equals("fctokyo")) {
+			teamName = "Ｆ東京";
+		}
 
 		String sql = "SELECT * FROM aclStandings WHERE"
 				+ " season=" + season 
-				+ " AND group_name=(SELECT group_name FROM aclStandings WHERE team_name=" + DB.quote(teamName) + ")"
+				+ " AND group_name=(SELECT group_name FROM aclStandings WHERE"
+				+ " team_name=" + DB.quote(teamName) + " AND season=" + season + ")"
 				+ " ORDER BY seq";
 		return sql;
 	}

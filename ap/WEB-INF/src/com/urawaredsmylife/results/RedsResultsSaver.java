@@ -34,7 +34,7 @@ public class RedsResultsSaver {
 	 * 取得元URL
 	 */
 	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20"
-			+ "html%20WHERE%20url%3D'http%3A%2F%2Fwww.urawa-reds.co.jp%2Fgame%2F'%20and%20"
+			+ "html%20WHERE%20url%3D'http%3A%2F%2Fwww.urawa-reds.co.jp%2Fgame%2F?<dummy>'%20and%20"
 			+ "xpath%3D%22%2F%2Fdiv%5B%40class%3D'mainContentColumn'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
@@ -52,7 +52,9 @@ public class RedsResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-		GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL);
+		String srcUrl = SRC_URL.replace("<dummy>", String.valueOf(System.currentTimeMillis()));
+		logger.info(srcUrl);
+		GetMethodWebRequest req = new GetMethodWebRequest(srcUrl);
 		try {
 			StopWatch sw = new StopWatch();
 			sw.start();

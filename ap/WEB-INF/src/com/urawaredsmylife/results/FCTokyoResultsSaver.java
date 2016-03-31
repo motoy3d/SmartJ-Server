@@ -71,7 +71,7 @@ public class FCTokyoResultsSaver {
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			//TODO　決勝T行った場合と行かなかった場合で違う
 //            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "ナビスコ決勝T", "天皇杯"};
-            String[] compeList = new String[]{"ACL", "ACL", "J1 1st", "J1 2nd", "ニューイヤーカップ"};
+            String[] compeList = new String[]{"J1 1st", "ACL", "ACL", "J1 2nd", "ニューイヤーカップ"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);

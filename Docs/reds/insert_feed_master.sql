@@ -24,7 +24,7 @@ insert into redsFeedMaster values(default,'http://pure-city.jp/gk-gishi/index.xm
 insert into redsFeedMaster values(default,'http://footballerplus.net/yamagishi/?feed=rss2','山岸範宏公式ブログ | THE GUARDIAN','山岸範宏公式ブログ | THE GUARDIAN',now());
 insert into redsFeedMaster values(default,'http://yamadanobuhisa.jp/?feed=rss2','山田暢久オフィシャルブログ','山田暢久オフィシャルブログ',now());
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/yohsuke0223/rss20.xml','新生レッズの逆襲','新生レッズの逆襲',now());
-insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/yosuke-kashiwagi/rss20.xml','柏木陽介 オフィシャルブログ Powered by Ameba','柏木陽介 オフィシャルブログ',now());
+insert into redsFeedMaster values(default,'http://lineblog.me/kashiwagiyosuke/site.css?_=20160215204959','柏木陽介 オフィシャルブログ Powered by Ameba','柏木陽介 オフィシャルブログ',now());
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/tsukasa-umesaki/rss20.xml','梅崎司 オフィシャルブログ Powered by Ameba','梅崎司 オフィシャルブログ',now());
 insert into redsFeedMaster values(default,'http://feedblog.ameba.jp/rss/ameblo/ryota-moriwaki/rss20.xml','森脇良太オフィシャルブログ Powered by Ameba','森脇良太オフィシャルブログ',now());
 insert into redsFeedMaster values(default,'http://samurai-foot.com/urawareds/feed/atom/','歌え浦和の男なら！！','歌え浦和の男なら！！',now());
@@ -63,5 +63,7 @@ insert into redsFeedMaster values(default,'http://blogs.yahoo.co.jp/amamin2000/r
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/redstrust/rss20.xml','redstrustの浦和レッズつれづれ','redstrustの浦和レッズつれづれ',now());
 insert into redsFeedMaster values(default,'http://feeds.feedburner.com/pride-of-urawa','Keep on Jumpin''','Keep on Jumpin''',now());
 insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/mono-komo/rss20.xml','浦和レッズとあなたに乾杯','浦和レッズとあなたに乾杯',now());
+insert into redsFeedMaster values(default,'http://lineblog.me/endowataru/index.rdf','遠藤航 公式ブログ','遠藤航 公式ブログ',now());
+
 
 insert into redsFeedMaster values(default,'http','xx','xx',now());
