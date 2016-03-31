@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import net.arnx.jsonic.JSON;
-
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -21,6 +19,8 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.Mail;
+
+import net.arnx.jsonic.JSON;
 
 /**
  * 柏レイソル公式サイトから試合日程・結果を取得してDBに保存する。
@@ -70,7 +70,7 @@ public class ReysolResultsSaver {
 			List<Object> gameGroupList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json
 					.get("query")).get("results")).get("tbody");
 			logger.info("gameGroupList = " + gameGroupList.size());
-			
+
             String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
 			for(int compeIdx = 0; compeIdx<gameGroupList.size(); compeIdx++) {
@@ -119,7 +119,7 @@ public class ReysolResultsSaver {
 					Map item1 = item1Obj instanceof Map? (Map)item1Obj : null;
 					if (item1 != null && item1.get("a") != null) {
 						gameDateView = (String)((Map)item1.get("a")).get("content");
-						detailUrl = "http://www.reysol.co.jp/game/results/" + 
+						detailUrl = "http://www.reysol.co.jp/game/results/" +
 								(String)((Map)item1.get("a")).get("href");
 //						System.out.println("gameDateView 0 = " + gameDateView);
 					} else if (item1 != null) {
@@ -132,18 +132,22 @@ public class ReysolResultsSaver {
 								gameDateViewTmp = ((Map)item1.get("p")).get("content");
 							}
 						}
-//						System.out.println(">> gameDateViewTmp = " + gameDateViewTmp);
+						System.out.println(">> gameDateViewTmp = " + gameDateViewTmp);
 						if (gameDateViewTmp instanceof String) {
 							gameDateView = (String)gameDateViewTmp;
-//							System.out.println("gameDateView 1 = " + gameDateView);
+							System.out.println("gameDateView 1 = " + gameDateView);
 						} else if (gameDateViewTmp instanceof Map) {
 							gameDateView = (String)((Map)gameDateViewTmp).get("content");
-//							System.out.println("gameDateView 2 = " + gameDateView);
+							System.out.println("gameDateView 2 = " + gameDateView);
 						}
 					} else if (item1Obj instanceof String){
 						gameDateView = (String)item1Obj;
 					}
-//					System.out.println("gameDateView 3 = " + gameDateView);
+					System.out.println("gameDateView 3 = " + gameDateView);
+					if (StringUtils.isBlank(gameDateView)) {
+						logger.info("日付空欄のため飛ばす");
+						continue;
+					}
 
 					gameDateView = gameDateView.replace("･祝", "").replace("･休", "").replace("（", "(").replace("）", ")")
 							.replaceAll("\n", "").trim();
@@ -218,6 +222,9 @@ public class ReysolResultsSaver {
 						result = StringUtils.trimToNull(((String)((Map)resultItem).get("content"))
 								.replaceAll(" ", ""));	//←普通の半角スペースとは違うらしい
 					}
+					if ("-".equals(result)) {
+						result = "";
+					}
 //					System.out.println("★結果 [" + result + "]");
 					String score = null;
 					System.out.println("gameItems.size()=" + gameItems.size());
@@ -238,7 +245,7 @@ public class ReysolResultsSaver {
 					if ("-".equals(score) || " ".equals(score)|| StringUtils.isBlank(score)) {
 						score = null;		//↑普通の半角スペースとは違うらしい
 					}
-					
+
 					int c = 0;
 					Object[] oneRec = new Object[12];
 					oneRec[c++] = season;
@@ -254,7 +261,7 @@ public class ReysolResultsSaver {
 					oneRec[c++] = score;
 					oneRec[c++] = detailUrl;
 					insertDataList.add(oneRec);
-					logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " 
+					logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", "
 							+ isHome + ", " + vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 				}
 			}
@@ -269,7 +276,7 @@ public class ReysolResultsSaver {
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * 半角変換
 	 * @param text
@@ -292,7 +299,7 @@ public class ReysolResultsSaver {
 
 		return res.toString();
 	}
-	
+
 	/**
 	 * テスト用メインメソッド
 	 * @param args
