@@ -14,8 +14,6 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import net.arnx.jsonic.JSON;
-
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
@@ -39,6 +37,8 @@ import com.urawaredsmylife.dto.googlefeedapi.GoogleFeedAPIResponseData;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.RemoveUnderscoreBeanProcessor;
 
+import net.arnx.jsonic.JSON;
+
 /**
  * 各チームのxxxFeedMasterからフィードリストを取得して、
  * google feed apiを使用して各フィードのエントリリストを取得し、
@@ -52,7 +52,7 @@ public class FeedEntrySaver {
 	/**
 	 * Google Feed API のURLベース
 	 */
-	protected static final String URL_BASE = "https://ajax.googleapis.com/ajax/services/feed/load?" 
+	protected static final String URL_BASE = "https://ajax.googleapis.com/ajax/services/feed/load?"
 			+ "v=1.0&q=%s&num=%s&userip=%s";
 	/**
 	 * デフォルトのフィード取得件数
@@ -68,7 +68,7 @@ public class FeedEntrySaver {
 	 * NGワード（エントリタイトルに含まれていたら保存しない）
 	 */
 	protected static final String[] NG_WORDS = new String[] {
-		"レディース", "なでしこ", "PR:", ": PR", "ラーメン", "拉麺", "ヴァンラーレ"
+		"レディース", "なでしこ", "PR:", ": PR", "ラーメン", "拉麺", "ヴァンラーレ", "献血", "MLB", "五郎丸", "シンシナティ", "前田健太"
 	};
 	/**
 	 * チームID
@@ -107,13 +107,13 @@ public class FeedEntrySaver {
 	public FeedEntrySaver(String teamId) {
 		this.teamId = teamId;
 	}
-	
+
 	/**
 	 * feed_masterからフィードリストを取得して、
 	 * google feed apiを使用して各フィードのエントリリストを取得し、
 	 * 各チームごとのentryテーブルに格納する。
 	 * 本処理はバッチで定期的に実行する。
-	 * 
+	 *
 	 * @param params
 	 * @return
 	 */
@@ -133,7 +133,7 @@ public class FeedEntrySaver {
 				logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
 				URLConnection connection = url.openConnection();
 				connection.addRequestProperty("Referer", "http://motoy3d.blogspot.jp");
-				
+
 //				String line;
 //				StringBuilder builder = new StringBuilder();
 //				BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -141,11 +141,11 @@ public class FeedEntrySaver {
 //					builder.append(line);
 //				}
 //				logger.info("-----" + builder.toString());
-				
+
 				GoogleFeedAPIResponse jsonResult = JSON.decode(
 						connection.getInputStream(), GoogleFeedAPIResponse.class);
 				logger.info("★結果＝" + ToStringBuilder.reflectionToString(jsonResult));
-				
+
 				GoogleFeedAPIResponseData responseData = jsonResult.getResponseData();
 				if(responseData == null) {
 					logger.error("レスポンスnull.");
@@ -162,7 +162,7 @@ public class FeedEntrySaver {
 			logger.info((sw.getTime()/1000.0) + " 秒");
 		}
 	}
-	
+
 	/**
 	 * フィードマスターからフィードリストを取得して返す。
 	 * @param qr
@@ -176,7 +176,7 @@ public class FeedEntrySaver {
 		BasicRowProcessor rowProcessor = new BasicRowProcessor(new RemoveUnderscoreBeanProcessor());
 		return qr.query(sql, new BeanListHandler<Feed>(Feed.class, rowProcessor));
 	}
-	
+
 	/**
 	 * 取得したエントリリストをDBに保存する
 	 * @param targetFeed マスターから取得した読み込み対象フィード
@@ -224,7 +224,7 @@ public class FeedEntrySaver {
 			}
 			siteName = siteName.replace("（", "").replace("）", "");
 			// 既に同一URLが登録済みの場合は登録しない
-			String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable 
+			String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable
 					+ " WHERE entry_url=? OR entry_title=?";
 			Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), e.getLink(), entryTitle);
 			Long cnt = (Long)cntMap.get("CNT");
@@ -245,7 +245,7 @@ public class FeedEntrySaver {
 				logger.info(insertSql);
 				try {
 					int count = qr.update(insertSql, inseartParams);
-					logger.info("結果：" + count);			
+					logger.info("結果：" + count);
 				} catch(Exception ex) {
 					logger.error("フィード読み込みエラー", ex);
 				}
@@ -303,7 +303,7 @@ public class FeedEntrySaver {
 		}
 		return "";
 	}
-	
+
 	/**
 	 * コンテンツ内のイメージ情報を返す。
 	 * @param sourceUrl
@@ -355,7 +355,7 @@ public class FeedEntrySaver {
         }
 		return img;
 	}
-	
+
 	/**
 	 * コンテンツの中のイメージ情報
 	 * @author motoy3d
