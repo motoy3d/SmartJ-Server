@@ -108,6 +108,10 @@ public class ArdijaResultsSaver {
 				String gameDateView = StringUtils.deleteWhitespace(((String)datetimeStadiumMap.get("content"))
 						.replaceAll("祝", "").replaceAll("休", ""));
 				String time = gameDateView.substring(gameDateView.indexOf(")") + 1);
+				int astaIdx = time.indexOf("※");
+				if (astaIdx != -1) {
+					time = time.substring(0, astaIdx);
+				}
 				gameDateView = gameDateView.substring(0, gameDateView.indexOf(")") + 1);
 				String gameDate = null;
 				if (gameDateView.contains("(")) {
@@ -139,39 +143,50 @@ public class ArdijaResultsSaver {
 				String vsTeam = "HOME".equals(homeAway)? awayTeam : homeTeam;
 				String tv = null;
 				Map resultMap = null;
-				if ((Map)((Map)gameItems.get(2)).get("span") != null) {
-					resultMap = (Map)((Map)((Map)gameItems.get(2)).get("span")).get("a");
+				System.out.println(">>>>>>>>>> result = " + div1Map.get(3));
+				if (div1Map.get(3) != null) {
+					Map resultDiv = div1Map.get(3);
+					resultMap = (Map)resultDiv.get("a");
 				}
 				String result = null;
 				String score = null;
 				String detailUrl = null;
-				if (resultMap != null) {					
-					if (resultMap.get("span") != null) {	//勝ちの場合構造が違う
-						score = ((String)resultMap.get("content")).replaceAll(" ", "");
-						result = (String)((Map)resultMap.get("span")).get("content");
+				if (resultMap != null) {
+					score = ((String)resultMap.get("content"));
+					System.out.println("スコア🔵 [" + score + "]");
+					if (score.contains("VS")) {
+						score  = null;
 					} else {
-						score = ((String)resultMap.get("content")).replaceAll(" ", "");
-						result = score.substring(0, 1);
-						score = score.substring(1);
-					}
-					// ホームが左になっている
-					int homeScore = Integer.parseInt(score.substring(0, score.indexOf("-")));
-					int awayScore = Integer.parseInt(score.substring(score.indexOf("-") + 1));
-					if ("○".equals(result)) {
-						if (awayScore < homeScore) {
-							score = homeScore + "-" + awayScore;
-						} else {
-							score = awayScore + "-" + homeScore;
+						if (score.contains("○")) {
+							result = "○";
+						} else if (score.contains("●")) {
+							result = "●";
+						} else if (score.contains("△")) {
+							result = "△";
 						}
-					} else if ("●".equals(result)) {
-						if (awayScore < homeScore) {
-							score = awayScore + "-" + homeScore;
+						System.out.println("★★★" + score + " / " + result);
+						// ホームが左になっている
+						int homeScore = Integer.parseInt(score.substring(0, score.indexOf(" ")));
+						int awayScore = Integer.parseInt(score.substring(score.indexOf(" ") + 3));
+						System.out.println("ホーム " + homeScore + " - アウェイ " + awayScore);
+						if ("○".equals(result)) {
+							if (awayScore < homeScore) {
+								score = homeScore + "-" + awayScore;
+							} else {
+								score = awayScore + "-" + homeScore;
+							}
+						} else if ("●".equals(result)) {
+							if (awayScore < homeScore) {
+								score = awayScore + "-" + homeScore;
+							} else {
+								score = homeScore + "-" + awayScore;
+							}
 						} else {
 							score = homeScore + "-" + awayScore;
 						}
-					}
 
-					detailUrl = "http://www.ardija.co.jp/" + (String)resultMap.get("href");
+						detailUrl = "http://www.ardija.co.jp/" + (String)resultMap.get("href");
+					}
 				}
 				int c = 0;
 				Object[] oneRec = new Object[12];

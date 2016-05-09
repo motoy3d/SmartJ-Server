@@ -33,9 +33,7 @@ public class VisselResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20"
-			+ "from%20html%20where%20url%3D%22http%3A%2F%2Fwww.vissel-kobe.co.jp%2Fmatch%2F%22%20"
-			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40id%3D'tab1'%5D%2Fsection%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
+	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.vissel-kobe.co.jp%2Fmatch%2F%22%20and%20xpath%3D%22%2F%2Fdl%2Fdd%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -62,7 +60,8 @@ public class VisselResultsSaver {
 			System.out.println((sw.getTime()/1000.0) + "秒");
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 			logger.info(json.toString());
-			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
+			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)
+					json.get("query")).get("results")).get("dd");
 			logger.info(gameList.getClass().toString());
 			
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
