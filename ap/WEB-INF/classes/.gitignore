@@ -1,4 +1,5 @@
 /app.properties
 /com/
+/log4j.properties
 /twitter4j/
 /youtube.properties
