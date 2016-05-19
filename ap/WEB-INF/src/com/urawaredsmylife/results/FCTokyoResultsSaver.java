@@ -143,7 +143,7 @@ public class FCTokyoResultsSaver {
 				String result = null;
 				String score = null;
 				String detailUrl = null;
-				if(resultMap != null) {
+				if(resultMap != null && resultMap.get("content") != null) {
 					score = (String)resultMap.get("content");
 					System.out.println("◉スコア：" + score);
 					if (score.indexOf("△") != -1) {
