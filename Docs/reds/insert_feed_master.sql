@@ -66,6 +66,7 @@ insert into redsFeedMaster values(default,'http://rssblog.ameba.jp/mono-komo/rss
 insert into redsFeedMaster values(default,'http://lineblog.me/endowataru/index.rdf','遠藤航 公式ブログ','遠藤航 公式ブログ',now());
 insert into redsFeedMaster values(default,'http://lineblog.me/kashiwagiyosuke/index.rdf','柏木陽介 オフィシャルブログ','柏木陽介 オフィシャルブログ',now());
 insert into redsFeedMaster values(default,'http://lineblog.me/ugajintomoya/index.rdf','宇賀神友弥オフィシャルブログ','宇賀神友弥オフィシャルブログ',now());
+insert into redsFeedMaster values(default,'http://lineblog.me/mr_makino0511/index.rdf','槙野智章オフィシャルブログ','槙野智章オフィシャルブログ',now());
 
 
 insert into redsFeedMaster values(default,'http','xx','xx',now());

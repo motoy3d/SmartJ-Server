@@ -71,7 +71,7 @@ public class FCTokyoResultsSaver {
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			//TODO　決勝T行った場合と行かなかった場合で違う
 //            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "ナビスコ決勝T", "天皇杯"};
-            String[] compeList = new String[]{"J1 1st", "ACL", "ACL", "J1 2nd", "ニューイヤーカップ"};
+            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ACL決勝T", "ACL", "ACL", "ニューイヤーカップ"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -98,12 +98,16 @@ public class FCTokyoResultsSaver {
 					}
 					continue;
 				}
-				if((compeIdx == 0 || compeIdx == 1 || compeIdx == 2) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
+				if((compeIdx == 0 || compeIdx == 1 /*|| compeIdx == 2*/) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
 					gameNumber = "第" + gameNumber + "節";
 				}
-				//TODO　決勝T行った場合と行かなかった場合で違う
-				else if(compeIdx == 3 && NumberUtils.isDigits(gameNumber)) {	//ナビスコ決勝T
-					gameNumber = "第" + gameNumber + "戦";
+				//TODO ACL決勝T
+				else if(compeIdx == 2) {
+					gameNumber = gameNumber.equals("1") ? "1st leg" : "2nd leg";
+				}
+				//ACLグループリーグ
+				else if(compeIdx == 3 && NumberUtils.isDigits(gameNumber)) {
+					gameNumber = "第" + gameNumber + "節";
 				}
 				else if(compeIdx == 4 && NumberUtils.isDigits(gameNumber)) {	//天皇杯
 					gameNumber += "回戦";
