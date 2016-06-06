@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import net.arnx.jsonic.JSON;
-
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -21,6 +19,8 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.Mail;
+
+import net.arnx.jsonic.JSON;
 
 /**
  * 名古屋グランパス公式サイトから試合日程・結果を取得してDBに保存する。
@@ -78,7 +78,7 @@ public class GrampusResultsSaver {
 				Map compeMap = (Map)compeList.get(compeIdx);
 				List<Object> gameList = (List<Object>)((Map)((Map)compeMap.get("table")).get("tbody")).get("tr");
 //				logger.info(compeIdx + ". gameList.size=" + gameList.size());
-				
+
 				for(int r=1; r<gameList.size(); r++) {
 					Object game = gameList.get(r);
 					//System.out.println("▲game=" + ((Map)game));
@@ -125,14 +125,19 @@ public class GrampusResultsSaver {
 					}
 					String stadium = ((String)((Map)gameItems.get(4)).get("content")).replace("\n", "").trim();
 					String homeAway = ((Map)gameItems.get(4)).get("img") != null? (String)((Map)((Map)gameItems.get(4)).get("img")).get("alt") : "";
-					String vsTeam = ((Map)gameItems.get(3)).get("div") != null ? 
-							(String)((Map)((Map)gameItems.get(3)).get("div")).get("span") 
+					String vsTeam = ((Map)gameItems.get(3)).get("div") != null ?
+							(String)((Map)((Map)gameItems.get(3)).get("div")).get("span")
 							: (String)((Map)((Map)gameItems.get(3))).get("content");
 					String tv = null;	//TODO TV
 					Map resultMap = null;
 					Object resultTmp = gameItems.get(5);
 					if (resultTmp instanceof Map) {
-						resultMap = (Map)((Map)resultTmp).get("p");;
+						System.out.println("resultTmp=" + resultTmp);
+						if (((Map)resultTmp).get("p") instanceof Map) {
+							resultMap = (Map)((Map)resultTmp).get("p");
+						} else if (((Map)resultTmp).get("p") instanceof List) {
+							resultMap = (Map)((List)((Map)resultTmp).get("p")).get(0);
+						}
 					}
 					String result = null;
 					String score = null;
@@ -161,12 +166,12 @@ public class GrampusResultsSaver {
 					oneRec[c++] = score;
 					oneRec[c++] = detailUrl;
 					insertDataList.add(oneRec);
-					logger.info("■" + compe + ", " + gameDate + "," + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
+					logger.info("■" + compe + ", " + gameDate + "," + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", "
 							+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
 				}
-				
+
 			}
-			
+
 			if(insertDataList.isEmpty()) {
 				logger.warn("日程データが取得出来ませんでした");
 				return -1;
@@ -181,7 +186,7 @@ public class GrampusResultsSaver {
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * テスト用メインメソッド
 	 * @param args
