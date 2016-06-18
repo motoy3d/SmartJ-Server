@@ -88,6 +88,10 @@ public class ArdijaResultsSaver {
 					compeName = "";
 				}
 				String compe = "";
+				System.out.println("🔴" + ((Map)gameItems.get(0)));
+				if ("listBanner".equals(((Map)gameItems.get(0)).get("class"))) {
+					gameItems.remove(0);
+				}
 				List<Map> item0DivList = (List<Map>)((Map)gameItems.get(0)).get("div");
 				Map compeMap = item0DivList.get(0);
 				compe = (String)compeMap.get("content");
