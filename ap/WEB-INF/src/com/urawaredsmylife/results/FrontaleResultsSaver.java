@@ -96,7 +96,7 @@ public class FrontaleResultsSaver {
 //						System.out.println("🌟" + game);
 						continue;
 					}
-					logger.info("★" + gameItems.get(0));
+//					logger.info("★" + gameItems.get(0));
 					String gameDateView = null;
 					String compe = "";
 					if (gameItems.get(0) instanceof String) {
@@ -125,7 +125,7 @@ public class FrontaleResultsSaver {
 					} else {
 						gameDateView = ((String)gameItems.get(2));
 					}
-					System.out.println(">>>>> " + gameDateView);
+//					System.out.println(">>>>> " + gameDateView);
 					gameDateView = gameDateView.replaceAll("（", "(").replaceAll("）", ")").replaceAll("・祝", "").replaceAll("\n", "")
 							.replaceAll("※.*", "");
 					String gameDate = null;
@@ -137,10 +137,12 @@ public class FrontaleResultsSaver {
 						} else {
 							gameDate = season + "/" + gameDate;
 						}
+					} else if ("未定".equals(gameDateView)){
+						gameDate = null;
 					} else {
-						gameDate = "";	//未定等
+						gameDate = null;
 					}
-					if(!"".equals(gameDate)) {
+					if(StringUtils.isNotBlank(gameDate)) {
 						gameDate = gameDate.replaceAll("月", "/").replaceAll("日", "");
 					}
 					String time = null;
