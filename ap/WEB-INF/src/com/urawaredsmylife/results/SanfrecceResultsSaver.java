@@ -122,15 +122,18 @@ public class SanfrecceResultsSaver {
 //				System.out.println("★" + resultMap);
 				if (resultMap != null) {
 					score = ((String)resultMap.get("content")).replaceAll(" ", "");
-					int hiroshimaScore = Integer.parseInt(score.substring(0, score.indexOf("-")));
-					int vsTeamScore = Integer.parseInt(score.substring(score.indexOf("-") + 1));
-					if (hiroshimaScore < vsTeamScore) {
-						result = "●";
-					} else if (hiroshimaScore == vsTeamScore) {
-						result = "△";
-					} else {
-						result = "○";
-					}
+					result = score.substring(0, 1);
+					score = score.substring(1);
+					logger.info("result=" + result + ",  score=" + score);
+//					int hiroshimaScore = Integer.parseInt(score.substring(1, score.indexOf("-")));
+//					int vsTeamScore = Integer.parseInt(score.substring(score.indexOf("-") + 1));
+//					if (hiroshimaScore < vsTeamScore) {
+//						result = "●";
+//					} else if (hiroshimaScore == vsTeamScore) {
+//						result = "△";
+//					} else {
+//						result = "○";
+//					}
 					detailUrl = "http://www.sanfrecce.co.jp/info/" + ((String)resultMap.get("href")).replace("../", "");
 				}
 				int c = 0;
