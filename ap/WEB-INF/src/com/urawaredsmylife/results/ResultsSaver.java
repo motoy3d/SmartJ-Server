@@ -73,9 +73,9 @@ public class ResultsSaver {
 		//松本山雅FC
 		YamagaResultsSaver yamagaSaver = new YamagaResultsSaver();
 		yamagaSaver.extractResults();
-//		//モンテディオ山形
-//		MontedioResultsSaver montedioSaver = new MontedioResultsSaver();
-//		montedioSaver.extractResults();
+		//モンテディオ山形
+		MontedioResultsSaver montedioSaver = new MontedioResultsSaver();
+		montedioSaver.extractResults();
 		//ジュビロ磐田
 		JubiloResultsSaver jubiloSaver = new JubiloResultsSaver();
 		jubiloSaver.extractResults();

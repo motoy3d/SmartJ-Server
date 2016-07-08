@@ -33,7 +33,10 @@ public class YamagaResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.yamaga-fc.com%2Fmatch%2Fcategory%2F2015%22%20and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'p-match-list'%5D%2Ftbody%2Ftr%22&format=json&callback=";
+	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html"
+			 + "%20where%20url%3D%22http%3A%2F%2Fwww.yamaga-fc.com%2Fmatch%2Fcategory%2F"
+			+ "{SEASON}"
+			+ "%22%20and%20xpath%3D%22%2F%2Ftable%5B%40class%3D'p-match-list'%5D%2Ftbody%2Ftr%22&format=json&callback=";
 
 	/**
 	 * コンストラクタ
@@ -89,7 +92,7 @@ public class YamagaResultsSaver {
 					continue;
 				}
 				compe = compe.replaceAll("J1リーグ", "J1").replaceAll("1stステージ", "1st/").replaceAll("2ndステージ", "2nd/")
-						.replaceAll("ヤマザキナビスコカップ ", "ナビスコ/")
+						.replaceAll("YBCルヴァンカップ ", "ルヴァン/")
 						.replaceAll("ACLノックアウトステージ　", "ACL/").replaceAll("　", "")
 						.replaceAll("明治安田生命", "")
 						.replace(season, "");

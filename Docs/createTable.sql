@@ -47,7 +47,7 @@ create table standings(
 );
 
 /**
- *  ナビスコカップ　グループリーグ順位表
+ *  ルヴァンカップ　グループリーグ順位表
  */
 create table nabiscoStandings(
   season year

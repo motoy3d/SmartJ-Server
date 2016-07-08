@@ -97,8 +97,8 @@ public class RedsResultsSaver {
 					continue;
 				}
 				compe = compe.replaceAll("J1リーグ", "J1").replaceAll("1stステージ", "1st").replaceAll("2ndステージ", "2nd")
-						.replaceAll("Ｊリーグヤマザキナビスコカップ", "ナビスコ")
-						.replaceAll("ACLノックアウトステージ　", "ACL").replaceAll("　", "");
+						.replaceAll("Jリーグ YBC ルヴァンカップ", "ルヴァン")
+						.replaceAll("ノックアウトステージ", "").replaceAll("　", "");
 				String gameDateView = null;
 				if (gameItems.get(1) instanceof Map) {
 					if (((Map)gameItems.get(1)).get("content") instanceof Map) {

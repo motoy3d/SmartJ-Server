@@ -88,7 +88,7 @@ public class MarinosResultsSaver {
 					continue;
 				}
 				String compe = StringUtils.trimToEmpty((String)((Map)((Map)gameItems.get(1)).get("p")).get("span"))
-						.replaceAll("明治安田", "").replaceAll("ナビスコカップ", "ﾅﾋﾞｽｺ").replaceAll("グループ", "ｸﾞﾙｰﾌﾟ");
+						.replaceAll("明治安田", "").replaceAll("ルヴァンカップ", "ﾙｳﾞｧﾝ").replaceAll("グループ", "ｸﾞﾙｰﾌﾟ");
 				System.out.println("★compe=" + compe);
 				Object compe2 = ((Map)gameItems.get(2)).get("p");
 				if(compe2 != null) {

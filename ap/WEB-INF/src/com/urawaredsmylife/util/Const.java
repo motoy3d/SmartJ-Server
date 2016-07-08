@@ -14,7 +14,7 @@ public class Const {
 	 */
 	public static final String J2_OPEN_DATE = "2015/03/08";
 	/**
-	 * ナビスコ開幕日
+	 * ルヴァン開幕日
 	 */
 	public static final String NABISCO_OPEN_DATE = "2015/03/18";
 	/**

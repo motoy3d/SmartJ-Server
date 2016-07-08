@@ -70,7 +70,7 @@ public class JubiloResultsSaver {
 
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
-            String[] compeNameList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "天皇杯", "練習・親善試合"};
+            String[] compeNameList = new String[]{"J1 1st", "J1 2nd", "ルヴァン", "天皇杯", "練習・親善試合"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -104,7 +104,7 @@ public class JubiloResultsSaver {
 					gameNumber = StringUtils.trimToEmpty((String)((Map)gameNumberTmp).get("content"));
 				}
 				String compe = compeNameList[compeIdx] + " " + gameNumber;
-				if((compeIdx <= 2) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
+				if((compeIdx <= 2) && NumberUtils.isDigits(gameNumber)) {	//ルヴァン、Jリーグ
 					compe += "節";
 				}
 				else if(compeIdx == 3 && NumberUtils.isDigits(gameNumber)) {	//天皇杯

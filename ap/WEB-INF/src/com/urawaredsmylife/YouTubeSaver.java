@@ -103,8 +103,8 @@ public class YouTubeSaver {
 				}
 				String vsTeamName = (String)game.get("vs_team");
 				String compe = (String)game.get("compe");
-				if (compe.contains("YNC")) {
-					compe = compe.replace("YNC", "ナビスコカップ");
+				if (compe.contains("YNC") || compe.contains("ルヴァン")) {
+					compe = compe.replace("YNC", "ルヴァンカップ");
 				}
 				Date gameDate = (Date)game.get("game_date1");
 				searchYouTube(teamName, vsTeamName, gameDate, compe, score);

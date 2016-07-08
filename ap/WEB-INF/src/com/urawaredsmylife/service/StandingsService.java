@@ -15,7 +15,7 @@ import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.TeamUtils;
 
 /**
- * DBに格納されているJ1/J2/ナビスコカップ/ACLの順位表から検索し、JSONを返す。
+ * DBに格納されているJ1/J2/ルヴァンカップ/ACLの順位表から検索し、JSONを返す。
  * JSONへの変換はJSONICが行う。
  * @author motoy3d
  *
@@ -119,7 +119,7 @@ public class StandingsService {
 	}
 
 	/**
-	 * ナビスコカップ順位表取得SQLを生成して返す。
+	 * ルヴァンカップ順位表取得SQLを生成して返す。
 	 * チームIDによってグループを自動判定する。
 	 * @param qr
 	 * @param season

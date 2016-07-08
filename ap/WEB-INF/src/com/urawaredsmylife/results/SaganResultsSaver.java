@@ -92,8 +92,8 @@ public class SaganResultsSaver {
 						compeName = "J1";
 					} else if (compeImgAlt.contains("J2リーグ") || compeImgAlt.contains("Ｊ２リーグ")) {
 						compeName = "J2";
-					} else if (compeImgAlt.contains("ナビスコカップ")) {
-						compeName = "ナビスコ";
+					} else if (compeImgAlt.contains("ナビスコ") || compeImgAlt.contains("ルヴァンカップ")) {
+						compeName = "ルヴァン";
 					} else if (compeImgAlt.contains("ACL") || compeImgAlt.contains("チャンピオンズリーグ")) {
 						compeName = "ACL";
 					} else if (compeImgAlt.contains("天皇杯")) {
@@ -106,7 +106,7 @@ System.out.println("compeName=" + compeName);
 				String compe = (String)((Map)gameItems.get(4)).get("content");
 System.out.println("compe=" + compe);
 				compe = compeName + "/" + compe.replaceAll("ステージ", "").replaceAll("予選リーグ", "")
-						.replaceAll("　", " ").replaceAll("\n", "").replace("ヤマザキナビスコカップ", "");
+						.replaceAll("　", " ").replaceAll("\n", "").replace("ルヴァンカップ", "");
 				
 				String day = (String)((Map)gameItems.get(1)).get("content");
 				String gameDateView = ((String)((Map)gameItems.get(0)).get("content")).replaceAll("\\.", "/")

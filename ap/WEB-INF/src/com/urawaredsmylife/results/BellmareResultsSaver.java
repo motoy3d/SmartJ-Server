@@ -97,12 +97,18 @@ public class BellmareResultsSaver {
 					compe = (String)gameItemsTh.get(1);
 				}
 				compe = compe.replace("ステージ", "");
-				String compeImg = (String)((Map)((Map)gameItemsTh.get(0)).get("img")).get("src");
+				String compeImg = "";
+				if (gameItemsTh.get(0) instanceof Map) {
+					compeImg = (String)((Map)((Map)gameItemsTh.get(0)).get("img")).get("src");
+				} else {
+					logger.info("サテライトリーグは飛ばす");
+					continue;
+				}
 				String compeName = "";
 				if (compeImg.endsWith("j1_s.png")) {
 					compeName = "J1 ";
 				} else if (compeImg.endsWith("ync_s.png")) {
-					compeName = "ナビスコ";
+					compeName = "ルヴァン ";
 				}
 				compe = compeName + compe;
 				String gameDateView = null;
@@ -124,10 +130,12 @@ public class BellmareResultsSaver {
 					gameDate = "";	//未定等
 				}
 				//時間
-				if (gameItemsTh.get(2) instanceof Map) {
-					time = (String)((Map)gameItemsTh.get(2)).get("content");
-				} else {
-					time = (String)gameItemsTh.get(2);
+				if (2 < gameItemsTh.size()) {
+					if (gameItemsTh.get(2) instanceof Map) {
+						time = (String)((Map)gameItemsTh.get(2)).get("content");
+					} else {
+						time = (String)gameItemsTh.get(2);
+					}
 				}
 				//スタジアム
 				String stadium = null;
@@ -150,8 +158,14 @@ public class BellmareResultsSaver {
 				String score = null;
 				String detailUrl = null;
 				if(resultMap != null) {
-					result = (String)((Map)resultMap.get("span")).get("content");
-					score = ((String)resultMap.get("content")).trim();
+					System.out.println("span = " + resultMap);
+					if (resultMap.get("span") != null) {
+						result = (String)((Map)resultMap.get("span")).get("content");
+						score = ((String)resultMap.get("content")).trim();
+					} else {
+						result = ((String)resultMap.get("content")).substring(0, 1);
+						score = ((String)resultMap.get("content")).substring(1).trim();
+					}
 					if (!homeFlg) {
 						int homeScore = Integer.parseInt(score.substring(0, score.indexOf("-")));
 						int awayScore = Integer.parseInt(score.substring(score.indexOf("-") + 1));

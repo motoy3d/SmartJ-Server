@@ -180,6 +180,8 @@ public class CerezoResultsSaver {
 							vsTeam = (String)((Map)spanList2.get(1)).get("content");
 //							System.out.println("🔶vsTeam1=" + vsTeam);
 						}
+						compe = compe.replaceAll("２０１６", "").replaceAll("Ｊ２", "J2").replaceAll("Ｊ１", "J1")
+								.replaceAll("天皇杯全日本サッカー選手権大会", "天皇杯");
 //						System.out.println("パターン違い🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟");
 					}
 					if (compe.contains("Ｊ３") || compe.contains("J3")) {

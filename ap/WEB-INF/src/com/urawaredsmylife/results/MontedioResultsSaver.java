@@ -96,7 +96,7 @@ public class MontedioResultsSaver {
 				if (compeImg.endsWith("obj_emblem_j1.png")) {
 					compeName = "J1 ";
 				} else if (compeImg.endsWith("obj_emblem_ync.png")) {
-					compeName = "ナビスコ";
+					compeName = "ルヴァン";
 				}
 				compe = compeName + compe;
 				String gameDateView = null;

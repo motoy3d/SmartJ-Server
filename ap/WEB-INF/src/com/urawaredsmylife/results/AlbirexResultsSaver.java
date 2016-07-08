@@ -69,7 +69,7 @@ public class AlbirexResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[]{"J1 1st", "J1 2nd", "YNC", "サテライト", "プレシーズン", "天皇杯"};
+            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ルヴァン", "サテライト", "プレシーズン", "天皇杯"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -84,7 +84,7 @@ public class AlbirexResultsSaver {
 					System.out.println("continue............... compeIdx=" + compeIdx);
 					continue;
 				}
-				if(compeIdx >= 3) { //プレシーズン //TODO ナビスコ決勝T行ったら or 天皇杯が始まったら5に変更
+				if(compeIdx >= 3) { //プレシーズン //TODO ルヴァン決勝T行ったら or 天皇杯が始まったら5に変更
 					break;
 				}
 				String compe = compeList[compeIdx] + " " + StringUtils.trimToEmpty((String)((Map)gameItems.get(0)).get("content"));

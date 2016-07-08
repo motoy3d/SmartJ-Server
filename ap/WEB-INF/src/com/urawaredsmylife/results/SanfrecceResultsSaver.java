@@ -9,6 +9,7 @@ import java.util.Map;
 import net.arnx.jsonic.JSON;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -68,8 +69,8 @@ public class SanfrecceResultsSaver {
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
             int compeIdx = 0;
-//            String[] compeList = new String[] {"FIFAｸﾗﾌﾞﾜｰﾙﾄﾞｶｯﾌﾟ", "ﾁｬﾝﾋﾟｵﾝｼｯﾌﾟ", "J1 1st", "J1 2nd", "ナビスコ", "天皇杯"};
-            String[] compeList = new String[] {"J1 1st", "J1 2nd", "FUJI XEROX SUPER CUP", "ACL"};
+//            String[] compeList = new String[] {"FIFAｸﾗﾌﾞﾜｰﾙﾄﾞｶｯﾌﾟ", "ﾁｬﾝﾋﾟｵﾝｼｯﾌﾟ", "J1 1st", "J1 2nd", "ルヴァン", "天皇杯"};
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ルヴァン", "FUJI XEROX SUPER CUP", "ACL"};
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
@@ -87,6 +88,8 @@ public class SanfrecceResultsSaver {
 				compe = compeList[compeIdx];
 				if (NumberUtils.isDigits(matchNo) && !compe.contains("XEROX")) {
 					compe += ("/" + matchNo) + "節";
+				} else if (StringUtils.isNotBlank(matchNo)) {
+					compe +=  matchNo;
 				}
 				String gameDateView = ((String)gameItems.get(1))
 						.replaceAll("祝", "").replace("・", "").replace("()", "").replace("\n", "");

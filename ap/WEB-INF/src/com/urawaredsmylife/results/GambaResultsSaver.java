@@ -96,8 +96,8 @@ public class GambaResultsSaver {
 						continue;
 					} else if(compeImg.endsWith("b_logo_cs.png")) {
 						compeName = "ﾁｬﾝﾋﾟｵﾝｼｯﾌﾟ";
-					} else if (compeImg.contains("nabisco")) {
-						compeName = "ナビスコ";
+					} else if (compeImg.contains("nabisco") || compeImg.contains("levaincup")) {
+						compeName = "ルヴァン";
 					} else if (compeImg.contains("acl")) {
 						compeName = "ACL";
 					} else if (compeImg.contains("tennohai")) {

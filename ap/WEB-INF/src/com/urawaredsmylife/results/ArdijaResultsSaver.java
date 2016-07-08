@@ -33,7 +33,8 @@ public class ArdijaResultsSaver {
 	/**
 	 * 取得元URL
 	 */
-	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%0Awhere%20url%3D%22http%3A%2F%2Fwww.ardija.co.jp%2Fmatch%2F%22%20and%20%0Axpath%3D%22%2F%2Fdiv%5B%40class%3D'matchCategory'%5D%2Fdiv%22&format=json&diagnostics=true&callback=";
+	private static final String SRC_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html"
+			+ "%0Awhere%20url%3D%22http%3A%2F%2Fwww.ardija.co.jp%2Fmatch%2F%22%20and%20%0Axpath%3D%22%2F%2Fdiv%5B%40class%3D'matchCategory'%5D%2Fdiv%22&format=json&diagnostics=true&callback=";
 
 	/**
 	 * コンストラクタ
@@ -79,7 +80,7 @@ public class ArdijaResultsSaver {
 				if (compeName.endsWith("logo_j.png")) {
 					compeName = "J";
 				} else if (compeName.endsWith("logo_yn.png")) {
-					compeName = "ナビスコ";
+					compeName = "ルヴァン";
 				} else if (compeName.endsWith("logo_empcup.png")) {
 					compeName = "天皇杯";
 				} else if (compeName.endsWith("logo_acl.png")) {
@@ -102,7 +103,7 @@ public class ArdijaResultsSaver {
 					compe = "J1 " + compe;
 				} else {
 					//TODO 時期によって要確認
-					compe = "ﾅﾋﾞｽｺ" + compe;
+					compe = "ルヴァン" + compe;
 				}
 				System.out.println("compe====" + compe);
 				System.out.println("0：" + gameItems.get(0));

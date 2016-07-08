@@ -79,7 +79,7 @@ public class VisselResultsSaver {
 				} else if (compeName.contains("logo-j")) {
 					compeName = "J1";
 				} else if (compeName.endsWith("logo-ync.png")) {
-					compeName = "ナビスコ";
+					compeName = "ルヴァン";
 				} else if (compeName.endsWith("logo-emp.png")) {
 					compeName = "天皇杯";
 				} else if (compeName.endsWith("logo-acl.png")) {

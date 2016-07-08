@@ -69,7 +69,7 @@ public class GrampusResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeNameList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "天皇杯", "プレシーズン"};
+            String[] compeNameList = new String[]{"J1 1st", "J1 2nd", "ルヴァン", "天皇杯", "プレシーズン"};
             for(int compeIdx=0; compeIdx<compeList.size(); compeIdx++) {
             	//TODO 天皇杯が始まったら、3を4にする
 				if (compeIdx >= 3) {	//プレシーズンは除外
@@ -95,7 +95,7 @@ public class GrampusResultsSaver {
 						gameNumber = StringUtils.trimToEmpty((String)((Map)gameNumberTmp).get("content"));
 					}
 					String compe = compeNameList[compeIdx] + " " + gameNumber;
-					if((compeIdx <= 2) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
+					if((compeIdx <= 2) && NumberUtils.isDigits(gameNumber)) {	//ルヴァン、Jリーグ
 						compe += "節";
 					}
 					else if(compeIdx == 3 && NumberUtils.isDigits(gameNumber)) {	//天皇杯

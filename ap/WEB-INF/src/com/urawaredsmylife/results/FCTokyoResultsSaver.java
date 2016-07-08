@@ -70,16 +70,16 @@ public class FCTokyoResultsSaver {
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			//TODO　決勝T行った場合と行かなかった場合で違う
-//            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ナビスコ", "ナビスコ決勝T", "天皇杯"};
-            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ACL決勝T", "ACL", "ACL", "ニューイヤーカップ"};
+//            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ルヴァン", "ルヴァン決勝T", "天皇杯"};
+            String[] compeList = new String[]{"J1 1st", "J1 2nd", "ルヴァン決勝T", "ACL決勝T", "ACL", "ACL", "ニューイヤーカップ"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				//System.out.println("▲game=" + ((Map)game));
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");
 				String bgcolor = (String)((Map)gameItems.get(0)).get("bgcolor");
-				if(gameItems.size() != 8) {//プレシーズンやナビスコ試合なしは省略
-					logger.info("#プレシーズンやナビスコ試合なしは省略 " + r);
+				if(gameItems.size() != 8) {//プレシーズンやルヴァン試合なしは省略
+					logger.info("#プレシーズンやルヴァン試合なしは省略 " + r);
 					continue;
 				}
 				Map gameNumberMap = (Map)gameItems.get(0);
@@ -98,18 +98,18 @@ public class FCTokyoResultsSaver {
 					}
 					continue;
 				}
-				if((compeIdx == 0 || compeIdx == 1 /*|| compeIdx == 2*/) && NumberUtils.isDigits(gameNumber)) {	//ナビスコ、Jリーグ
+				if((compeIdx == 0 || compeIdx == 1 /*|| compeIdx == 2*/) && NumberUtils.isDigits(gameNumber)) {	//ルヴァン、Jリーグ
 					gameNumber = "第" + gameNumber + "節";
 				}
-				//TODO ACL決勝T
-				else if(compeIdx == 2) {
+				//TODO ACL決勝T、ルヴァン決勝T
+				else if(compeIdx == 2 || compeIdx == 3) {
 					gameNumber = gameNumber.equals("1") ? "1st leg" : "2nd leg";
 				}
 				//ACLグループリーグ
-				else if(compeIdx == 3 && NumberUtils.isDigits(gameNumber)) {
+				else if(compeIdx == 4 && NumberUtils.isDigits(gameNumber)) {
 					gameNumber = "第" + gameNumber + "節";
 				}
-				else if(compeIdx == 4 && NumberUtils.isDigits(gameNumber)) {	//天皇杯
+				else if(compeIdx == 5 && NumberUtils.isDigits(gameNumber)) {	//天皇杯
 					gameNumber += "回戦";
 				}
 				String compe = compeList[compeIdx] + " " + gameNumber;

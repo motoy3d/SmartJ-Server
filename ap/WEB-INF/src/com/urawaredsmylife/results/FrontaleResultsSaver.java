@@ -58,7 +58,7 @@ public class FrontaleResultsSaver {
 		HttpUnitOptions.setScriptingEnabled(false);
 		String[] htmls = new String[] {SRC_HTML_J1_1st, SRC_HTML_J1_2nd, SRC_HTML_NABISCO, SRC_HTML_TENNOHAI};
 		String[] tableIds = new String[] {"tbl_cate_j_league", "tbl_cate_j_league", "tbl_cate_yamazaki_nabisco", "tbl_cate_emperors_cup"};
-        String[] compeList = new String[]{"J1 1st", "J1 2nd", "YNC", "天皇杯"};
+        String[] compeList = new String[]{"J1 1st", "J1 2nd", "ルヴァン", "天皇杯"};
 		try {
 			QueryRunner qr = DB.createQueryRunner();
             String season = new SimpleDateFormat("yyyy").format(new Date());

@@ -68,7 +68,7 @@ public class AntlersResultsSaver {
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
             //４つ目はサテライト,５つ目はプレシーズン
-            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ナビスコ", "", "", "天皇杯", "ACL"};
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ルヴァン", "", "", "天皇杯", "ACL"};
             int compeIdx = 0;
             int newYearCupIdx = 1;
 			for(int r=1; r<gameList.size(); r++) {

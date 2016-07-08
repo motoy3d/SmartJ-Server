@@ -21,7 +21,7 @@ import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.TeamUtils;
 
 /**
- * YahooスポーツからJリーグ、ナビスコカップの順位表を取得してDBに保存する。
+ * YahooスポーツからJリーグ、ルヴァンカップの順位表を取得してDBに保存する。
  * 本処理はバッチで定期的に実行する。
  * @author motoy3d
  */
@@ -41,7 +41,7 @@ public class StandingsSaver {
 	private static final String SRC_URL_ACL4 = "http://www.hochi.co.jp/soccer/data/world/acl/group_H.html";
 
 	/**
-	 * ナビスコカップ参加チーム数（年によって変わる可能性あり）
+	 * ルヴァンカップ参加チーム数（年によって変わる可能性あり）
 	 */
 	private static final int NABISCO_TEAM_COUNT = 14;
 	/**
@@ -90,7 +90,7 @@ public class StandingsSaver {
 			if (j2OpenDate.getTime() < new Date().getTime()) {
 				j2Result = insertJ(SRC_URL_J2, "J2", "", 22);
 			}
-			// ナビスコカップ
+			// ルヴァンカップ
 			Date nabiscoOpenDate = DateUtils.parseDate(Const.NABISCO_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int nabiscoResult = 0;
 			if (nabiscoOpenDate.getTime() < new Date().getTime()) {
@@ -186,7 +186,7 @@ public class StandingsSaver {
 	}
 
 	/**
-	 * ナビスコカップ順位表URLにアクセスして解析し、nabiscoStandingsテーブルにINSERTする。
+	 * ルヴァンカップ順位表URLにアクセスして解析し、nabiscoStandingsテーブルにINSERTする。
 	 * @return
 	 */
 	private int insertNabisco() {
@@ -246,7 +246,7 @@ public class StandingsSaver {
             int[] resultCount = qr.batch(insertSql, insertDataList);
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
-			logger.error("ナビスコカップ順位表抽出エラー", e);
+			logger.error("ルヴァンカップ順位表抽出エラー", e);
 		}
 		return 0;
 	}

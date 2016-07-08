@@ -67,7 +67,7 @@ public class VentforetResultsSaver {
             String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ナビスコ", "天皇杯", "プレシーズン"};
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ルヴァン", "天皇杯", "プレシーズン"};
             int compeIdx = 0;
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
