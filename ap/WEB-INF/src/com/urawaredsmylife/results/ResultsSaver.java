@@ -71,8 +71,8 @@ public class ResultsSaver {
 //		VortisResultsSaver vortisSaver = new VortisResultsSaver();
 //		vortisSaver.extractResults();
 		//松本山雅FC
-		YamagaResultsSaver yamagaSaver = new YamagaResultsSaver();
-		yamagaSaver.extractResults();
+//		YamagaResultsSaver yamagaSaver = new YamagaResultsSaver();
+//		yamagaSaver.extractResults();
 		//モンテディオ山形
 		MontedioResultsSaver montedioSaver = new MontedioResultsSaver();
 		montedioSaver.extractResults();
