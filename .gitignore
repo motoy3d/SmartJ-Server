@@ -38,3 +38,4 @@ _svn
 svn-commit*.tmp
 Docs/ŠÂ‹«ƒƒ‚.txt
 ap/WEB-INF/src/twitter4j.properties
+/logs/
