@@ -32,8 +32,8 @@ public class ResultsSaver {
 		FCTokyoResultsSaver fctokyoSaver = new FCTokyoResultsSaver();
 		fctokyoSaver.extractResults();
 		//名古屋グランパス
-		GrampusResultsSaver grampusSaver = new GrampusResultsSaver();
-		grampusSaver.extractResults();
+//		GrampusResultsSaver grampusSaver = new GrampusResultsSaver();
+//		grampusSaver.extractResults();
 		//清水エスパルス
 		SpulseResultsSaver spulseSaver = new SpulseResultsSaver();
 		spulseSaver.extractResults();
