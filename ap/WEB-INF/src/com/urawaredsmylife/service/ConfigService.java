@@ -68,9 +68,9 @@ public class ConfigService {
 						Const.J1_SECOND_STAGE_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 //				if (new Date().getTime() < secondStageOpenDate.getTime()) {
 				//TODO アプリ側で順位表初期表示時にタブが2ndに切り替わらないため、とりあえず1st固定としておく。
-					conf.put("currentStage", "1st");
+//					conf.put("currentStage", "1st");
 //				} else {
-//					conf.put("currentStage", "2nd");
+					conf.put("currentStage", "2nd");
 //				}
 			} catch (ParseException e) {
 			}
