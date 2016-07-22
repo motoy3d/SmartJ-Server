@@ -228,7 +228,7 @@ public class FeedEntrySaver {
 					+ " WHERE entry_url=? OR entry_title=?";
 			Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), e.getLink(), entryTitle);
 			Long cnt = (Long)cntMap.get("CNT");
-			if(cnt == 0) {
+			if(cnt.intValue() == 0) {
 				String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
 				ImageInfo img = getImageInContent(e.getLink(), e.getContent());
 				Object[] inseartParams = new Object[] {
