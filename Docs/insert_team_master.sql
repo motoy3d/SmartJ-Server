@@ -1,3 +1,4 @@
+#↓team_name2,team_name3が不足しているがDBには登録済み
 insert into teamMaster values('reds', '浦和レッズ', 'J1', '#urawareds -redsurw -twiccer', 80604313, 0, now());
 insert into teamMaster values('albirex', 'アルビレックス新潟', 'J1', '#albirex -nalbirex -twiccer', 91131898, 2, now());
 insert into teamMaster values('frontale', '川崎フロンターレ', 'J1', '#frontale -frontalek -twiccer', 165218254, 2, now());

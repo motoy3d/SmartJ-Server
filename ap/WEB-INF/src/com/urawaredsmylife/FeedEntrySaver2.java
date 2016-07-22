@@ -57,6 +57,10 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 	 * チーム名２
 	 */
 	private String teamName2;
+	/**
+	 * チーム名３
+	 */
+	private String teamName3;
 
 	/**
 	 * メインメソッド
@@ -72,7 +76,8 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				String teamId = (String)team.get("team_id");
 				String teamName1 = (String)team.get("team_name");
 				String teamName2 = (String)team.get("team_name2");
-				FeedEntrySaver2 srv = new FeedEntrySaver2(teamId, teamName1, teamName2);
+				String teamName3 = (String)team.get("team_name3");
+				FeedEntrySaver2 srv = new FeedEntrySaver2(teamId, teamName1, teamName2, teamName3);
 				srv.saveEntry(entryList, qr);
 			}
 		} catch(Exception ex) {
@@ -85,11 +90,13 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 	 * @param teamId
 	 * @param teamName1
 	 * @param teamName2
+	 * @param teamName3
 	 */
-	public FeedEntrySaver2(String teamId, String teamName1, String teamName2) {
+	public FeedEntrySaver2(String teamId, String teamName1, String teamName2, String teamName3) {
 		this.teamId = teamId;
 		this.teamName1 = teamName1;
 		this.teamName2 = teamName2;
+		this.teamName3 = teamName3;
 	}
 	
 	/**
@@ -193,9 +200,14 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 		Map<String, Object> teamName1Map = new HashMap<>();
 		teamName1Map.put("word", teamName1);
 		okWordList.add(teamName1Map);
+		
 		Map<String, Object> teamName2Map = new HashMap<>();
 		teamName2Map.put("word", teamName2);
 		okWordList.add(teamName2Map);
+
+		Map<String, Object> teamName3Map = new HashMap<>();
+		teamName3Map.put("word", teamName3);
+		okWordList.add(teamName3Map);
 
 		for(Feed feedResult : feedResults) {
 			FeedEntry[] entries = feedResult.getEntries();
