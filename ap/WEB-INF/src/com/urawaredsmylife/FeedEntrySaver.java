@@ -65,12 +65,6 @@ public class FeedEntrySaver {
 		"（ゲキサカ）", "（SOCCER"
 	};
 	/**
-	 * NGワード（エントリタイトルに含まれていたら保存しない）
-	 */
-	protected static final String[] NG_WORDS = new String[] {
-		"レディース", "なでしこ", "PR:", ": PR", "ラーメン", "拉麺", "ヴァンラーレ", "献血", "MLB", "五郎丸", "シンシナティ", "前田健太"
-	};
-	/**
 	 * チームID
 	 */
 	private String teamId;
@@ -212,9 +206,13 @@ public class FeedEntrySaver {
 				logger.info("NGサイト:" + siteName);
 				continue;
 			}
+			
+			// NGワードチェック
+			String ngSql = "SELECT word FROM feedKeywordMaster WHERE team_id=? OR team_id='all' AND ok_flg=false";
+			List<Map<String, Object>> ngWordList = qr.query(ngSql, new MapListHandler(), teamId);
 			boolean isNg = false;
-			for(String ng : NG_WORDS) {
-				if(entryTitle.contains(ng)) {
+			for(Map<String, Object> ngMap : ngWordList) {
+				if(entryTitle.contains((String)ngMap.get("word"))) {
 					logger.info("NGワード:" + entryTitle);
 					isNg = true; break;
 				}
