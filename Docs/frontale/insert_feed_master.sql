@@ -12,7 +12,7 @@ insert into frontaleFeedMaster values(default,'http://www.plus-blog.sportsnavi.c
 insert into frontaleFeedMaster values(default,'http://fxhr.blog.fc2.com/?xml','週末は青のスタジアムで','週末は青のスタジアムで',now());
 insert into frontaleFeedMaster values(default,'http://rssblog.ameba.jp/fantasiska18/rss20.xml','フロンターレフットボールクレイジー','フロンターレフットボールクレイジー',now());
 insert into frontaleFeedMaster values(default,'http://blog.lirionet.jp/sota_blog/rss.xml','中澤聡太 OFFICIAL BLOG','中澤聡太 OFFICIAL BLOG',now());
-
+insert into frontaleFeedMaster values(default,'http://rss.phew.homeip.net/v10/10014.xml','川崎フロンターレ公式','川崎フロンターレ公式',now());
 
 insert into frontaleFeedMaster values(default,'http','xx','xx',now());
 

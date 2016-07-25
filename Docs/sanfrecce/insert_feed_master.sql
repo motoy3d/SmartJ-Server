@@ -13,7 +13,7 @@ insert into sanfrecceFeedMaster values(default,'http://blogs.yahoo.co.jp/sanfrec
 insert into sanfrecceFeedMaster values(default,'http://seto.way-nifty.com/thisweek/rss.xml','今週のSANFRECCE Diary','今週のSANFRECCE Diary',now());
 insert into sanfrecceFeedMaster values(default,'http://sanfretamasi.blog.fc2.com/?xml','雨ニモマケズ～サンフレッチェ広島応援ブログ～','雨ニモマケズ～サンフレッチェ広島応援ブログ～',now());
 insert into sanfrecceFeedMaster values(default,'http://sachikumatei.blog63.fc2.com/?xml','幸熊亭　サンフレッチェ応援ブログ','幸熊亭　サンフレッチェ応援ブログ',now());
-
+insert into sanfrecceFeedMaster values(default,'http://rss.phew.homeip.net/v10/10027.xml','サンフレッチェ広島公式','サンフレッチェ広島公式',now());
 
 
 insert into sanfrecceFeedMaster values(default,'http','xx','xx',now());

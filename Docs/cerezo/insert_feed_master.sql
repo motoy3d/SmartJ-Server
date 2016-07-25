@@ -15,6 +15,8 @@ insert into cerezoFeedMaster values(default,'http://goingcerezo.blog115.fc2.com/
 insert into cerezoFeedMaster values(default,'http://ofssoyokazei3.blog.shinobi.jp/RSS/','桜咲華FS ','桜咲華FS ',now());
 insert into cerezoFeedMaster values(default,'http://iten2014.blog.jp/index.rdf','さつきつつじと桜花','さつきつつじと桜花',now());
 insert into cerezoFeedMaster values(default,'http://cerezoman.com/?feed=rss2','セレッソマン','セレッソマン',now());
+insert into cerezoFeedMaster values(default,'http://rss.phew.homeip.net/v10/10025.xml','セレッソ大阪公式','セレッソ大阪公式',now());
+
 
 insert into cerezoFeedMaster values(default,'http','xx','xx',now());
 

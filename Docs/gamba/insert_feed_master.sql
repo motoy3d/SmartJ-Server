@@ -17,7 +17,7 @@ insert into gambaFeedMaster values(default,'http://azurdc.blog136.fc2.com/?xml',
 insert into gambaFeedMaster values(default,'http://gambamaguro.cocolog-nifty.com/blog/rss.xml','たまに観戦記','たまに観戦記',now());
 insert into gambaFeedMaster values(default,'http://tamaemongamba.blog.fc2.com/?xml','★★★　終わりなき蒼黒の旅　★★★','★★★　終わりなき蒼黒の旅　★★★',now());
 insert into gambaFeedMaster values(default,'http://rssblog.ameba.jp/usami-takashi/rss20.xml','宇佐美貴史オフィシャルブログ','宇佐美貴史オフィシャルブログ',now());
-
+insert into gambaFeedMaster values(default,'http://rss.phew.homeip.net/v10/10024.xml','ガンバ大阪公式','ガンバ大阪公式',now());
 
 
 insert into gambaFeedMaster values(default,'http','xx','xx',now());
