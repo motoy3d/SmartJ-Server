@@ -16,8 +16,8 @@ insert into fctokyoFeedMaster values(default,'http://blog.livedoor.jp/mammut7769
 insert into fctokyoFeedMaster values(default,'http://zap2013.blog.fc2.com/?xml&category=3','40℃','40℃',now());
 insert into fctokyoFeedMaster values(default,'http://blog.livedoor.jp/fctokyo12/index.rdf','FC東京と共に','FC東京と共に',now());
 insert into fctokyoFeedMaster values(default,'http://blog.livedoor.jp/tokyo_la12/index.rdf','FC東京　応援生活（続　オクヤマ的）','FC東京　応援生活（続　オクヤマ的）',now());
+insert into fctokyoFeedMaster values(default,'http://rss.phew.homeip.net/v10/10012.xml','FC東京公式','FC東京公式',now());
 
-insert into fctokyoFeedMaster values(default,'http','xx','xx',now());
 insert into fctokyoFeedMaster values(default,'http','xx','xx',now());
 
 

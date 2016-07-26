@@ -14,7 +14,7 @@ insert into spulseFeedMaster values(default,'http://rssblog.ameba.jp/charcha-ufo
 insert into spulseFeedMaster values(default,'http://rssblog.ameba.jp/yuzu17-paru1219/rss20.xml','愛知エスパルス会隊員募集！','愛知エスパルス会隊員募集！',now());
 insert into spulseFeedMaster values(default,'http://rssblog.ameba.jp/wish596/rss20.xml','オレンジの風に想いを馳せて・・・。','オレンジの風に想いを馳せて・・・。',now());
 insert into spulseFeedMaster values(default,'http://yana-fs-diary.cocolog-nifty.com/blog/atom.xml','ＹＡＮＡの球蹴り徒々日記','ＹＡＮＡの球蹴り徒々日記',now());
-
+insert into spulseFeedMaster values(default,'http://rss.phew.homeip.net/v10/10020.xml','清水エスパルス公式','清水エスパルス公式',now());
 
 
 insert into spulseFeedMaster values(default,'http','xx','xx',now());

@@ -10,7 +10,7 @@ insert into vegaltaFeedMaster values(default,'http://achtsendai.xii.jp/vegaltano
 insert into vegaltaFeedMaster values(default,'http://api.plaza.rakuten.ne.jp/vegazatu/rss/','チャンネル２１','チャンネル２１',now());
 insert into vegaltaFeedMaster values(default,'http://rssblog.ameba.jp/vegab/rss20.xml','ベガサポ兄弟のＡＡ日記 ～ ベガルタ仙台＆Ｊリーグサッカー ～','ベガサポ兄弟のＡＡ日記 ～ ベガルタ仙台＆Ｊリーグサッカー ～',now());
 insert into vegaltaFeedMaster values(default,'http://nobu-music.blog.so-net.ne.jp/index.rdf','NOBU''S MUSIC','NOBU''S MUSIC',now());
-insert into vegaltaFeedMaster values(default,'http','xx','xx',now());
+insert into vegaltaFeedMaster values(default,'http://rss.phew.homeip.net/v10/10003.xml','ベガルタ仙台公式','ベガルタ仙台公式',now());
 insert into vegaltaFeedMaster values(default,'http','xx','xx',now());
 insert into vegaltaFeedMaster values(default,'http','xx','xx',now());
 insert into vegaltaFeedMaster values(default,'http','xx','xx',now());

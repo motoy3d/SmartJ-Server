@@ -9,9 +9,9 @@ insert into ardijaFeedMaster values(default,'http://api.plaza.rakuten.ne.jp/0038
 insert into ardijaFeedMaster values(default,'http://orearu.com/feed/','俺たちの大宮アルディージャ[俺アル]ブログ','俺たちの大宮アルディージャ[俺アル]ブログ',now());
 insert into ardijaFeedMaster values(default,'http://football.katsuo-no-tataki.net/feed','Love football, Go Ardija!　サッカーと大宮アルディージャのブログ','Love football, Go Ardija!　サッカーと大宮アルディージャのブログ',now());
 insert into ardijaFeedMaster values(default,'http://blog.goo.ne.jp/omiyawarabi/rss2.xml','大宮蕨通信-The Orange Time-','大宮蕨通信-The Orange Time-',now());
+insert into ardijaFeedMaster values(default,'http://rss.phew.homeip.net/v10/10009.xml','大宮アルディージャ公式','大宮アルディージャ公式',now());
 
 
-insert into ardijaFeedMaster values(default,'http','xx','xx',now());
 insert into ardijaFeedMaster values(default,'http','xx','xx',now());
 insert into ardijaFeedMaster values(default,'http','xx','xx',now());
 insert into ardijaFeedMaster values(default,'http','xx','xx',now());

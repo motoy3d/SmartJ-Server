@@ -9,7 +9,7 @@ insert into ventforetFeedMaster values(default,'http://masaya1481jp.blog12.fc2.c
 insert into ventforetFeedMaster values(default,'http://vfklove.blog.fc2.com/?xml&category=1','おしのびＶＦＫ','おしのびＶＦＫ',now());
 insert into ventforetFeedMaster values(default,'http://vfklove.blog.fc2.com/?xml&category=6','おしのびＶＦＫ','おしのびＶＦＫ',now());
 insert into ventforetFeedMaster values(default,'http://blog.livedoor.jp/cavk/index.rdf','たいくつな道中','たいくつな道中',now());
-
+insert into ventforetFeedMaster values(default,'http://rss.phew.homeip.net/v10/10018.xml','ヴァンフォーレ甲府公式','ヴァンフォーレ甲府公式',now());
 
 insert into ventforetFeedMaster values(default,'http','xx','xx',now());
 

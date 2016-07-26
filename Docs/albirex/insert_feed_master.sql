@@ -16,10 +16,7 @@ insert into albirexFeedMaster values(default,'http://blog.goo.ne.jp/chendai2005/
 insert into albirexFeedMaster values(default,'http://albalb.seesaa.net/index.rdf','アル中ドリーム','アル中ドリーム',now());
 insert into albirexFeedMaster values(default,'http://orangepower.qlookblog.net/index.rdf','ばじとうふう','ばじとうふう',now());
 insert into albirexFeedMaster values(default,'http://www.plus-blog.sportsnavi.com/blueja/rss2_0/feed.xml','白鳥城の騒霊','白鳥城の騒霊',now());
-
-
-
-
+insert into albirexFeedMaster values(default,'http://rss.phew.homeip.net/v10/10019.xml','アルビレックス新潟公式','アルビレックス新潟公式',now());
 
 insert into albirexFeedMaster values(default,'http','xx','xx',now());
 

@@ -11,7 +11,7 @@ insert into grampusFeedMaster values(default,'http://gra.boo-log.com/index.rdf',
 insert into grampusFeedMaster values(default,'http://record.air-nifty.com/people/atom.xml','浜鯱　★★★','浜鯱　★★★',now());
 insert into grampusFeedMaster values(default,'http://nge1014.blog9.fc2.com/?xml','ひらけ！名古屋グランパス','ひらけ！名古屋グランパス',now());
 insert into grampusFeedMaster values(default,'http://roupeiro.livedoor.biz/index.rdf','プロホペイロ　松浦紀典OFFICIAL blog','プロホペイロ　松浦紀典OFFICIAL blog',now());
-
+insert into grampusFeedMaster values(default,'http://rss.phew.homeip.net/v10/10022.xml','名古屋グランパス公式','名古屋グランパス公式',now());
 
 insert into grampusFeedMaster values(default,'http','xx','xx',now());
 

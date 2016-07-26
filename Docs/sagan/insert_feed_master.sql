@@ -15,9 +15,7 @@ insert into saganFeedMaster values(default,'http://sinbunbun.exblog.jp/index.xml
 insert into saganFeedMaster values(default,'http://uragawanetshop.sagafan.jp/index.rdf','サガン鳥栖を応援する福岡県民のブログ　サガントス','サガン鳥栖を応援する福岡県民のブログ　サガントス',now());
 insert into saganFeedMaster values(default,'http://www.plus-blog.sportsnavi.com/sagantosusagantosu/rss2_0/feed.xml','Ｊ','Ｊ',now());
 insert into saganFeedMaster values(default,'http://www.facebook.com/feeds/page.php?format=rss20&id=495527923859368','サガン鳥栖 Facebook','サガン鳥栖 Facebook',now());
-
-
-
+insert into saganFeedMaster values(default,'http://rss.phew.homeip.net/v10/10030.xml','サガン鳥栖公式','サガン鳥栖公式',now());
 
 insert into saganFeedMaster values(default,'http','xx','xx',now());
 

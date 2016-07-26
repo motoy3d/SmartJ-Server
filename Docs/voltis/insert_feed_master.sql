@@ -6,6 +6,7 @@ insert into vortisFeedMaster values(default,'http://rssblog.ameba.jp/vor-alpha/r
 insert into vortisFeedMaster values(default,'http://uzu-uzu.ldblog.jp/index.rdf','Sunny Day','Sunny Day',now());
 insert into vortisFeedMaster values(default,'http://rssblog.ameba.jp/air944/rss20.xml','それさえも おそらくは 平穏なVORTIS','それさえも おそらくは 平穏なVORTIS',now());
 insert into vortisFeedMaster values(default,'http://jimaturitokushima.blog.fc2.com/?xml','児祭りと徳島ヴォルティス','児祭りと徳島ヴォルティス',now());
+insert into vortisFeedMaster values(default,'http://rss.phew.homeip.net/v10/10028.xml','徳島ヴォルティス公式','徳島ヴォルティス公式',now());
 
 insert into vortisFeedMaster values(default,'http','xx','xx',now());
 

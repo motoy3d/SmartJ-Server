@@ -2,5 +2,5 @@
 //insert into montedioFeedMaster values(default,'http://www.facebook.com/feeds/page.php?format=rss20&id=205640519465003','鹿島アントラーズ Facebook','鹿島アントラーズ Facebook',now());
 
 
-insert into montedioFeedMaster values(default,'http','xx','xx',now());
+insert into montedioFeedMaster values(default,'http://rss.phew.homeip.net/v10/10004.xml','モンテディオ山形公式','モンテディオ山形公式',now());
 

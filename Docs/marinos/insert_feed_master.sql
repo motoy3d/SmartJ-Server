@@ -18,10 +18,10 @@ insert into marinosFeedMaster values(default,'http://maritarou22.blog.fc2.com/?x
 insert into marinosFeedMaster values(default,'http://rssblog.ameba.jp/kikomari/rss20.xml','ｋｉｋｏ@with F・Marinosブログ','ｋｉｋｏ@with F・Marinosブログ',now());
 insert into marinosFeedMaster values(default,'http://tricotrico.seesaa.net/index.rdf','とりこと横浜Ｆ・マリノス','とりこと横浜Ｆ・マリノス',now());
 insert into marinosFeedMaster values(default,'http://blog.livedoor.jp/who_nya/index.rdf','Walk on the Wild Side','Walk on the Wild Side',now());
+insert into marinosFeedMaster values(default,'http://rss.phew.homeip.net/v10/10015.xml','横浜F・マリノス公式','横浜F・マリノス公式',now());
 
 
 
-insert into marinosFeedMaster values(default,'http','xx','xx',now());
 insert into marinosFeedMaster values(default,'http','xx','xx',now());
 insert into marinosFeedMaster values(default,'http','xx','xx',now());
 

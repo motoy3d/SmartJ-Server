@@ -14,7 +14,7 @@ insert into visselFeedMaster values(default,'http://mikoko2008.blog60.fc2.com/?x
 insert into visselFeedMaster values(default,'http://kobe.kensyusokko.com/feed/','けしゅんそこっう ～堅守速攻？','けしゅんそこっう ～堅守速攻？ ',now());
 insert into visselFeedMaster values(default,'http://rssblog.ameba.jp/shunki-takahashi/rss20.xml','高橋峻希オフィシャルブログ','高橋峻希オフィシャルブログ',now());
 insert into visselFeedMaster values(default,'http://api.plaza.rakuten.ne.jp/koberiver/rss/','がんばれヴィッセル神戸～koberiverのブログ','がんばれヴィッセル神戸～koberiverのブログ',now());
-
+insert into visselFeedMaster values(default,'http://rss.phew.homeip.net/v10/10026.xml','ヴィッセル神戸公式','ヴィッセル神戸公式',now());
 
 insert into visselFeedMaster values(default,'http','xx','xx',now());
 
