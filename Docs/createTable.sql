@@ -148,3 +148,25 @@ create table players(
 create table ngSite(
   domain varchar(40)
 );
+
+/**
+ * 日程・結果（全チーム分）
+ */
+create table results(
+ season year
+ ,compe varchar(40)
+ ,game_date1 date
+ ,game_date2 varchar(10)
+ ,kickoff_time varchar(5)
+ ,stadium varchar(50)
+ ,home_team varchar(50)
+ ,away_team varchar(50)
+ ,tv varchar(100)
+ ,home_score int
+ ,away_score int
+ ,home_pk int
+ ,away_pk int
+ ,detail_url varchar(200)
+ ,up_date timestamp
+ ,primary key(compe, game_date1, home_team)
+);

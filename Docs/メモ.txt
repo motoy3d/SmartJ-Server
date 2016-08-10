@@ -1,3 +1,22 @@
+-- 特定チームの日程を抽出する
+SELECT season,compe,game_date1,game_date2,kickoff_time,stadium,
+case when home_team='名古屋' then away_team else home_team end as vs_team,
+case when home_team='名古屋' then concat(home_score,'-',away_score) else concat(away_score,'-',home_score) end as score,
+case when home_team='名古屋' then concat(home_pk,'-',away_pk) else concat(away_pk,'-',home_pk) end as pk,
+case when home_team='名古屋' then 
+	case when home_score is null then null when home_score > away_score then '◯' when home_score < away_score then '×' else '△' end
+else case when home_score is null then null when home_score > away_score then '×' when home_score < away_score then '◯' else '△' end 
+end as result,
+detail_url
+FROM results 
+where home_team='名古屋' or away_team='名古屋'
+order by game_date1;
+
+
+
+
+
+
 insert into feed_master values(
 default, 'http://sanukireds.ashita-sanuki.jp/index.rdf', 'J for 2014', 'J for 2014',now());
 

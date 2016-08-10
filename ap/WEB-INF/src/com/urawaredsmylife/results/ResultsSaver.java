@@ -30,10 +30,10 @@ public class ResultsSaver {
 		marinosSaver.extractResults();
 		//FC東京
 		FCTokyoResultsSaver fctokyoSaver = new FCTokyoResultsSaver();
-		fctokyoSaver.extractResults();
+		fctokyoSaver.updateResults();
 		//名古屋グランパス
-//		GrampusResultsSaver grampusSaver = new GrampusResultsSaver();
-//		grampusSaver.extractResults();
+		GrampusResultsSaver grampusSaver = new GrampusResultsSaver();
+		grampusSaver.updateResults();
 		//清水エスパルス
 		SpulseResultsSaver spulseSaver = new SpulseResultsSaver();
 		spulseSaver.extractResults();
