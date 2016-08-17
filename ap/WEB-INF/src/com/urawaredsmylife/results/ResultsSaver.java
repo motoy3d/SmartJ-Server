@@ -32,8 +32,8 @@ public class ResultsSaver {
 		FCTokyoResultsSaver fctokyoSaver = new FCTokyoResultsSaver();
 		fctokyoSaver.updateResults();
 		//名古屋グランパス
-		GrampusResultsSaver grampusSaver = new GrampusResultsSaver();
-		grampusSaver.updateResults();
+//		GrampusResultsSaver grampusSaver = new GrampusResultsSaver();
+//		grampusSaver.updateResults();
 		//清水エスパルス
 		SpulseResultsSaver spulseSaver = new SpulseResultsSaver();
 		spulseSaver.extractResults();
@@ -53,8 +53,8 @@ public class ResultsSaver {
 		VegaltaResultsSaver vegaltaSaver = new VegaltaResultsSaver();
 		vegaltaSaver.extractResults();
 		//セレッソ大阪
-		CerezoResultsSaver cerezoSaver = new CerezoResultsSaver();
-		cerezoSaver.extractResults();
+//		CerezoResultsSaver cerezoSaver = new CerezoResultsSaver();
+//		cerezoSaver.updateResults();
 		// 大宮アルディージャ
 		ArdijaResultsSaver ardijaSaver = new ArdijaResultsSaver();
 		ardijaSaver.extractResults();
@@ -67,19 +67,19 @@ public class ResultsSaver {
 		//柏レイソル
 		ReysolResultsSaver reysolSaver = new ReysolResultsSaver();
 		reysolSaver.extractResults();
-		//TODO 徳島ヴォルティス
+		// 徳島ヴォルティス
 //		VortisResultsSaver vortisSaver = new VortisResultsSaver();
 //		vortisSaver.extractResults();
 		//松本山雅FC
 //		YamagaResultsSaver yamagaSaver = new YamagaResultsSaver();
 //		yamagaSaver.extractResults();
 		//モンテディオ山形
-		MontedioResultsSaver montedioSaver = new MontedioResultsSaver();
-		montedioSaver.extractResults();
+//		MontedioResultsSaver montedioSaver = new MontedioResultsSaver();
+//		montedioSaver.extractResults();
 		//ジュビロ磐田
-		JubiloResultsSaver jubiloSaver = new JubiloResultsSaver();
-		jubiloSaver.extractResults();
-		//TODO アビスパ福岡
+//		JubiloResultsSaver jubiloSaver = new JubiloResultsSaver();
+//		jubiloSaver.extractResults();
+		// アビスパ福岡
 //		AvispaResultsSaver avispaSaver = new AvispaResultsSaver();
 //		avispaSaver.extractResults();
 

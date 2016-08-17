@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
@@ -20,6 +21,8 @@ public class GrampusResultsSaver {
 	private Logger logger = Logger.getLogger(GrampusResultsSaver.class.getName());
 	/** チームID */
 	private static final String teamId = "grampus";
+	/** チーム名 */
+	private static final String teamName = "名古屋グランパス";
 
 	/**
 	 * コンストラクタ
@@ -43,23 +46,24 @@ public class GrampusResultsSaver {
 			// resultsテーブルから名古屋の情報のみSELECTしてINSERT
 			String insertSql = "INSERT INTO " + teamId + "Results \n"
             		+ "SELECT season,compe,game_date1,game_date2,kickoff_time,stadium,\n"
-            		+ " case when home_team='名古屋グランパス' then true else false end as home_flg,\n"
-            		+ " case when home_team='名古屋グランパス' then away_team else home_team end as vs_team,\n"
+            		+ " case when home_team='${TEAM_NAME}' then true else false end as home_flg,\n"
+            		+ " case when home_team='${TEAM_NAME}' then away_team else home_team end as vs_team,\n"
             		+ " null tv,\n"
-					+ " case when home_team='名古屋グランパス' then \n"
+					+ " case when home_team='${TEAM_NAME}' then \n"
 					+ " case when home_score is null then null when home_score > away_score then '◯' when home_score < away_score then '×' else '△' end\n"
 					+ " 	else case when home_score is null then null when home_score > away_score then '×' when home_score < away_score then '◯' else '△' end\n" 
 					+ " end as result,\n"
 					+ " CONCAT(\n"
-					+ "   case when home_team='名古屋グランパス' then concat(home_score,'-',away_score) else concat(away_score,'-',home_score) end, \n"
-					+ "   IFNULL(case when home_team='名古屋グランパス' then concat(home_pk,'-',away_pk) else concat(away_pk,'-',home_pk) end, '')\n"
+					+ "   case when home_team='${TEAM_NAME}' then concat(home_score,'-',away_score) else concat(away_score,'-',home_score) end, \n"
+					+ "   IFNULL(case when home_team='${TEAM_NAME}' then concat(home_pk,'-',away_pk) else concat(away_pk,'-',home_pk) end, '')\n"
 					+ " ) as score,\n"
 					+ " detail_url,\n"
 					+ " now()\n"
 					+ " FROM results \n"
 					+ " where season=" + season
-					+ " AND home_team='名古屋グランパス' or away_team='名古屋グランパス'\n"
+					+ " AND home_team='${TEAM_NAME}' or away_team='${TEAM_NAME}'\n"
 					+ " order by game_date1";
+			insertSql = StringUtils.replace(insertSql, "${TEAM_NAME}", teamName);
 			logger.info(insertSql);
 			int count = qr.update(insertSql);
             logger.info("登録件数：" + count);
