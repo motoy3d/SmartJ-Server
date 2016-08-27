@@ -139,6 +139,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 					continue;
 				}
 				Feed feedResult = responseData.getFeed();
+				feedResult.setFeedId(targetFeed.getFeedId());
 				logger.info("★件数＝" + responseData.getFeed().getEntries().length);
 				if (StringUtils.isBlank(feedResult.getSiteName())) {
 					feedResult.setSiteName(targetFeed.getSiteName());
@@ -281,7 +282,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 							,img.url
 							,img.width
 							,img.height
-							,9999	//TODO feedId
+							,10000 + Integer.parseInt(feedResult.getFeedId())	//チームごとのフィードのIDと全チーム共通フィードのIDが重複しないよう10000を足す。
 							,siteName
 							,pubDate
 					};
