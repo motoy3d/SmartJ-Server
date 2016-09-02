@@ -69,6 +69,10 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 	public static void main(String[] args) {
 		try {
 			QueryRunner qr = DB.createQueryRunner();
+			// イメージNGキーワードリスト取得
+			String sqlNgImage = "SELECT url_keyword FROM ngImageSite";
+			List<Map<String, Object>> ngImageKeywordList = qr.query(sqlNgImage, new MapListHandler());
+
 			String sql = "SELECT * FROM teamMaster ORDER BY team_id";
 			List<Feed> entryList = collectFeedEntriesForAllTeams();
 			List<Map<String, Object>> teamList = qr.query(sql, new MapListHandler());
@@ -78,7 +82,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				String teamName2 = (String)team.get("team_name2");
 				String teamName3 = (String)team.get("team_name3");
 				FeedEntrySaver2 srv = new FeedEntrySaver2(teamId, teamName1, teamName2, teamName3);
-				srv.saveEntry(entryList, qr);
+				srv.saveEntry(entryList, ngImageKeywordList, qr);
 			}
 		} catch(Exception ex) {
 			ex.printStackTrace();
@@ -189,10 +193,12 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 	 * 取得したエントリリストをDBに保存する
 //	 * @param targetFeed マスターから取得した読み込み対象フィード
 	 * @param feedResults Google Feed APIから取得した読み込み結果
+	 * @param ngImageKeywordList イメージURL保存NGなサイトURLのキーワードリスト
 	 * @param qr
 	 * @throws SQLException
 	 */
-	private void saveEntry(/*Feed targetFeed,*/ List<Feed> feedResults, QueryRunner qr) throws SQLException {
+	private void saveEntry(/*Feed targetFeed,*/ List<Feed> feedResults
+			, List<Map<String, Object>> ngImageKeywordList, QueryRunner qr) throws SQLException {
 		//OK・NGワードリスト
 		String ngSql = "SELECT word FROM feedKeywordMaster WHERE team_id=? OR team_id='all' AND ok_flg=false";
 		List<Map<String, Object>> ngWordList = qr.query(ngSql, new MapListHandler(), teamId);
@@ -274,7 +280,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				Long cnt = (Long)cntMap.get("CNT");
 				if(cnt.intValue() == 0) {
 					String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-					ImageInfo img = getImageInContent(e.getLink(), e.getContent());
+					ImageInfo img = getImageInContent(e.getLink(), e.getContent(), ngImageKeywordList);
 					Object[] inseartParams = new Object[] {
 							e.getLink()
 							,entryTitle

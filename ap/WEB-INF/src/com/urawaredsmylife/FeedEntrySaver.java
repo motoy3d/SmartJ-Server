@@ -117,6 +117,11 @@ public class FeedEntrySaver {
 		try {
 			QueryRunner qr = DB.createQueryRunner();
 			String ipAddress = InetAddress.getLocalHost().getHostAddress();
+			
+			// イメージNGキーワードリスト取得
+			String sql = "SELECT url_keyword FROM ngImageSite";
+			List<Map<String, Object>> ngImageKeywordList = qr.query(sql, new MapListHandler());
+
 			// 対象フィードリストをマスターから取得
 			List<Feed> feedList = getFeedListFromDB(qr);
 			for(Feed targetFeed : feedList) {
@@ -147,7 +152,7 @@ public class FeedEntrySaver {
 				}
 				Feed feedResult = responseData.getFeed();
 				logger.info("★feed＝" + feedResult.getTitle() + "  " + feedResult.getFeedUrl());
-				saveEntry(targetFeed, feedResult, qr);
+				saveEntry(targetFeed, feedResult, ngImageKeywordList, qr);
 			}
 		} catch (Exception e) {
 			logger.error("フィード読み込みエラー", e);
@@ -175,10 +180,12 @@ public class FeedEntrySaver {
 	 * 取得したエントリリストをDBに保存する
 	 * @param targetFeed マスターから取得した読み込み対象フィード
 	 * @param feedResult Google Feed APIから取得した読み込み結果
+	 * @param ngImageKeywordList イメージURL保存NGなサイトURLのキーワードリスト
 	 * @param qr
 	 * @throws SQLException
 	 */
-	private void saveEntry(Feed targetFeed, Feed feedResult, QueryRunner qr) throws SQLException {
+	private void saveEntry(Feed targetFeed, Feed feedResult
+			, List<Map<String, Object>> ngImageKeywordList, QueryRunner qr) throws SQLException {
 		FeedEntry[] entries = feedResult.getEntries();
 		String entryTable = teamId + "Entry";
 		for(FeedEntry e : entries) {
@@ -228,7 +235,7 @@ public class FeedEntrySaver {
 			Long cnt = (Long)cntMap.get("CNT");
 			if(cnt.intValue() == 0) {
 				String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-				ImageInfo img = getImageInContent(e.getLink(), e.getContent());
+				ImageInfo img = getImageInContent(e.getLink(), e.getContent(), ngImageKeywordList);
 				Object[] inseartParams = new Object[] {
 						e.getLink()
 						,entryTitle
@@ -306,9 +313,11 @@ public class FeedEntrySaver {
 	 * コンテンツ内のイメージ情報を返す。
 	 * @param sourceUrl
 	 * @param content
+	 * @param ngImageKeywordList イメージURL保存NGなサイトURLのキーワードリスト
 	 * @return
 	 */
-	protected ImageInfo getImageInContent(String sourceUrl, String content) {
+	protected ImageInfo getImageInContent(String sourceUrl, String content
+			, List<Map<String, Object>> ngImageKeywordList) {
 		ImageInfo img = new ImageInfo();
         int imgTagIdx = content.indexOf("<img");
         if(imgTagIdx != -1) {
@@ -318,18 +327,16 @@ public class FeedEntrySaver {
 	            int urlEndIdx = content.indexOf('"', urlStartIdx);
 	            String imgUrl = content.substring(urlStartIdx, urlEndIdx);
 	            imgUrl = imgUrl.replaceAll("&amp;", "&");
-	            if(imgUrl.endsWith(".gif") ||
-	                    imgUrl.indexOf("http://hbb.afl.rakuten.co.jp") == 0 ||
-	                    imgUrl.indexOf("http://uragi.com/bfb320100.jpg") == 0 ||
-	                    imgUrl.indexOf("http://counter2.blog.livedoor.com") == 0 ||
-	                    imgUrl.indexOf("fbcdn") != -1 || //facebook(直接表示できない)
-	                    imgUrl.indexOf("http://measure.kuchikomi.ameba.jp") == 0 || //ameba
-	                    imgUrl.indexOf("rssad") != -1 || //rssad(直接表示できない)
-                		imgUrl.indexOf("f.image.geki.jp") != -1 || //ゲキサカ(直接表示できない)
-                		imgUrl.endsWith("money_yen.png") ||  //浦和フットボール通信
-                		imgUrl.endsWith("/btn_share_now.png") || //なう
-                		imgUrl.endsWith("/btn_share_mixi.png")  //mixi
-                ) {
+	            
+	            // イメージ保存NGチェック
+	            boolean isNgImage = false;
+	            for (Map<String, Object> ngWord : ngImageKeywordList) {
+	            	if (imgUrl.contains((String)ngWord.get("url_keyword"))) {
+	            		isNgImage = true;
+	            		break;
+	            	}
+	            }
+	            if(isNgImage) {
 	                imgUrl = "";
 	            } else {
 	        		try {

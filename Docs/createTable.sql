@@ -170,3 +170,11 @@ create table results(
  ,up_date timestamp
  ,primary key(compe, game_date1, home_team)
 );
+
+/**
+ * 記事内の画像URLのNGサイト(直接アクセス不可サイト)のキーワード(URLの一部)
+ */
+create table ngImageSite(
+  url_keyword varchar(40)
+);
+
