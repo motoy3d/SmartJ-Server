@@ -68,6 +68,7 @@ insert into redsFeedMaster values(default,'http://lineblog.me/kashiwagiyosuke/in
 insert into redsFeedMaster values(default,'http://lineblog.me/ugajintomoya/index.rdf','宇賀神友弥オフィシャルブログ','宇賀神友弥オフィシャルブログ',now());
 insert into redsFeedMaster values(default,'http://lineblog.me/mr_makino0511/index.rdf','槙野智章オフィシャルブログ','槙野智章オフィシャルブログ',now());
 insert into redsFeedMaster values(default,'http://rss.phew.homeip.net/v10/10008.xml','浦和レッズ公式','浦和レッズ公式',now());
+insert into redsFeedMaster values(default,'http://urawaislife.seesaa.net/index.rdf','浦和 is Life','浦和 is Life',now());
 
 
 insert into redsFeedMaster values(default,'http','xx','xx',now());

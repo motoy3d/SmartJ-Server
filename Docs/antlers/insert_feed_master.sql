@@ -15,7 +15,10 @@ insert into antlersFeedMaster values(default,'http://kashimakataribe.com/?xml','
 insert into antlersFeedMaster values(default,'http://rssblog.ameba.jp/anmochiya/rss20.xml','鹿島アントラーズと歩むブログ','鹿島アントラーズと歩むブログ',now());
 insert into antlersFeedMaster values(default,'http://blogs.yahoo.co.jp/ogayanagi99/rss.xml','鹿島を写真で紹介するblog','鹿島を写真で紹介するblog',now());
 insert into antlersFeedMaster values(default,'http://footballcom.blog34.fc2.com/?xml&category=1','茨城フットボール物語','茨城フットボール物語',now());
-
+insert into antlersFeedMaster values(default,'http://blog.livedoor.jp/mk2ks11/index.rdf','鹿島の空は燃えているか！？','鹿島の空は燃えているか！？',now());
+insert into antlersFeedMaster values(default,'http://blog.goo.ne.jp/shikako10/rss2.xml','鹿島なるままに','鹿島なるままに',now());
+insert into antlersFeedMaster values(default,'http://antlers.red/?feed=rss2','だって好きなんです鹿島アントラーズ！','だって好きなんです鹿島アントラーズ！',now());
+insert into antlersFeedMaster values(default,'http://blog.livedoor.jp/winry5555/index.rdf','鹿自由観察日記〜脱にわか宣言！','鹿自由観察日記〜脱にわか宣言！',now());
 
 
 insert into antlersFeedMaster values(default,'http','xx','xx',now());
