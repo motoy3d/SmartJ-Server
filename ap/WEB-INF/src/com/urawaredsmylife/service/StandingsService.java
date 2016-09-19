@@ -133,7 +133,8 @@ public class StandingsService {
 
 		String sql = "SELECT * FROM nabiscoStandings WHERE"
 				+ " season=" + season 
-				+ " AND group_name=(SELECT group_name FROM nabiscoStandings WHERE team_name=" + DB.quote(teamName) + ")"
+				+ " AND group_name=(SELECT group_name FROM nabiscoStandings"
+				+ " WHERE season=" + season + " AND team_name=" + DB.quote(teamName) + ")"
 				+ " ORDER BY seq";
 		return sql;
 	}
