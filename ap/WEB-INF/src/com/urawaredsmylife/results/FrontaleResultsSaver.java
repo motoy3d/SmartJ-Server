@@ -145,6 +145,10 @@ public class FrontaleResultsSaver {
 					if(StringUtils.isNotBlank(gameDate)) {
 						gameDate = gameDate.replaceAll("月", "/").replaceAll("日", "");
 					}
+					//TODO いずれ削除
+					if (gameDateView.startsWith("6月5日")) {
+						continue;
+					}
 					String time = null;
 					if (gameItems.get(3) instanceof Map) {
 						time = (String)((Map)gameItems.get(3)).get("content");
