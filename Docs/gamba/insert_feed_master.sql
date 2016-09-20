@@ -18,6 +18,11 @@ insert into gambaFeedMaster values(default,'http://gambamaguro.cocolog-nifty.com
 insert into gambaFeedMaster values(default,'http://tamaemongamba.blog.fc2.com/?xml','★★★　終わりなき蒼黒の旅　★★★','★★★　終わりなき蒼黒の旅　★★★',now());
 insert into gambaFeedMaster values(default,'http://rssblog.ameba.jp/usami-takashi/rss20.xml','宇佐美貴史オフィシャルブログ','宇佐美貴史オフィシャルブログ',now());
 insert into gambaFeedMaster values(default,'http://rss.phew.homeip.net/v10/10024.xml','ガンバ大阪公式','ガンバ大阪公式',now());
+insert into gambaFeedMaster values(default,'http://gambaka9244.blog.fc2.com/?xml','GAMBAKA blog ~あの焼く音 あの味~','GAMBAKA blog ~あの焼く音 あの味~',now());
+insert into gambaFeedMaster values(default,'http://level42j.blog.fc2.com/?xml','おじさんのチャリチャリつれづれ','おじさんのチャリチャリつれづれ',now());
+insert into gambaFeedMaster values(default,'http://blog.livedoor.jp/gamba_pinapon/index.rdf','お一人様サッカー観戦記〜フォルツァガンバ！','お一人様サッカー観戦記〜フォルツァガンバ！',now());
+insert into gambaFeedMaster values(default,'http://api.plaza.rakuten.ne.jp/suda6473/rss/','Resistance','Resistance',now());
+
 
 
 insert into gambaFeedMaster values(default,'http','xx','xx',now());

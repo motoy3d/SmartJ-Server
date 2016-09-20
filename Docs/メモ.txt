@@ -68,3 +68,52 @@ select count(*) from redsResults;
 select count(*) from bellmareResults;
 select count(*) from montedioResults;
 select count(*) from yamagaResults;
+
+-- チームごとに記事数確認
+select * from(
+select 'albirex' team,count(*) cnt from albirexEntry where published_date like '2016%'
+union all
+select 'antlers' team,count(*) cnt from antlersEntry where published_date like '2016%'
+union all
+select 'ardija' team,count(*) cnt from ardijaEntry where published_date like '2016%'
+union all
+select 'avispa' team,count(*) cnt from avispaEntry where published_date like '2016%'
+union all
+select 'bellmare' team,count(*) cnt from bellmareEntry where published_date like '2016%'
+union all
+select 'cerezo' team,count(*) cnt from cerezoEntry where published_date like '2016%'
+union all
+select 'fctokyo' team,count(*) cnt from fctokyoEntry where published_date like '2016%'
+union all
+select 'frontale' team,count(*) cnt from frontaleEntry where published_date like '2016%'
+union all
+select 'gamba' team,count(*) cnt from gambaEntry where published_date like '2016%'
+union all
+select 'grampus' team,count(*) cnt from grampusEntry where published_date like '2016%'
+union all
+select 'jubilo' team,count(*) cnt from jubiloEntry where published_date like '2016%'
+union all
+select 'marinos' team,count(*) cnt from marinosEntry where published_date like '2016%'
+union all
+select 'montedio' team,count(*) cnt from montedioEntry where published_date like '2016%'
+union all
+select 'reds' team,count(*) cnt from redsEntry where published_date like '2016%'
+union all
+select 'reysol' team,count(*) cnt from reysolEntry where published_date like '2016%'
+union all
+select 'sagan' team,count(*) cnt from saganEntry where published_date like '2016%'
+union all
+select 'sanfrecce' team,count(*) cnt from sanfrecceEntry where published_date like '2016%'
+union all
+select 'spulse' team,count(*) cnt from spulseEntry spulse where published_date like '2016%'
+union all
+select 'vegalta' team,count(*) cnt from vegaltaEntry where published_date like '2016%'
+union all
+select 'ventforet' team,count(*) cnt from ventforetEntry where published_date like '2016%'
+union all
+select 'vissel' team,count(*) cnt from visselEntry where published_date like '2016%'
+union all
+select 'vortis' team,count(*) cnt from vortisEntry where published_date like '2016%'
+union all
+select 'yamaga' team,count(*) cnt from yamagaEntry where published_date like '2016%'
+) a order by cnt desc
