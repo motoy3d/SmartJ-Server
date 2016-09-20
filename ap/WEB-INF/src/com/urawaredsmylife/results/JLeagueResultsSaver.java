@@ -243,6 +243,7 @@ public class JLeagueResultsSaver {
 					+ "   IFNULL(case when home_team='${TEAM_NAME}' then concat(home_pk,'-',away_pk) else concat(away_pk,'-',home_pk) end, '')\n"
 					+ " ) as score,\n"
 					+ " detail_url,\n"
+					+ " null,\n"	//ticket_url
 					+ " now()\n"
 					+ " FROM results \n"
 					+ " where season=" + season

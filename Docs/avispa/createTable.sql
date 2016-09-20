@@ -72,6 +72,7 @@ create table avispaResults(
  ,result char(1)
  ,score varchar(20)
  ,detail_url varchar(200)
+ ,ticket_url varchar(200)
  ,up_date timestamp
  ,primary key(season, compe)
 );
