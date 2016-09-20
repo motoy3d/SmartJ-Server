@@ -65,7 +65,7 @@ public class SanfrecceResultsSaver {
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
 			logger.info("gameList=" + gameList);
 			
-            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
             int compeIdx = 0;
@@ -140,7 +140,7 @@ public class SanfrecceResultsSaver {
 					detailUrl = "http://www.sanfrecce.co.jp/info/" + ((String)resultMap.get("href")).replace("../", "");
 				}
 				int c = 0;
-				Object[] oneRec = new Object[12];
+				Object[] oneRec = new Object[13];
 				oneRec[c++] = season;
 				oneRec[c++] = compe;
 				oneRec[c++] = gameDate;
@@ -153,6 +153,7 @@ public class SanfrecceResultsSaver {
 				oneRec[c++] = result;
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
+				oneRec[c++] = null;
 				insertDataList.add(oneRec);
 				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);

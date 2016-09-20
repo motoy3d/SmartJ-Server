@@ -65,7 +65,7 @@ public class RedsResultsSaver {
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 			//logger.info("json = " + json.toString());
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");	
-            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			for(int r=1; r<gameList.size(); r++) {
@@ -194,7 +194,7 @@ System.out.println("スタジアム🌟" + ((Map)gameItems.get(4)).get("content"
 					score = ((String)((Map)gameItems.get(5)).get("content")).substring(1);
 				}
 				int c = 0;
-				Object[] oneRec = new Object[12];
+				Object[] oneRec = new Object[13];
 				oneRec[c++] = season;
 				oneRec[c++] = compe;
 				oneRec[c++] = 0 < gameDate.length()? new SimpleDateFormat("yyyy/MM/dd").parse(gameDate) : null;
@@ -207,6 +207,7 @@ System.out.println("スタジアム🌟" + ((Map)gameItems.get(4)).get("content"
 				oneRec[c++] = result;
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
+				oneRec[c++] = null;
 				insertDataList.add(oneRec);
 				logger.info(compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);

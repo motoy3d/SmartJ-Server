@@ -66,7 +66,7 @@ public class AlbirexResultsSaver {
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
 			logger.info("gameList.size() = " + gameList.size());
 			
-            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
             String[] compeList = new String[]{"J1 1st", "J1 2nd", "ルヴァン", "サテライト", "プレシーズン", "天皇杯"};
@@ -129,7 +129,7 @@ public class AlbirexResultsSaver {
 					detailUrl = "http://www.albirex.co.jp" + (String)resultMap.get("href");
 				}
 				int c = 0;
-				Object[] oneRec = new Object[12];
+				Object[] oneRec = new Object[13];
 				oneRec[c++] = season;
 				oneRec[c++] = compe;
 				oneRec[c++] = gameDate;
@@ -143,6 +143,7 @@ public class AlbirexResultsSaver {
 				oneRec[c++] = result;
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
+				oneRec[c++] = null;
 				insertDataList.add(oneRec);
 //				logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 //						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);

@@ -166,7 +166,7 @@ System.out.println("■gameDateView = [" + gameDateView + "]");
 					detailUrl = (String)resultMap.get("href");
 				}
 				int c = 0;
-				Object[] oneRec = new Object[12];
+				Object[] oneRec = new Object[13];
 				oneRec[c++] = season;
 				oneRec[c++] = compe;
 				oneRec[c++] = gameDate;
@@ -179,6 +179,7 @@ System.out.println("■gameDateView = [" + gameDateView + "]");
 				oneRec[c++] = result;
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
+				oneRec[c++] = null;
 				insertDataList.add(oneRec);
 				logger.info("■" + compe + ", " + gameDate + "," + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);

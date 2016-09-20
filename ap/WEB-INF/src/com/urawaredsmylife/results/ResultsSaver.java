@@ -29,8 +29,8 @@ public class ResultsSaver {
 		MarinosResultsSaver marinosSaver = new MarinosResultsSaver();
 		marinosSaver.extractResults();
 		//FC東京
-		FCTokyoResultsSaver fctokyoSaver = new FCTokyoResultsSaver();
-		fctokyoSaver.updateResults();
+//		FCTokyoResultsSaver fctokyoSaver = new FCTokyoResultsSaver();
+//		fctokyoSaver.updateResults();
 		//名古屋グランパス
 //		GrampusResultsSaver grampusSaver = new GrampusResultsSaver();
 //		grampusSaver.updateResults();
@@ -44,8 +44,8 @@ public class ResultsSaver {
 		AntlersResultsSaver antlersSaver = new AntlersResultsSaver();
 		antlersSaver.extractResults();
 		//ヴィッセル神戸
-		VisselResultsSaver visselSaver = new VisselResultsSaver();
-		visselSaver.extractResults();
+//		VisselResultsSaver visselSaver = new VisselResultsSaver();
+//		visselSaver.extractResults();
 		//サンフレッチェ広島
 		SanfrecceResultsSaver sanfrecceSaver = new SanfrecceResultsSaver();
 		sanfrecceSaver.extractResults();

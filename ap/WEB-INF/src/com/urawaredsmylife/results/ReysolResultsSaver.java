@@ -71,7 +71,7 @@ public class ReysolResultsSaver {
 					.get("query")).get("results")).get("tbody");
 			logger.info("gameGroupList = " + gameGroupList.size());
 
-            String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
 			for(int compeIdx = 0; compeIdx<gameGroupList.size(); compeIdx++) {
 				if (compeIdx == 4) {
@@ -247,7 +247,7 @@ public class ReysolResultsSaver {
 					}
 
 					int c = 0;
-					Object[] oneRec = new Object[12];
+					Object[] oneRec = new Object[13];
 					oneRec[c++] = season;
 					oneRec[c++] = compe;
 					oneRec[c++] = gameDate;
@@ -260,6 +260,7 @@ public class ReysolResultsSaver {
 					oneRec[c++] = result;
 					oneRec[c++] = score;
 					oneRec[c++] = detailUrl;
+					oneRec[c++] = null;
 					insertDataList.add(oneRec);
 					logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", "
 							+ isHome + ", " + vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);

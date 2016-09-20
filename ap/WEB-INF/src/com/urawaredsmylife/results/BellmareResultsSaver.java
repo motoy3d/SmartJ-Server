@@ -63,7 +63,7 @@ public class BellmareResultsSaver {
 			Map<String, Object> json = (Map<String, Object>)JSON.decode(res.getText());
 			//logger.info("json = " + ((Map)((Map)((List)((Map)((Map)json.get("query")).get("results")).get("table")).get(0)).get("tbody")).get("tr"));
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json.get("query")).get("results")).get("tr");
-            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
 			for(int r=0; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -187,7 +187,7 @@ public class BellmareResultsSaver {
 				score = StringUtils.trim(StringUtils.replace(score, "\n", ""));
 				detailUrl = StringUtils.trim(StringUtils.replace(detailUrl, "\n", ""));
 				int c = 0;
-				Object[] oneRec = new Object[12];
+				Object[] oneRec = new Object[13];
 				oneRec[c++] = season;
 				oneRec[c++] = compe;
 				oneRec[c++] = gameDate;
@@ -200,6 +200,7 @@ public class BellmareResultsSaver {
 				oneRec[c++] = result;
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
+				oneRec[c++] = null;
 				insertDataList.add(oneRec);
 				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeFlg + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);

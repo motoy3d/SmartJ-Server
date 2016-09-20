@@ -63,7 +63,7 @@ public class MontedioResultsSaver {
 			//logger.info("json = " + ((Map)((Map)((List)((Map)((Map)json.get("query")).get("results")).get("table")).get(0)).get("tbody")).get("tr"));
 			List<Object> gameList = (List)((Map)((Map)((List)((Map)((Map)json.get("query")).get("results"))
 					.get("table")).get(0)).get("tbody")).get("tr");
-            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            String insertSql = "INSERT INTO " + teamId + "Results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			for(int r=0; r<gameList.size(); r++) {
@@ -157,7 +157,7 @@ public class MontedioResultsSaver {
 				score = StringUtils.trim(StringUtils.replace(score, "\n", ""));
 				detailUrl = StringUtils.trim(StringUtils.replace(detailUrl, "\n", ""));
 				int c = 0;
-				Object[] oneRec = new Object[12];
+				Object[] oneRec = new Object[13];
 				oneRec[c++] = season;
 				oneRec[c++] = compe;
 				oneRec[c++] = gameDate;
@@ -170,6 +170,7 @@ public class MontedioResultsSaver {
 				oneRec[c++] = result;
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
+				oneRec[c++] = null;
 				insertDataList.add(oneRec);
 				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + homeAway + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);

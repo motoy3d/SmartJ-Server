@@ -73,7 +73,7 @@ public class SaganResultsSaver {
 			List<Object> gameList = (List<Object>)((Map<String, Object>)((Map<String, Object>)json
 					.get("query")).get("results")).get("tr");
 			
-            String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
 			for(int r=0; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
@@ -203,7 +203,7 @@ System.out.println("compe=" + compe);
 				System.out.println("🔵stadium = " + stadium);
 				
 				int c = 0;
-				Object[] oneRec = new Object[12];
+				Object[] oneRec = new Object[13];
 				oneRec[c++] = season;
 				oneRec[c++] = compe;
 				oneRec[c++] = gameDate;
@@ -216,6 +216,7 @@ System.out.println("compe=" + compe);
 				oneRec[c++] = result;
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
+				oneRec[c++] = null;
 				insertDataList.add(oneRec);
 				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + isHome + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);

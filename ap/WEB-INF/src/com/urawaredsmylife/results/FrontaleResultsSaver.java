@@ -191,7 +191,7 @@ public class FrontaleResultsSaver {
 						detailUrl = "http://www.frontale.co.jp" + ((String)detailUrlMap.get("href")).substring(2);
 					}
 					int c = 0;
-					Object[] oneRec = new Object[12];
+					Object[] oneRec = new Object[13];
 					oneRec[c++] = season;
 					oneRec[c++] = compe;
 					oneRec[c++] = gameDate;
@@ -204,6 +204,7 @@ public class FrontaleResultsSaver {
 					oneRec[c++] = result;
 					oneRec[c++] = score;
 					oneRec[c++] = detailUrl;
+					oneRec[c++] = null;
 					insertDataList.add(oneRec);
 					logger.info(compe + ", " + gameDateView + ", " + time + ", " + stadium + ", " + isHome + ", " 
 							+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
@@ -214,7 +215,7 @@ public class FrontaleResultsSaver {
 				logger.warn("日程データが取得出来ませんでした ");
 			} else {
 				qr.update("DELETE FROM " + TABLE + " WHERE season=" + season);
-	            String insertSql = "INSERT INTO " + TABLE + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+	            String insertSql = "INSERT INTO " + TABLE + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
 	            int[] resultCount = qr.batch(insertSql, insertDataList.toArray(new Object[insertDataList.size()][]));
 	            logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 			}

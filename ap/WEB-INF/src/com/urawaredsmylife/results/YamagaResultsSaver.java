@@ -183,7 +183,7 @@ public class YamagaResultsSaver {
 				score = StringUtils.trim(StringUtils.replace(score, "\n", ""));
 				detailUrl = StringUtils.trim(StringUtils.replace(detailUrl, "\n", ""));
 				int c = 0;
-				Object[] oneRec = new Object[12];
+				Object[] oneRec = new Object[13];
 				oneRec[c++] = season;
 				oneRec[c++] = compe;
 				oneRec[c++] = gameDate;
@@ -196,6 +196,7 @@ public class YamagaResultsSaver {
 				oneRec[c++] = result;
 				oneRec[c++] = score;
 				oneRec[c++] = detailUrl;
+				oneRec[c++] = null;
 				insertDataList.add(oneRec);
 				logger.info("■" + compe + ", " + gameDate + ", " + gameDateView + ", " + time + ", " + stadium + ", " + "アルウィン".equals(stadium) + ", " 
 						+ vsTeam + ", " + tv + ", " + result + ", " + score + ", " + detailUrl);
