@@ -123,7 +123,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				String feedUrl = targetFeed.getFeedUrl();
 				feedUrl = URLEncoder.encode(feedUrl, "UTF-8");
 				URL url = new URL(String.format(URL_BASE, feedUrl, String.valueOf(DEFAULT_FEED_COUNT), ipAddress));
-				logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
+				//logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
 				URLConnection connection = url.openConnection();
 				connection.addRequestProperty("Referer", "http://motoy3d.blogspot.jp");
 				

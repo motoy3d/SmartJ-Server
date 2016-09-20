@@ -129,7 +129,7 @@ public class FeedEntrySaver {
 				int feedCount = DEFAULT_FEED_COUNT;
 				feedUrl = URLEncoder.encode(feedUrl, "UTF-8");
 				URL url = new URL(String.format(URL_BASE, feedUrl, String.valueOf(feedCount), ipAddress));
-				logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
+				//logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
 				URLConnection connection = url.openConnection();
 				connection.addRequestProperty("Referer", "http://motoy3d.blogspot.jp");
 
@@ -143,7 +143,7 @@ public class FeedEntrySaver {
 
 				GoogleFeedAPIResponse jsonResult = JSON.decode(
 						connection.getInputStream(), GoogleFeedAPIResponse.class);
-				logger.info("★結果＝" + ToStringBuilder.reflectionToString(jsonResult));
+				//logger.info("★結果＝" + ToStringBuilder.reflectionToString(jsonResult));
 
 				GoogleFeedAPIResponseData responseData = jsonResult.getResponseData();
 				if(responseData == null) {
@@ -151,7 +151,7 @@ public class FeedEntrySaver {
 					continue;
 				}
 				Feed feedResult = responseData.getFeed();
-				logger.info("★feed＝" + feedResult.getTitle() + "  " + feedResult.getFeedUrl());
+				//logger.info("★feed＝" + feedResult.getTitle() + "  " + feedResult.getFeedUrl());
 				saveEntry(targetFeed, feedResult, ngImageKeywordList, qr);
 			}
 		} catch (Exception e) {
@@ -171,7 +171,7 @@ public class FeedEntrySaver {
 	private List<Feed> getFeedListFromDB(QueryRunner qr) throws SQLException {
 		String table = teamId + "FeedMaster";
 		String sql = "select * from " + table;
-		logger.info(sql);
+		//logger.info(sql);
 		BasicRowProcessor rowProcessor = new BasicRowProcessor(new RemoveUnderscoreBeanProcessor());
 		return qr.query(sql, new BeanListHandler<Feed>(Feed.class, rowProcessor));
 	}
@@ -208,7 +208,7 @@ public class FeedEntrySaver {
 			if (pubDate == null || e.getLink().startsWith("http://www.soccerdigestweb.com/")) {
 				pubDate = new Date();
 			}
-			logger.info("■" + new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle + "  -  " + siteName);
+			//logger.info("■" + new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle + "  -  " + siteName);
 			if(ArrayUtils.contains(NG_SITES, siteName)) {
 				logger.info("NGサイト:" + siteName);
 				continue;
@@ -247,7 +247,7 @@ public class FeedEntrySaver {
 						,siteName
 						,pubDate
 				};
-				logger.info(insertSql);
+				//logger.info(insertSql);
 				try {
 					int count = qr.update(insertSql, inseartParams);
 					logger.info("結果：" + count);
