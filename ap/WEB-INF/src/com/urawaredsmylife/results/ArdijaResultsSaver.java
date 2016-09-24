@@ -77,9 +77,10 @@ public class ArdijaResultsSaver {
 				if (((Map)gameItems.get(0)).get("img") != null) {
 					compeName = (String)((Map)((Map)gameItems.get(0)).get("img")).get("src");
 				}
+				System.out.println("🌟" + compeName);
 				if (compeName.endsWith("logo_j.png")) {
 					compeName = "J";
-				} else if (compeName.endsWith("logo_yn.png")) {
+				} else if (compeName.endsWith("logo_yn.png") || compeName.contains("ylc")) {
 					compeName = "ルヴァン";
 				} else if (compeName.endsWith("logo_empcup.png")) {
 					compeName = "天皇杯";

@@ -56,8 +56,8 @@ public class ResultsSaver {
 //		CerezoResultsSaver cerezoSaver = new CerezoResultsSaver();
 //		cerezoSaver.updateResults();
 		// 大宮アルディージャ
-		ArdijaResultsSaver ardijaSaver = new ArdijaResultsSaver();
-		ardijaSaver.extractResults();
+//		ArdijaResultsSaver ardijaSaver = new ArdijaResultsSaver();
+//		ardijaSaver.extractResults();
 		//ヴァンフォーレ甲府
 		VentforetResultsSaver ventforetSaver = new VentforetResultsSaver();
 		ventforetSaver.extractResults();

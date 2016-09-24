@@ -45,6 +45,7 @@ public class JLeagueResultsSaver {
 	private static final Team[] TEAMS = new Team[] {
 		new Team("grampus", "名古屋グランパス")
 		,new Team("fctokyo", "FC東京")
+		,new Team("ardija", "大宮アルディージャ")
 		,new Team("vissel", "ヴィッセル神戸")
 		,new Team("jubilo", "ジュビロ磐田")
 		,new Team("bellmare", "湘南ベルマーレ")

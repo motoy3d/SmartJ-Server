@@ -8,6 +8,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 import com.urawaredsmylife.dto.NoDataResult;
@@ -37,6 +38,8 @@ public abstract class TweetsService {
 	 * @return
 	 */
 	public Object find(Map<String, Object> params) {
+		StopWatch sw = new StopWatch();
+		sw.start();
 		try {
 			String teamId = StringUtils.defaultIfEmpty((String)params.get("teamId"), "reds");
 			QueryRunner qr = DB.createQueryRunner();
@@ -79,6 +82,9 @@ public abstract class TweetsService {
 		} catch (SQLException e) {
 			logger.error("ツイート読み込みエラー", e);
 			return new Object[] {new NoDataResult()};
+		} finally {
+			sw.stop();
+			logger.info("ツイート取得時間= " + (sw.getTime()/1000.0) + "秒");
 		}
 	}
 }
