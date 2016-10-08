@@ -35,15 +35,14 @@ select
 
 
 insert into message values(
-'reds'
+'frontale'
 ,1
-,'日程が表示できない事があります。
-申し訳ありません。修正までお待ちください。'
-,'iPhone'
-,'2014-11-04'
-,'2014-11-15'
-,'5.0'
-,'8.1'
+,'アプリの最新版があります。アップデートお願いします！'
+,'iphone'
+,'2016-10-04'
+,'2016-12-31'
+,'1.0.0'
+,'1.0.2'
 ,now()
 );
 
@@ -117,3 +116,29 @@ select 'vortis' team,count(*) cnt from vortisEntry where published_date like '20
 union all
 select 'yamaga' team,count(*) cnt from yamagaEntry where published_date like '2016%'
 ) a order by cnt desc
+
+
+-- 古いツイート削除（パフォーマンス対策）
+delete from albirexSearchTweets where created_at < '2016-08-01';
+delete from antlersSearchTweets where created_at < '2016-08-01';
+delete from ardijaSearchTweets where created_at < '2016-08-01';
+delete from avispaSearchTweets where created_at < '2016-08-01';
+delete from bellmareSearchTweets where created_at < '2016-08-01';
+delete from cerezoSearchTweets where created_at < '2016-08-01';
+delete from fctokyoSearchTweets where created_at < '2016-08-01';
+delete from frontaleSearchTweets where created_at < '2016-08-01';
+delete from gambaSearchTweets where created_at < '2016-08-01';
+delete from grampusSearchTweets where created_at < '2016-08-01';
+delete from jubiloSearchTweets where created_at < '2016-08-01';
+delete from marinosSearchTweets where created_at < '2016-08-01';
+delete from montedioSearchTweets where created_at < '2016-08-01';
+delete from redsSearchTweets where created_at < '2016-08-01';
+delete from reysolSearchTweets where created_at < '2016-08-01';
+delete from saganSearchTweets where created_at < '2016-08-01';
+delete from sanfrecceSearchTweets where created_at < '2016-08-01';
+delete from spulseSearchTweets where created_at < '2016-08-01';
+delete from vegaltaSearchTweets where created_at < '2016-08-01';
+delete from ventforetSearchTweets where created_at < '2016-08-01';
+delete from visselSearchTweets where created_at < '2016-08-01';
+delete from vortisSearchTweets where created_at < '2016-08-01';
+delete from yamagaSearchTweets where created_at < '2016-08-01';

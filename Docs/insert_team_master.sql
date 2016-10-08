@@ -24,3 +24,22 @@ insert into teamMaster values('bellmare', '湘南ベルマーレ', 'J1', false, 
 # team_name2カラムが追加になっている
 insert into teamMaster values('jubilo', 'ジュビロ磐田', 'ジュビロ', 'J1', false, '#jubilo -twiccer', 700772926669205504, 2, now());
 insert into teamMaster values('avispa', 'アビスパ福岡', 'アビスパ', 'J1', false, '#avispa -twiccer', null, 2, now());
+
+#チケットサイト用の2文字略称を追加
+insert into teamMaster values('ehimefc', '愛媛FC', '愛媛FC', '愛媛', 'eh', 'J2', false, null, null, 2, now());
+insert into teamMaster values('fagiano', 'ファジアーノ岡山', 'ファジアーノ', '岡山', 'fo', 'J2', false, null, null, 2, now());
+insert into teamMaster values('fcgifu', 'FC岐阜', 'FC岐阜', '岐阜', 'fg', 'J2', false, null, null, 2, now());
+insert into teamMaster values('giravanz', 'ギラヴァンツ北九州', 'ギラヴァンツ', '北九州', 'gv', 'J2', false, null, null, 2, now());
+insert into teamMaster values('hollyhock', '水戸ホーリーホック', 'ホーリーホック', '水戸', 'mh', 'J2', false, null, null, 2, now());
+insert into teamMaster values('jef', 'ジェフユナイテッド市原・千葉', 'ジェフユナイテッド千葉', 'ジェフ千葉', 'je', 'J2', false, null, null, 2, now());
+insert into teamMaster values('kamatamare', 'カマタマーレ讃岐', 'カマタマーレ', '讃岐', 'km', 'J2', false, null, null, 2, now());
+insert into teamMaster values('renofa', 'レノファ山口FC', 'レノファ山口', 'レノファ', 'ry', 'J2', false, null, null, 2, now());
+insert into teamMaster values('roasso', 'ロアッソ熊本', 'ロアッソ', '熊本', 'rk', 'J2', false, null, null, 2, now());
+insert into teamMaster values('sanga', '京都サンガF.C.', '京都サンガ', '京都', 'ks', 'J2', false, null, null, 2, now());
+insert into teamMaster values('consadole', '北海道コンサドーレ札幌', 'コンサドーレ', '札幌', 'cs','J2', false, null, null, 2, now());
+insert into teamMaster values('thespa', 'ザスパクサツ群馬', 'ザスパクサツ', 'ザスパ', 'pa', 'J2', false, null, null, 2, now());
+insert into teamMaster values('v_varen', 'Ｖ・ファーレン長崎', 'Ｖ・ファーレン', '長崎', 'vv', 'J2', false, null, null, 2, now());
+insert into teamMaster values('verdy', 'ヴェルディ川崎', 'ヴェルディ', '東京V', 'vn', 'J2', false, null, null, 2, now());
+insert into teamMaster values('yokohamafc', '横浜FC', '横浜FC', '横浜ＦＣ', 'yk', 'J2', false, null, null, 2, now());
+insert into teamMaster values('zelvia', 'ＦＣ町田ゼルビア', 'ゼルビア', '町田', 'mz', 'J2', false, null, null, 2, now());
+insert into teamMaster values('zweigen', 'ツエーゲン金沢', 'ツエーゲン', '金沢', 'zk', 'J2', false, null, null, 2, now());

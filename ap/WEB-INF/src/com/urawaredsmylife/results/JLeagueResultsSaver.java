@@ -41,7 +41,6 @@ public class JLeagueResultsSaver {
 	};
 	private static final String DETAIL_URL_BASE = "http://www.jleague.jp";
 	private static Logger logger = Logger.getLogger(JLeagueResultsSaver.class.getName());
-	
 	private static final Team[] TEAMS = new Team[] {
 		new Team("grampus", "名古屋グランパス")
 		,new Team("fctokyo", "FC東京")
@@ -54,6 +53,37 @@ public class JLeagueResultsSaver {
 		,new Team("montedio", "モンテディオ山形")
 		,new Team("vortis", "徳島ヴォルティス")
 		,new Team("yamaga", "松本山雅FC")
+		,new Team("consadole", "北海道コンサドーレ札幌")
+		,new Team("sanga", "京都サンガF.C")
+		,new Team("jef", "ジェフユナイテッド千葉")
+		,new Team("verdy", "東京ヴェルディ")
+		,new Team("yokohamafc", "横浜FC")
+		,new Team("giravanz", "ギラヴァンツ北九州")
+		,new Team("fagiano", "ファジアーノ岡山")
+		,new Team("hollyhock", "水戸ホーリーホック")
+		,new Team("thespa", "ザスパクサツ群馬")
+		,new Team("roasso", "ロアッソ熊本")
+		,new Team("ehimefc", "愛媛FC")
+		,new Team("fcgifu", "FC岐阜")
+		,new Team("zelvia", "FC町田ゼルビア")
+		,new Team("zweigen", "ツエーゲン金沢")
+		,new Team("v_varen", " V・ファーレン長崎")
+		,new Team("kamatamare", "カマタマーレ讃岐")
+		,new Team("renofa", "レノファ山口FC")
+
+//		,new Team("torinita", "大分トリニータ")
+//		,new Team("tochigi", "栃木SC")
+//		,new Team("kataller", "カターレ富山")
+//		,new Team("gainare", "ガイナーレ鳥取")
+//		,new Team("parceiro", "AC長野パルセイロ")
+//		,new Team("grulla", "グルージャ盛岡")
+//		,new Team("sagamihara", "SC相模原")
+//		,new Team("ryukyu", "FC琉球")
+//		,new Team("fukushima", "福島ユナイテッドFC")
+//		,new Team("blaublitz", "ブラウブリッツ秋田")
+//		,new Team("U22", "Jリーグ・アンダー22選抜")
+//		,new Team("myfc", "藤枝MYFC")
+//		,new Team("yscc", "Y.S.C.C.横浜")
 	};
 
 	/**
@@ -69,6 +99,7 @@ public class JLeagueResultsSaver {
 		} catch(Exception ex) {
 			logger.error("日程・結果更新エラー", ex);
 			Mail.send(ex);
+			System.exit(1);
 		} finally {
 			sw.stop();
 			logger.info((sw.getTime()/1000.0) + "秒");
@@ -107,103 +138,108 @@ public class JLeagueResultsSaver {
 				String gameDate2 = gameDate.substring(5).replaceFirst("月", "/").replaceFirst("日", "");
 				// 大会名、節
 				Elements h5 = matchSection.select("h5");
-				String compe = h5.get(0).text();
-				compe = compe.replace("明治安田生命Ｊ１リーグ", "J1")
-						.replace("明治安田生命Ｊ２リーグ", "J2")
-						.replace("　１ｓｔステージ　", " 1st ")
-						.replace("　２ｎｄステージ　", " 2nd ")
-						.replace("ＡＦＣチャンピオンズリーグ", "ACL")
-						.replace("ＪリーグYBCルヴァンカップ", "ルヴァン")
-						.replace("ヤマザキナビスコカップ", "ナビスコ")
-						.replace("グループステージ", "GS ")
-						.replace("ラウンド１６　", "ラウンド16")
-						.replace("ＭＤ", "MD")
-						.replace("　", "")
-						;
-				// 試合
-				Elements games = matchSection.select("table.matchTable > tbody > tr");
-				
-				Iterator<Element> gamesItr = games.iterator();
-				while (gamesItr.hasNext()) {
-					Element game = gamesItr.next();
-//						logger.info("-------------------------------");
-//						logger.info(game);
-					Elements timeAndStadiumTd = game.select("td.stadium");
-					if (timeAndStadiumTd.isEmpty()) {
-						logger.info(">>>>>>> continue ルヴァンカップ等のグループ名のtr");
-						continue;	//ルヴァンカップ等のグループ名のtr
-					}
-					// 時間
-					String timeAndStadium = timeAndStadiumTd.text();
-					String time = timeAndStadium.split(" ")[0];
-					// スタジアム
-//						logger.info("timeAndStadium = " + timeAndStadium);
-					String stadium = timeAndStadium.split(" ")[1];
-					// チーム、スコア
-					Elements gameTableTd = game.select("table.gameTable > tbody > tr > td");
-					if (gameTableTd.isEmpty()) {
-						Elements gameTableTbody = game.select("table.gameTable > tbody");
-						logger.info(">>>>>>> continue gameTableTd.isEmpty()");
-						logger.info(gameTableTbody.html());
-						continue;
-					}
-					// ホームチーム
-					String homeTeam = gameTableTd.get(0).text();
-					if ("未定".equals(homeTeam)) {
-						logger.info(">>>>>>> continue チーム未定");
-						continue;
-					}
-					homeTeam = TeamUtils.getOfficialTeamName(homeTeam);
-					// ホームスコア
-					String homeScore = StringUtils.trimToNull(gameTableTd.get(1).text());
-					// アウェイスコア
-					String awayScore = StringUtils.trimToNull(gameTableTd.get(3).text());
-					// アウェイチーム
-					String awayTeam = gameTableTd.get(4).text();
-					awayTeam = TeamUtils.getOfficialTeamName(awayTeam);
-					// PK
-					Elements pkLi = game.select("li.pk");
-					String pk = pkLi.text();
-					if (StringUtils.isNotBlank(pk)) {
-						pk = " " + pk;
-					}
-					String homePk = null;
-					String awayPk = null;
-					if (0 < pk.trim().length()) {
-						String pk2 = pk.replace("(", "").replace(")", "");
-						int idx = pk2.indexOf(" PK");
-						homePk = pk2.substring(0, idx);
-						awayPk = pk2.substring(idx+4);
-					}
-					
-					// 詳細URL
-					Elements link = game.select("td.match > a");
-					String detailUrl = link.get(0).attr("href");
-					if (StringUtils.isNotBlank(detailUrl)) {
-						detailUrl = DETAIL_URL_BASE + detailUrl;
-					}
-					
-					int c = 0;
-					Object[] oneRec = new Object[14];
-					oneRec[c++] = season;
-					oneRec[c++] = compe;
-					oneRec[c++] = gameDate1;
-					oneRec[c++] = gameDate2;
-					oneRec[c++] = time;
-					oneRec[c++] = stadium;
-					oneRec[c++] = homeTeam;
-					oneRec[c++] = awayTeam;
-					oneRec[c++] = "";	//TV
-					oneRec[c++] = homeScore;
-					oneRec[c++] = awayScore;					
-					oneRec[c++] = homePk;
-					oneRec[c++] = awayPk;
-					oneRec[c++] = detailUrl;
-					insertDataList.add(oneRec);
+				for (int i=0; i<h5.size(); i++) {	//1日に複数の節の試合がある場合がある
+					String compe = h5.get(i).text();
+					compe = compe.replace("明治安田生命Ｊ１リーグ", "J1")
+							.replace("明治安田生命Ｊ２リーグ", "J2")
+							.replace("　１ｓｔステージ　", " 1st ")
+							.replace("　２ｎｄステージ　", " 2nd ")
+							.replace("ＡＦＣチャンピオンズリーグ", "ACL")
+							.replace("ＪリーグYBCルヴァンカップ", "ルヴァン")
+							.replace("ヤマザキナビスコカップ", "ナビスコ")
+							.replace("グループステージ", "GS ")
+							.replace("ラウンド１６　", "ラウンド16")
+							.replace("ＭＤ", "MD")
+							.replace("　", "")
+							;
+					System.out.println("🌟 " + gameDate + "  " + compe);
+					// 試合
+					Elements matchTables = matchSection.select("table.matchTable");
+					Element matchTable = matchTables.get(i);
+					Elements games = matchTable.select("tbody > tr");
+					Iterator<Element> gamesItr = games.iterator();
+					while (gamesItr.hasNext()) {
+						Element game = gamesItr.next();
+//						logger.info("--------------------------------------------------------------");
+//						logger.info("game🔴" + game);
+//						logger.info("--------------------------------------------------------------");
+						Elements timeAndStadiumTd = game.select("td.stadium");
+						if (timeAndStadiumTd.isEmpty()) {
+							logger.info(">>>>>>> continue ルヴァンカップ等のグループ名のtr");
+							continue;	//ルヴァンカップ等のグループ名のtr
+						}
+						// 時間
+						String timeAndStadium = timeAndStadiumTd.text();
+						String time = timeAndStadium.split(" ")[0];
+						// スタジアム
+//							logger.info("timeAndStadium = " + timeAndStadium);
+						String stadium = timeAndStadium.split(" ")[1];
+						// チーム、スコア
+						Elements gameTableTd = game.select("table.gameTable > tbody > tr > td");
+						if (gameTableTd.isEmpty()) {
+							Elements gameTableTbody = game.select("table.gameTable > tbody");
+							logger.info(">>>>>>> continue gameTableTd.isEmpty()");
+							logger.info(gameTableTbody.html());
+							continue;
+						}
+						// ホームチーム
+						String homeTeam = gameTableTd.get(0).text();
+						if ("未定".equals(homeTeam)) {
+							logger.info(">>>>>>> continue チーム未定");
+							continue;
+						}
+						homeTeam = TeamUtils.getOfficialTeamName(homeTeam);
+						// ホームスコア
+						String homeScore = StringUtils.trimToNull(gameTableTd.get(1).text());
+						// アウェイスコア
+						String awayScore = StringUtils.trimToNull(gameTableTd.get(3).text());
+						// アウェイチーム
+						String awayTeam = gameTableTd.get(4).text();
+						awayTeam = TeamUtils.getOfficialTeamName(awayTeam);
+						// PK
+						Elements pkLi = game.select("li.pk");
+						String pk = pkLi.text();
+						if (StringUtils.isNotBlank(pk)) {
+							pk = " " + pk;
+						}
+						String homePk = null;
+						String awayPk = null;
+						if (0 < pk.trim().length()) {
+							String pk2 = pk.replace("(", "").replace(")", "");
+							int idx = pk2.indexOf(" PK");
+							homePk = pk2.substring(0, idx);
+							awayPk = pk2.substring(idx+4);
+						}
+						
+						// 詳細URL
+						Elements link = game.select("td.match > a");
+						String detailUrl = link.get(0).attr("href");
+						if (StringUtils.isNotBlank(detailUrl)) {
+							detailUrl = DETAIL_URL_BASE + detailUrl;
+						}
+						
+						int c = 0;
+						Object[] oneRec = new Object[14];
+						oneRec[c++] = season;
+						oneRec[c++] = compe;
+						oneRec[c++] = gameDate1;
+						oneRec[c++] = gameDate2;
+						oneRec[c++] = time;
+						oneRec[c++] = stadium;
+						oneRec[c++] = homeTeam;
+						oneRec[c++] = awayTeam;
+						oneRec[c++] = "";	//TV
+						oneRec[c++] = homeScore;
+						oneRec[c++] = awayScore;					
+						oneRec[c++] = homePk;
+						oneRec[c++] = awayPk;
+						oneRec[c++] = detailUrl;
+						insertDataList.add(oneRec);
 
-					logger.info(gameDate1 + " | " + gameDate2 + " | " + time + " | " + stadium + " | " 
-							+ compe + " | " + homeTeam + " " + StringUtils.trimToEmpty(homeScore) + " - " + StringUtils.trimToEmpty(awayScore) + pk + " "
-							+ awayTeam + " | " + detailUrl);
+						logger.info("🌟 🌟 🌟 " + gameDate1 + " | " + gameDate2 + " | " + time + " | " + stadium + " | " 
+								+ compe + " | " + homeTeam + " " + StringUtils.trimToEmpty(homeScore) + " - " + StringUtils.trimToEmpty(awayScore) + pk + " "
+								+ awayTeam + " | " + detailUrl);
+					}
 				}
 			}
 		}
@@ -230,7 +266,7 @@ public class JLeagueResultsSaver {
 			// 一旦削除
 			qr.update("DELETE FROM " + team.id + "Results WHERE season=" + season);
 	
-			// resultsテーブルからC大阪の情報のみSELECTしてINSERT
+			// resultsテーブルから対象クラブの情報のみSELECTしてINSERT
 			String insertSql = "INSERT INTO " + team.id + "Results \n"
 	        		+ "SELECT season,compe,game_date1,game_date2,kickoff_time,stadium,\n"
 	        		+ " case when home_team='${TEAM_NAME}' then true else false end as home_flg,\n"

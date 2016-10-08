@@ -1,7 +1,7 @@
 package com.urawaredsmylife.util;
 
 /**
- * 定数定義
+ * 定数定義　//TODO 開幕日のDB化
  * @author motoy3d
  */
 public class Const {

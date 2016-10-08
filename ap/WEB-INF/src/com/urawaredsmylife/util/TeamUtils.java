@@ -46,8 +46,8 @@ public class TeamUtils {
 		TEAMS.put("thespa", "ザスパクサツ群馬");
 		TEAMS.put("roasso", "ロアッソ熊本");
 		TEAMS.put("avispa", "アビスパ福岡");
-		TEAMS.put("ehime", "愛媛FC");
-		TEAMS.put("gifu", "FC岐阜");
+		TEAMS.put("ehimefc", "愛媛FC");
+		TEAMS.put("fcgifu", "FC岐阜");
 		TEAMS.put("kataller", "カターレ富山");
 		TEAMS.put("gainare", "ガイナーレ鳥取");
 		TEAMS.put("zelvia", "FC町田ゼルビア");
@@ -61,9 +61,9 @@ public class TeamUtils {
 		TEAMS.put("U22", "Jリーグ・アンダー22選抜");
 		TEAMS.put("myfc", "藤枝MYFC");
 		TEAMS.put("yscc", "Y.S.C.C.横浜");
-		TEAMS.put("v-varen", " V・ファーレン長崎");
+		TEAMS.put("v_varen", " V・ファーレン長崎");
 		TEAMS.put("kamatamare", "カマタマーレ讃岐");
-		TEAMS.put("yamaguchi", "レノファ山口FC");
+		TEAMS.put("renofa", "レノファ山口FC");
 	}
 	
 	public static final Map<String, String> TEAM_NAMES = new HashMap<String, String>();

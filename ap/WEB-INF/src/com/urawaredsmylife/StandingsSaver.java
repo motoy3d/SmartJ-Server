@@ -21,6 +21,7 @@ import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.TeamUtils;
 
 /**
+ * TODO ACL取得先を報知からJリーグ公式サイトに変更
  * YahooスポーツからJリーグ、ルヴァンカップの順位表を取得してDBに保存する。
  * 本処理はバッチで定期的に実行する。
  * @author motoy3d
@@ -100,16 +101,14 @@ public class StandingsSaver {
 			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int aclResult = 0;
 			if (aclOpenDate.getTime() < new Date().getTime()) {
-				aclResult = insertACL();
+				//TODO 取得先を報知からJリーグ公式サイトに変更
+//				aclResult = insertACL();
 			}
 			
-			if (j1Result == 0 && j2Result == 0 && nabiscoResult ==0 && aclResult == 0) {
-				return 0;
-			} else {
-				return -1;
-			}
-		} catch(ParseException ex) {
-			return -1;
+			return j1Result + j2Result + nabiscoResult + aclResult;
+		} catch(Exception ex) {
+			logger.error("順位表取得エラー", ex);
+			return 1;
 		}
 	}
 
@@ -148,15 +147,20 @@ public class StandingsSaver {
 				String gotGoal = tables[0].getCellAsText(r, 7);
 				String lostGoal = tables[0].getCellAsText(r, 8);
 				String diff = tables[0].getCellAsText(r, 9);
-				System.out.println(rank + " : " + team);
+				String teamId = TeamUtils.getTeamId(team);
+				System.out.println(rank + " : [" + team + "] " + teamId);
+				if ("V・ファーレン長崎".equals(team)) {
+					System.out.println("🌟 V・ファーレン長崎");
+					teamId = "v_varen";
+				}
 				int c = 0;
 				insertDataList[r-1] = new Object[15];
 				insertDataList[r-1][c++] = season;
 				insertDataList[r-1][c++] = league;
-				insertDataList[r-1][c++] = "J1".equals(league)? stage : "-";	//TODO ステージ(1st, 2nd, total)
+				insertDataList[r-1][c++] = "J1".equals(league)? stage : "-";
 				insertDataList[r-1][c++] = r;
 				insertDataList[r-1][c++] = rank;
-				insertDataList[r-1][c++] = TeamUtils.getTeamId(team);
+				insertDataList[r-1][c++] = teamId;
 				insertDataList[r-1][c++] = team;
 				insertDataList[r-1][c++] = point;
 				insertDataList[r-1][c++] = games;
@@ -181,6 +185,7 @@ public class StandingsSaver {
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("J1/J2順位表抽出エラー", e);
+			return 1;
 		}
 		return 0;
 	}
@@ -247,6 +252,7 @@ public class StandingsSaver {
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("ルヴァンカップ順位表抽出エラー", e);
+			return 1;
 		}
 		return 0;
 	}
@@ -318,6 +324,7 @@ public class StandingsSaver {
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("ACL順位表抽出エラー", e);
+			return 1;
 		}
 		return 0;
 	}
