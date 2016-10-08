@@ -65,6 +65,10 @@ public class StandingsService {
 			}
 			logger.info(sql);
 			List<Map<String, Object>> resultList = qr.query(sql, new MapListHandler());
+			for (Map<String, Object> team : resultList) {
+				String officialTeamName = (String)team.get("team_name");
+				team.put("team_name", TeamUtils.getShortTeamName(officialTeamName));
+			}
 			return resultList;
 		} catch (SQLException e) {
 			logger.error("順位表読み込みエラー", e);

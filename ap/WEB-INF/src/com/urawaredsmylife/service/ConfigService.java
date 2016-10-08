@@ -39,10 +39,14 @@ public class ConfigService {
 			if (StringUtils.isBlank(osVersion)) {
 				osVersion = (String)params.get("version");		//古いアプリへの対応
 			}
-//TODO アプリバージョンによるメッセージ判定			String appVersion = (String)params.get("appversion");
+//TODO アプリバージョンによるメッセージ判定			
+			String appVersion = (String)params.get("appversion");
+			if (StringUtils.isBlank(appVersion)) {
+				appVersion = "1.0.0";
+			}
 			String teamId = (String)params.get("teamId");
 			String sql = "SELECT * FROM message WHERE os=" + DB.quote(os) 
-					+ " AND " + DB.quote(osVersion) + " BETWEEN min_ver AND max_ver"
+					+ " AND " + DB.quote(appVersion) + " BETWEEN min_ver AND max_ver"
 					+ " AND team_id = " + DB.quote(teamId);
 			logger.info(sql);
 			List<Map<String, Object>> messageList = qr.query(sql, new MapListHandler());
@@ -61,6 +65,13 @@ public class ConfigService {
 			conf.put("jcategory", team.get("category"));
 			conf.put("adType", team.get("adType"));
 			conf.put("aclFlg", team.get("aclFlg"));
+			
+			// TODO 他チーム情報表示機能はJ1のみ有効
+			if ("J1".equals(team.get("category"))) {
+				conf.put("isOtherTeamNewsFeatureEnable", "true");
+			} else {
+				conf.put("isOtherTeamNewsFeatureEnable", "false");
+			}
 			
 			// 現在のステージ
 			try {

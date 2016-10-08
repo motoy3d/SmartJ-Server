@@ -28,7 +28,7 @@ public class TeamUtils {
 		TEAMS.put("ardija", "大宮アルディージャ");
 		TEAMS.put("gamba", "ガンバ大阪");
 		TEAMS.put("albirex", "アルビレックス新潟");
-		TEAMS.put("consadole", "コンサドーレ札幌");
+		TEAMS.put("consadole", "北海道コンサドーレ札幌");
 		TEAMS.put("ventforet", "ヴァンフォーレ甲府");
 		TEAMS.put("bellmare", "湘南ベルマーレ");
 		TEAMS.put("torinita", "大分トリニータ");
@@ -63,7 +63,7 @@ public class TeamUtils {
 		TEAMS.put("yscc", "Y.S.C.C.横浜");
 		TEAMS.put("v-varen", " V・ファーレン長崎");
 		TEAMS.put("kamatamare", "カマタマーレ讃岐");
-		TEAMS.put("yamaguchi", "レノファ山口");
+		TEAMS.put("yamaguchi", "レノファ山口FC");
 	}
 	
 	public static final Map<String, String> TEAM_NAMES = new HashMap<String, String>();
@@ -91,7 +91,7 @@ public class TeamUtils {
 		TEAM_NAMES.put("G大阪", "ガンバ大阪");
 		TEAM_NAMES.put("Ｇ大阪", "ガンバ大阪");
 		TEAM_NAMES.put("新潟", "アルビレックス新潟");
-		TEAM_NAMES.put("札幌", "コンサドーレ札幌");
+		TEAM_NAMES.put("札幌", "北海道コンサドーレ札幌");
 		TEAM_NAMES.put("甲府", "ヴァンフォーレ甲府");
 		TEAM_NAMES.put("湘南", "湘南ベルマーレ");
 		TEAM_NAMES.put("大分", "大分トリニータ");
@@ -130,7 +130,7 @@ public class TeamUtils {
 		TEAM_NAMES.put("ＹＳ横浜", "Y.S.C.C.横浜");
 		TEAM_NAMES.put("長崎", "V・ファーレン長崎");
 		TEAM_NAMES.put("讃岐", "カマタマーレ讃岐");
-		TEAM_NAMES.put("山口", "レノファ山口");
+		TEAM_NAMES.put("山口", "レノファ山口FC");
 		
 		TEAM_NAMES.put("SHA", "上海上港");
 		TEAM_NAMES.put("SEO", "ＦＣソウル");
@@ -178,6 +178,20 @@ public class TeamUtils {
 		String officialTeamName = TEAM_NAMES.get(shortTeamName);
 		if (officialTeamName == null) {
 			return shortTeamName;
+		}
+		return officialTeamName;
+	}
+
+	/**
+	 * 引数の正式チーム名に相当する短いチーム名を返す。
+	 */
+	public static final String getShortTeamName(String officialTeamName) {
+		Iterator<String> keys = TEAM_NAMES.keySet().iterator();
+		while (keys.hasNext()) {
+			String shortName = keys.next();
+			if (officialTeamName.equals(TEAM_NAMES.get(shortName))) {
+				return shortName;
+			}
 		}
 		return officialTeamName;
 	}
