@@ -70,7 +70,7 @@ public class SanfrecceResultsSaver {
             String season = new SimpleDateFormat("yyyy").format(new Date());
             int compeIdx = 0;
 //            String[] compeList = new String[] {"FIFAｸﾗﾌﾞﾜｰﾙﾄﾞｶｯﾌﾟ", "ﾁｬﾝﾋﾟｵﾝｼｯﾌﾟ", "J1 1st", "J1 2nd", "ルヴァン", "天皇杯"};
-            String[] compeList = new String[] {"J1 1st", "J1 2nd", "ルヴァン", "FUJI XEROX SUPER CUP", "ACL"};
+            String[] compeList = new String[] {"J1 1st", "J1 2nd", "天皇杯", "ルヴァン", "FUJI XEROX SUPER CUP", "ACL"};
 			for(int r=1; r<gameList.size(); r++) {
 				Object game = gameList.get(r);
 				List<Object> gameItems = (List<Object>)((Map)game).get("td");

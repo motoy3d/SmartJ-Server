@@ -134,6 +134,7 @@ public class AntlersResultsSaver {
 					result = score.substring(0, 1);
 					score = score.substring(1);
 					detailUrl = "http://www.so-net.ne.jp" + (String)resultMap.get("href");
+					detailUrl = detailUrl.replace("/games", "/sp/games");
 				}
 				compe = StringUtils.trim(StringUtils.replace(compe, "\n", ""));
 				gameDate = StringUtils.trim(StringUtils.replace(gameDate, "\n", ""));
