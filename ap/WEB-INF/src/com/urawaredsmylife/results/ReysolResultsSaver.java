@@ -53,7 +53,8 @@ public class ReysolResultsSaver {
 	public int extractResults() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
-        String[] compeList = new String[]{ "J1 1st", "J1 2nd", "ルヴァン", "天皇杯", "プレシーズン"};
+        String[] compeList = new String[]{ "J1 2nd", "J1 1st", "ルヴァン", "ルヴァングループステージ勝敗表"
+        		, "天皇杯", "プレシーズン"};
 		try {
 			String resultsTable = teamId + "Results";
 			QueryRunner qr = DB.createQueryRunner();
@@ -74,7 +75,11 @@ public class ReysolResultsSaver {
             String insertSql = "INSERT INTO " + resultsTable + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             List<Object[]> insertDataList = new ArrayList<Object[]>();
 			for(int compeIdx = 0; compeIdx<gameGroupList.size(); compeIdx++) {
-				if (compeIdx == 4) {
+				System.out.println("-------------------------" + compeIdx);
+				if (compeIdx == 3) {
+					continue;	//ルヴァングループステージ勝敗表
+				}
+				if (compeIdx == 5) {
 					break;	//プレシーズン
 				}
 				Object tmp = ((Map)gameGroupList.get(compeIdx)).get("tr");
@@ -117,6 +122,7 @@ public class ReysolResultsSaver {
 					System.out.println("gameItems.get(1) " + gameItems.get(1));
 					Object item1Obj = gameItems.get(1);
 					Map item1 = item1Obj instanceof Map? (Map)item1Obj : null;
+System.out.println("🔴item1=" + item1);
 					if (item1 != null && item1.get("a") != null) {
 						gameDateView = (String)((Map)item1.get("a")).get("content");
 						detailUrl = "http://www.reysol.co.jp/game/results/" +
