@@ -64,7 +64,8 @@ public abstract class TweetsService {
 					+ ", user_profile_image_url"
 					+ ", tweet"
 					+ ", retweeted_count"
-					+ ", DATE_FORMAT(created_at, '%Y/%m/%d %T') created_at"
+					//+ ", DATE_FORMAT(created_at, '%Y/%m/%d %T') created_at"	//フルスキャンになり遅い
+					+ ", created_at"	//Javascript側でちゃんと処理可能
 					+ " FROM " + table;
 			if(maxId != null) {
 				sql += " WHERE tweet_id < " + maxId;	//maxIdより古いツイートを読み込む
