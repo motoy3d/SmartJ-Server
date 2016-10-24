@@ -72,6 +72,12 @@ public class ConfigService {
 			} else {
 				conf.put("isOtherTeamNewsFeatureEnable", "false");
 			}
+			//  2ステージ制フラグ  TODO 2017シーズンは１ステージ制
+			if ("J1".equals(team.get("category"))) {
+				conf.put("is2stages", "true");
+			} else {
+				conf.put("is2stages", "false");
+			}
 			
 			// 現在のステージ
 			try {
@@ -81,7 +87,8 @@ public class ConfigService {
 //				TODO アプリ側で順位表初期表示時にタブが2ndに切り替わらないため、とりあえず1st固定としておく。
 					conf.put("currentStage", "1st");
 				} else {
-					conf.put("currentStage", "2nd");
+					conf.put("currentStage", "total");
+//					conf.put("currentStage", "2nd");
 				}
 			} catch (ParseException e) {
 			}
