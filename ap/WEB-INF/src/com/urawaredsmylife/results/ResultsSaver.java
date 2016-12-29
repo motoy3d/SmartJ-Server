@@ -17,8 +17,8 @@ public class ResultsSaver {
 		Logger logger = Logger.getLogger(ResultsSaver.class.getName());
 		logger.info("######## 日程・結果データ取得　開始 #########");
 		//レッズ
-		RedsResultsSaver redsSaver = new RedsResultsSaver();
-		redsSaver.extractResults();
+//		RedsResultsSaver redsSaver = new RedsResultsSaver();
+//		redsSaver.extractResults();
 		//アルビレックス
 		AlbirexResultsSaver albirexSaver = new AlbirexResultsSaver();
 		albirexSaver.extractResults();
