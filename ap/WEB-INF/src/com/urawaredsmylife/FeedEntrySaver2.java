@@ -1,9 +1,6 @@
 package com.urawaredsmylife;
 
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,23 +9,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.arnx.jsonic.JSON;
-
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.XmlReader;
 import com.urawaredsmylife.dto.googlefeedapi.Feed;
-import com.urawaredsmylife.dto.googlefeedapi.FeedEntry;
-import com.urawaredsmylife.dto.googlefeedapi.GoogleFeedAPIResponse;
-import com.urawaredsmylife.dto.googlefeedapi.GoogleFeedAPIResponseData;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.RemoveUnderscoreBeanProcessor;
 
@@ -41,10 +35,6 @@ import com.urawaredsmylife.util.RemoveUnderscoreBeanProcessor;
  */
 public class FeedEntrySaver2 extends FeedEntrySaver {
 	private Logger logger = Logger.getLogger(FeedEntrySaver2.class.getName());
-	/**
-	 * デフォルトのフィード取得件数
-	 */
-	private static final int DEFAULT_FEED_COUNT = 30;
 	/**
 	 * チームID
 	 */
@@ -74,7 +64,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 			List<Map<String, Object>> ngImageKeywordList = qr.query(sqlNgImage, new MapListHandler());
 
 			String sql = "SELECT * FROM teamMaster ORDER BY team_id";
-			List<Feed> entryList = collectFeedEntriesForAllTeams();
+			List<SyndFeedHolder> entryList = collectFeedEntriesForAllTeams();
 			List<Map<String, Object>> teamList = qr.query(sql, new MapListHandler());
 			for(Map<String, Object> team : teamList) {
 				String teamId = (String)team.get("team_id");
@@ -97,60 +87,38 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 	 * @param teamName3
 	 */
 	public FeedEntrySaver2(String teamId, String teamName1, String teamName2, String teamName3) {
+		System.out.println("★チーム=" + teamId);
 		this.teamId = teamId;
 		this.teamName1 = teamName1;
 		this.teamName2 = teamName2;
 		this.teamName3 = teamName3;
 	}
-	
+
 	/**
 	 * 全チーム用のfeedMasterからフィードリストを取得して、
 	 * google feed apiを使用して各フィードのエントリリストを取得して返す。
 	 * @param params
 	 * @return
 	 */
-	public static List<Feed> collectFeedEntriesForAllTeams() {
+	public static List<SyndFeedHolder> collectFeedEntriesForAllTeams() {
 		StopWatch sw = new StopWatch();
 		sw.start();
 		Logger logger = Logger.getLogger(FeedEntrySaver2.class);
-		List<Feed> entryList  = new ArrayList<Feed>();
+		List<SyndFeedHolder> entryList  = new ArrayList<SyndFeedHolder>();
 		try {
 			QueryRunner qr = DB.createQueryRunner();
-			String ipAddress = InetAddress.getLocalHost().getHostAddress();
 			// 対象フィードリストをマスターから取得
 			List<Feed> feedMasterList = getFeedListFromDB(qr);
 			for(Feed targetFeed : feedMasterList) {
 				String feedUrl = targetFeed.getFeedUrl();
-				feedUrl = URLEncoder.encode(feedUrl, "UTF-8");
-				URL url = new URL(String.format(URL_BASE, feedUrl, String.valueOf(DEFAULT_FEED_COUNT), ipAddress));
-				//logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
-				URLConnection connection = url.openConnection();
-				connection.addRequestProperty("Referer", "http://motoy3d.blogspot.jp");
-				
-//				String line;
-//				StringBuilder builder = new StringBuilder();
-//				BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//				while((line = reader.readLine()) != null) {
-//					builder.append(line);
-//				}
-//				logger.info("-----" + builder.toString());
-				
-				GoogleFeedAPIResponse jsonResult = JSON.decode(
-						connection.getInputStream(), GoogleFeedAPIResponse.class);				
-				GoogleFeedAPIResponseData responseData = jsonResult.getResponseData();
-				if(responseData == null) {
-					logger.error("レスポンスnull.");
-					continue;
-				}
-				Feed feedResult = responseData.getFeed();
-				feedResult.setFeedId(targetFeed.getFeedId());
-				logger.info("★件数＝" + responseData.getFeed().getEntries().length);
-				if (StringUtils.isBlank(feedResult.getSiteName())) {
-					feedResult.setSiteName(targetFeed.getSiteName());
-				}
-//				logger.info("★feedResult＝" + feedResult.getSiteName() + ".  " +  feedResult.getTitle() + ".  " 
-//						+ feedResult.getFeedUrl() + " count=" + responseData.getFeed().getEntries().length);
-				entryList.add(feedResult);
+				URL url = new URL(feedUrl);
+				logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
+
+				SyndFeed feed = new SyndFeedInput().build(new XmlReader(url));
+				SyndFeedHolder feedHolder = new SyndFeedHolder(feed, targetFeed.getFeedId(), targetFeed.getSiteName());
+
+				logger.info("★件数＝" + feed.getEntries().size() + "  " + targetFeed.getSiteName());
+				entryList.add(feedHolder);
 			}
 		} catch (Exception e) {
 			logger.error("フィード読み込みエラー", e);
@@ -160,7 +128,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 		}
 		return entryList;
 	}
-	
+
 	/**
 	 * 全チーム共通フィードマスターからフィードリストを取得して返す。
 	 * @param qr
@@ -197,7 +165,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 	 * @param qr
 	 * @throws SQLException
 	 */
-	private void saveEntry(/*Feed targetFeed,*/ List<Feed> feedResults
+	private void saveEntry(/*Feed targetFeed,*/ List<SyndFeedHolder> feedResults
 			, List<Map<String, Object>> ngImageKeywordList, QueryRunner qr) throws SQLException {
 		//OK・NGワードリスト
 		String ngSql = "SELECT word FROM feedKeywordMaster WHERE team_id=? OR team_id='all' AND ok_flg=false";
@@ -207,7 +175,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 		Map<String, Object> teamName1Map = new HashMap<>();
 		teamName1Map.put("word", teamName1);
 		okWordList.add(teamName1Map);
-		
+
 		Map<String, Object> teamName2Map = new HashMap<>();
 		teamName2Map.put("word", teamName2);
 		okWordList.add(teamName2Map);
@@ -216,12 +184,12 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 		teamName3Map.put("word", teamName3);
 		okWordList.add(teamName3Map);
 
-		for(Feed feedResult : feedResults) {
-			FeedEntry[] entries = feedResult.getEntries();
+		for(SyndFeedHolder feedResultHolder : feedResults) {
+			List<SyndEntry> entries = feedResultHolder.syndFeed.getEntries();
 			String entryTable = teamId + "Entry";
-			for(FeedEntry e : entries) {
+			for(SyndEntry e : entries) {
 				String entryTitle = StringEscapeUtils.unescapeHtml(e.getTitle());
-				String entryContent = e.getContent();
+				String entryContent = e.getDescription() == null? "" : e.getDescription().getValue();
 				boolean isNg = false;
 				// NGワードチェック
 				for(Map<String, Object> ngMap : ngWordList) {
@@ -237,6 +205,9 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				boolean isOk = false;
 				for (Map<String, Object> okMap : okWordList) {
 					String ok = (String)okMap.get("word");
+					if (entryTitle == null || entryContent == null) {
+						continue;
+					}
 					if (entryTitle.contains(ok) || entryContent.contains(ok)) {
 						isOk = true;
 						break;
@@ -249,38 +220,22 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				if (pubDate == null || e.getLink().startsWith("http://www.soccerdigestweb.com/")) {
 					pubDate = new Date();
 				}
-//				System.out.println((isNg? "🔴" : "🔵") + "(" + teamName2 + ") " 
+//				System.out.println((isNg? "🔴" : "🔵") + "(" + teamName2 + ") "
 //						+ new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle/*+ " : " + entryContent*/);
-				// エントリタイトルからサイト名を抽出
-				String siteName = feedResult.getSiteName();
-				if(e.getLink().startsWith("http://web.gekisaka.jp")) {
-					siteName = "ゲキサカ";
-				}
-				else if(e.getLink().startsWith("http://www.nikkansports.com")) {
-					siteName = "日刊スポーツ";
-				}
-				else if(e.getLink().startsWith("http://www.soccerdigestweb.com/")) {
-					siteName = "サッカーダイジェストWeb";
-				}
-				if(StringUtils.isBlank(siteName)) {
-					siteName = extractSiteName(e.getLink());
-				}
-				if(ArrayUtils.contains(NG_SITES, siteName)) {
-					logger.info("NGサイト:" + siteName);
-					continue;
-				}
-				System.out.println("(" + teamName2 + ") " 
+
+				System.out.println("(" + teamName2 + ") "
 						+ new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle
 						+ " : " + e.getLink() /*+ " : " + entryContent*/);
+				String siteName = feedResultHolder.siteName;
 				siteName = siteName.replace("（", "").replace("）", "");
 				// 既に同一URLが登録済みの場合は登録しない
-				String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable 
+				String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable
 						+ " WHERE entry_url=? OR entry_title=?";
 				Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), e.getLink(), entryTitle);
 				Long cnt = (Long)cntMap.get("CNT");
 				if(cnt.intValue() == 0) {
 					String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-					ImageInfo img = getImageInContent(e.getLink(), e.getContent(), ngImageKeywordList);
+					ImageInfo img = getImageInContent(e.getLink(), entryContent, ngImageKeywordList);
 					Object[] inseartParams = new Object[] {
 							e.getLink()
 							,entryTitle
@@ -288,14 +243,14 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 							,img.url
 							,img.width
 							,img.height
-							,10000 + Integer.parseInt(feedResult.getFeedId())	//チームごとのフィードのIDと全チーム共通フィードのIDが重複しないよう10000を足す。
+							,10000 + Integer.parseInt(feedResultHolder.feedId)	//チームごとのフィードのIDと全チーム共通フィードのIDが重複しないよう10000を足す。
 							,siteName
 							,pubDate
 					};
 					logger.info("🌟" + insertSql);
 					try {
 						int count = qr.update(insertSql, inseartParams);
-						logger.info("結果：" + count);			
+						logger.info("結果：" + count);
 					} catch(Exception ex) {
 						logger.error("フィード読み込みエラー", ex);
 					}
@@ -304,5 +259,22 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				}
 			}
 		}
+	}
+}
+
+
+/**
+ * SyndFeedとfeedIdをセットで保持するクラス
+ * @author nob
+ *
+ */
+class SyndFeedHolder {
+	public SyndFeed syndFeed;
+	public String feedId;
+	public String siteName;
+	public SyndFeedHolder(SyndFeed syndFeed, String feedId, String siteName) {
+		this.syndFeed = syndFeed;
+		this.feedId = feedId;
+		this.siteName = siteName;
 	}
 }

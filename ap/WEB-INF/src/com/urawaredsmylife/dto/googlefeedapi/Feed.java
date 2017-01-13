@@ -27,11 +27,7 @@ public class Feed {
 	 * サイト名(マスター用)
 	 */
 	private String siteName;
-	/**
-	 * エントリリスト
-	 */
-	private FeedEntry[] entries;
-	
+
 	/**
 	 * @return the feedId
 	 */
@@ -44,18 +40,7 @@ public class Feed {
 	public void setFeedId(String feedId) {
 		this.feedId = feedId;
 	}
-	/**
-	 * @return the entries
-	 */
-	public FeedEntry[] getEntries() {
-		return entries;
-	}
-	/**
-	 * @param entries the entries to set
-	 */
-	public void setEntries(FeedEntry[] entries) {
-		this.entries = entries;
-	}
+
 	/**
 	 * @return the feedUrl
 	 */
@@ -92,5 +77,5 @@ public class Feed {
 	public void setSiteName(String siteName) {
 		this.siteName = siteName;
 	}
-	
+
 }

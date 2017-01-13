@@ -2,10 +2,7 @@ package com.urawaredsmylife;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -28,14 +25,13 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.XmlReader;
 import com.urawaredsmylife.dto.googlefeedapi.Feed;
-import com.urawaredsmylife.dto.googlefeedapi.FeedEntry;
-import com.urawaredsmylife.dto.googlefeedapi.GoogleFeedAPIResponse;
-import com.urawaredsmylife.dto.googlefeedapi.GoogleFeedAPIResponseData;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.RemoveUnderscoreBeanProcessor;
-
-import net.arnx.jsonic.JSON;
 
 /**
  * 各チームのxxxFeedMasterからフィードリストを取得して、
@@ -114,8 +110,6 @@ public class FeedEntrySaver {
 		sw.start();
 		try {
 			QueryRunner qr = DB.createQueryRunner();
-			String ipAddress = InetAddress.getLocalHost().getHostAddress();
-			
 			// イメージNGキーワードリスト取得
 			String sql = "SELECT url_keyword FROM ngImageSite";
 			List<Map<String, Object>> ngImageKeywordList = qr.query(sql, new MapListHandler());
@@ -124,33 +118,12 @@ public class FeedEntrySaver {
 			List<Feed> feedList = getFeedListFromDB(qr);
 			for(Feed targetFeed : feedList) {
 				String feedUrl = targetFeed.getFeedUrl();
-				int feedCount = DEFAULT_FEED_COUNT;
-				feedUrl = URLEncoder.encode(feedUrl, "UTF-8");
-				URL url = new URL(String.format(URL_BASE, feedUrl, String.valueOf(feedCount), ipAddress));
-				//logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
-				URLConnection connection = url.openConnection();
-				connection.addRequestProperty("Referer", "http://motoy3d.blogspot.jp");
+				URL url = new URL(feedUrl);
+				logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
+				SyndFeed feed = new SyndFeedInput().build(new XmlReader(url));
 
-//				String line;
-//				StringBuilder builder = new StringBuilder();
-//				BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//				while((line = reader.readLine()) != null) {
-//					builder.append(line);
-//				}
-//				logger.info("-----" + builder.toString());
-
-				GoogleFeedAPIResponse jsonResult = JSON.decode(
-						connection.getInputStream(), GoogleFeedAPIResponse.class);
-				//logger.info("★結果＝" + ToStringBuilder.reflectionToString(jsonResult));
-
-				GoogleFeedAPIResponseData responseData = jsonResult.getResponseData();
-				if(responseData == null) {
-					logger.error("レスポンスnull.");
-					continue;
-				}
-				Feed feedResult = responseData.getFeed();
 				//logger.info("★feed＝" + feedResult.getTitle() + "  " + feedResult.getFeedUrl());
-				saveEntry(targetFeed, feedResult, ngImageKeywordList, qr);
+				saveEntry(targetFeed, feed, ngImageKeywordList, qr);
 			}
 		} catch (Exception e) {
 			logger.error("フィード読み込みエラー", e);
@@ -182,11 +155,11 @@ public class FeedEntrySaver {
 	 * @param qr
 	 * @throws SQLException
 	 */
-	private void saveEntry(Feed targetFeed, Feed feedResult
+	private void saveEntry(Feed targetFeed, SyndFeed feed
 			, List<Map<String, Object>> ngImageKeywordList, QueryRunner qr) throws SQLException {
-		FeedEntry[] entries = feedResult.getEntries();
+		List<SyndEntry> entries = feed.getEntries();
 		String entryTable = teamId + "Entry";
-		for(FeedEntry e : entries) {
+		for(SyndEntry e : entries) {
 			String entryTitle = StringEscapeUtils.unescapeHtml(e.getTitle());
 			// エントリタイトルからサイト名を抽出
 			String siteName = targetFeed.getSiteName();
@@ -211,7 +184,7 @@ public class FeedEntrySaver {
 				logger.info("NGサイト:" + siteName);
 				continue;
 			}
-			
+
 			// NGワードチェック
 			String ngSql = "SELECT word FROM feedKeywordMaster WHERE team_id=? OR team_id='all' AND ok_flg=false";
 			List<Map<String, Object>> ngWordList = qr.query(ngSql, new MapListHandler(), teamId);
@@ -232,12 +205,13 @@ public class FeedEntrySaver {
 			Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), e.getLink(), entryTitle);
 			Long cnt = (Long)cntMap.get("CNT");
 			if(cnt.intValue() == 0) {
+				String content = e.getDescription().getValue();
 				String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-				ImageInfo img = getImageInContent(e.getLink(), e.getContent(), ngImageKeywordList);
+				ImageInfo img = getImageInContent(e.getLink(), content, ngImageKeywordList);
 				Object[] inseartParams = new Object[] {
 						e.getLink()
 						,entryTitle
-						,e.getContent()
+						,content
 						,img.url
 						,img.width
 						,img.height
@@ -325,7 +299,7 @@ public class FeedEntrySaver {
 	            int urlEndIdx = content.indexOf('"', urlStartIdx);
 	            String imgUrl = content.substring(urlStartIdx, urlEndIdx);
 	            imgUrl = imgUrl.replaceAll("&amp;", "&");
-	            
+
 	            // イメージ保存NGチェック
 	            boolean isNgImage = false;
 	            for (Map<String, Object> ngWord : ngImageKeywordList) {
