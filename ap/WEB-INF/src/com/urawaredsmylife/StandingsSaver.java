@@ -31,9 +31,7 @@ public class StandingsSaver {
 	/**
 	 * 順位表URL
 	 */
-	private static final String SRC_URL_J1_1st = "http://soccer.yahoo.co.jp/jleague/standings/j1/1st";
-	private static final String SRC_URL_J1_2nd = "http://soccer.yahoo.co.jp/jleague/standings/j1/2nd";
-	private static final String SRC_URL_J1_ALL = "http://soccer.yahoo.co.jp/jleague/standings/j1/all";
+	private static final String SRC_URL_J1 = "http://soccer.yahoo.co.jp/jleague/standings/j1";
 	private static final String SRC_URL_J2 = "http://soccer.yahoo.co.jp/jleague/standings/j2";
 	private static final String SRC_URL_NABISCO = "http://soccer.yahoo.co.jp/jleague/standings/jleaguecup";
 	private static final String SRC_URL_ACL1 = "http://www.hochi.co.jp/soccer/data/world/acl/group_E.html";
@@ -76,14 +74,9 @@ public class StandingsSaver {
 		try {
 			// J1
 			Date j1OpenDate = DateUtils.parseDate(Const.J1_OPEN_DATE, new String[] {"yyyy/MM/dd"});
-			Date j1SecondStageOpenDate = DateUtils.parseDate(Const.J1_SECOND_STAGE_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int j1Result = 0;
 			if (j1OpenDate.getTime() < new Date().getTime()) {
-				j1Result = insertJ(SRC_URL_J1_1st, "J1", "1st", 18);
-			}
-			if (j1SecondStageOpenDate.getTime() < new Date().getTime()) {
-				j1Result = insertJ(SRC_URL_J1_2nd, "J1", "2nd", 18);
-				j1Result = insertJ(SRC_URL_J1_ALL, "J1", "total", 18);
+				j1Result = insertJ(SRC_URL_J1, "J1", "1st", 18);
 			}
 			// J2
 			Date j2OpenDate = DateUtils.parseDate(Const.J2_OPEN_DATE, new String[] {"yyyy/MM/dd"});
@@ -101,8 +94,12 @@ public class StandingsSaver {
 			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int aclResult = 0;
 			if (aclOpenDate.getTime() < new Date().getTime()) {
+				
+				
 				//TODO 取得先を報知からJリーグ公式サイトに変更
 //				aclResult = insertACL();
+				
+				
 			}
 			
 			return j1Result + j2Result + nabiscoResult + aclResult;

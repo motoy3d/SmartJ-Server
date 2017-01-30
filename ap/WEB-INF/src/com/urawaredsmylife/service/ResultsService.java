@@ -1,6 +1,7 @@
 package com.urawaredsmylife.service;
 
-import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ public class ResultsService {
 		try {
 			QueryRunner qr = DB.createQueryRunner();
 			String season = (String)params.get("season");
+			season = new SimpleDateFormat("yyyy").format(new Date());	//パラメータに関わらず今年をセット
 			String teamId = StringUtils.defaultIfEmpty((String)params.get("teamId"), "reds");
 			if (StringUtils.isNotBlank((String)params.get("otherTeamId"))) {
 				teamId = (String)params.get("otherTeamId");
@@ -41,7 +43,7 @@ public class ResultsService {
 			logger.info(sql);
 			List<Map<String, Object>> resultList = qr.query(sql, new MapListHandler());
 			return resultList;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			logger.error("日程・結果読み込みエラー", e);
 			return new Object[] {new NoDataResult()};
 		}

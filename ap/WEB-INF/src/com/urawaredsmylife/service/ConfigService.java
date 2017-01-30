@@ -72,12 +72,8 @@ public class ConfigService {
 			} else {
 				conf.put("isOtherTeamNewsFeatureEnable", "false");
 			}
-			//  2ステージ制フラグ  TODO 2017シーズンは１ステージ制
-			if ("J1".equals(team.get("category"))) {
-				conf.put("is2stages", "true");
-			} else {
-				conf.put("is2stages", "false");
-			}
+			//  2ステージ制フラグ.  2017シーズンは１ステージ制
+			conf.put("is2stages", "false");
 			
 			// 現在のステージ
 			try {

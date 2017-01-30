@@ -8,15 +8,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
+import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.urawaredsmylife.Team;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.Mail;
 import com.urawaredsmylife.util.TeamUtils;
@@ -31,62 +35,17 @@ public class JLeagueResultsSaver {
 	private static final String LEAGUECUP_RESULTS_URL = "http://www.jleague.jp/match/search/leaguecup/all/";
 	private static final String ACL_RESULTS_URL = "http://www.jleague.jp/match/search/acl/all/";
 	private static final String TENNOHAI_RESULTS_URL = "http://www.jleague.jp/match/search/emperor/all/";
-	private static final String CS_RESULTS_URL = "http://www.jleague.jp/special/match/cs/${SEASON}/";
 	private static final String J1SHOKAKU_PLAYOFF_RESULTS_URL = "http://www.jleague.jp/match/search/playoff/all/";
 	private static final String FUJI_XEROX_RESULTS_URL = "http://www.jleague.jp/match/search/fxsc/all/";
+//	private static final String NEWYEAR_CUP_RESULTS_URL = "http://www.jleague.jp/match/search/nyc/all/";
+	private static final String SURUGA_RESULTS_URL = "http://www.jleague.jp/match/search/suruga/all/";
 	private static final String[] URLS = new String[] {
 			J1_RESULTS_URL, J2_RESULTS_URL, LEAGUECUP_RESULTS_URL, ACL_RESULTS_URL
-			,TENNOHAI_RESULTS_URL, CS_RESULTS_URL, J1SHOKAKU_PLAYOFF_RESULTS_URL
+			,TENNOHAI_RESULTS_URL, SURUGA_RESULTS_URL, J1SHOKAKU_PLAYOFF_RESULTS_URL
 			, FUJI_XEROX_RESULTS_URL
 	};
 	private static final String DETAIL_URL_BASE = "http://www.jleague.jp";
 	private static Logger logger = Logger.getLogger(JLeagueResultsSaver.class.getName());
-	private static final Team[] TEAMS = new Team[] {
-		new Team("grampus", "名古屋グランパス")
-		,new Team("fctokyo", "FC東京")
-		,new Team("reds", "浦和レッズ")
-		,new Team("ardija", "大宮アルディージャ")
-		,new Team("vissel", "ヴィッセル神戸")
-		,new Team("jubilo", "ジュビロ磐田")
-		,new Team("bellmare", "湘南ベルマーレ")
-		,new Team("avispa", "アビスパ福岡")
-		,new Team("cerezo", "セレッソ大阪")
-		,new Team("montedio", "モンテディオ山形")
-		,new Team("vortis", "徳島ヴォルティス")
-		,new Team("yamaga", "松本山雅FC")
-		,new Team("consadole", "北海道コンサドーレ札幌")
-		,new Team("sanga", "京都サンガF.C")
-		,new Team("jef", "ジェフユナイテッド千葉")
-		,new Team("verdy", "東京ヴェルディ")
-		,new Team("yokohamafc", "横浜FC")
-		,new Team("giravanz", "ギラヴァンツ北九州")
-		,new Team("fagiano", "ファジアーノ岡山")
-		,new Team("hollyhock", "水戸ホーリーホック")
-		,new Team("thespa", "ザスパクサツ群馬")
-		,new Team("roasso", "ロアッソ熊本")
-		,new Team("ehimefc", "愛媛FC")
-		,new Team("fcgifu", "FC岐阜")
-		,new Team("zelvia", "FC町田ゼルビア")
-		,new Team("zweigen", "ツエーゲン金沢")
-		,new Team("v_varen", " V・ファーレン長崎")
-		,new Team("kamatamare", "カマタマーレ讃岐")
-		,new Team("renofa", "レノファ山口FC")
-
-//		,new Team("torinita", "大分トリニータ")
-//		,new Team("tochigi", "栃木SC")
-//		,new Team("kataller", "カターレ富山")
-//		,new Team("gainare", "ガイナーレ鳥取")
-//		,new Team("parceiro", "AC長野パルセイロ")
-//		,new Team("grulla", "グルージャ盛岡")
-//		,new Team("sagamihara", "SC相模原")
-//		,new Team("ryukyu", "FC琉球")
-//		,new Team("fukushima", "福島ユナイテッドFC")
-//		,new Team("blaublitz", "ブラウブリッツ秋田")
-//		,new Team("U22", "Jリーグ・アンダー22選抜")
-//		,new Team("myfc", "藤枝MYFC")
-//		,new Team("yscc", "Y.S.C.C.横浜")
-	};
-
 	/**
 	 * メインメソッド
 	 * @param args
@@ -120,9 +79,17 @@ public class JLeagueResultsSaver {
 			logger.info("------------------------------------------------------------------");
 			logger.info(url);
 			logger.info("------------------------------------------------------------------");
-			Document doc = Jsoup.connect(url).maxBodySize(0).timeout(60 * 1000).get();
+			Connection connection = Jsoup.connect(url).maxBodySize(0).timeout(60 * 1000);
+			Document doc = null;
+			try {
+				doc = connection.get();
+			} catch(HttpStatusException ex) {
+				if (ex.getStatusCode() == 404) {
+					logger.warn("404 error " + url, ex);
+					continue;
+				}
+			}
 			Elements ele = doc.select("section.matchlistWrap");
-
 			Iterator<Element> matchLists = ele.iterator();
 			while (matchLists.hasNext()) {
 				Element matchSection = matchLists.next();
@@ -134,9 +101,16 @@ public class JLeagueResultsSaver {
 					continue;
 				}
 				String gameDate = h4.get(0).text();
-				String gameDate1 = gameDate.replace("年", "/").replaceFirst("月", "/").replaceFirst("日", "").replace("（", "(");
-				gameDate1 = gameDate1.substring(0, gameDate1.indexOf("("));
-				String gameDate2 = gameDate.substring(5).replaceFirst("月", "/").replaceFirst("日", "");
+				logger.info("★gameDate=" + gameDate);
+				String gameDate1 = null;
+				String gameDate2 = "";
+				if (gameDate.contains("開催日未定")) {
+					gameDate2 = "開催日未定";
+				} else {
+					gameDate1 = gameDate.replace("年", "/").replaceFirst("月", "/").replaceFirst("日", "").replace("（", "(");
+					gameDate1 = gameDate1.substring(0, gameDate1.indexOf("("));
+					gameDate2 = gameDate.substring(5).replaceFirst("月", "/").replaceFirst("日", "");
+				}
 				// 大会名、節
 				Elements h5 = matchSection.select("h5");
 				for (int i=0; i<h5.size(); i++) {	//1日に複数の節の試合がある場合がある
@@ -151,6 +125,7 @@ public class JLeagueResultsSaver {
 							.replace("グループステージ", "GS ")
 							.replace("ラウンド１６　", "ラウンド16")
 							.replace("ＭＤ", "MD")
+							.replaceAll("ＦＵＪＩ ＸＥＲＯＸ ＳＵＰＥＲ ＣＵＰ", "FUJI XEROX SUPER CUP")
 							.replace("　", "")
 							;
 					System.out.println("🌟 " + gameDate + "  " + compe);
@@ -166,7 +141,7 @@ public class JLeagueResultsSaver {
 //						logger.info("--------------------------------------------------------------");
 						Elements timeAndStadiumTd = game.select("td.stadium");
 						if (timeAndStadiumTd.isEmpty()) {
-							logger.info(">>>>>>> continue ルヴァンカップ等のグループ名のtr");
+//							logger.info(">>>>>>> continue ルヴァンカップ等のグループ名のtr");
 							continue;	//ルヴァンカップ等のグループ名のtr
 						}
 						// 時間
@@ -214,7 +189,7 @@ public class JLeagueResultsSaver {
 						
 						// 詳細URL
 						Elements link = game.select("td.match > a");
-						String detailUrl = link.get(0).attr("href");
+						String detailUrl = link.isEmpty()? null : link.get(0).attr("href");
 						if (StringUtils.isNotBlank(detailUrl)) {
 							detailUrl = DETAIL_URL_BASE + detailUrl;
 						}
@@ -235,7 +210,9 @@ public class JLeagueResultsSaver {
 						oneRec[c++] = homePk;
 						oneRec[c++] = awayPk;
 						oneRec[c++] = detailUrl;
-						insertDataList.add(oneRec);
+						if (gameDate1 != null) {	//TODO 開催日未定を登録する
+							insertDataList.add(oneRec);
+						}
 
 						logger.info("🌟 🌟 🌟 " + gameDate1 + " | " + gameDate2 + " | " + time + " | " + stadium + " | " 
 								+ compe + " | " + homeTeam + " " + StringUtils.trimToEmpty(homeScore) + " - " + StringUtils.trimToEmpty(awayScore) + pk + " "
@@ -258,17 +235,20 @@ public class JLeagueResultsSaver {
 	private static void insertEachTeamResults() throws SQLException {
 		StopWatch sw = new StopWatch();
 		sw.start();
-		for (Team team : TEAMS) {
+		QueryRunner qr = DB.createQueryRunner();
+		String sql = "SELECT team_id as teamId, team_name as teamName"
+					+ " FROM teamMaster ORDER BY category, team_id";
+		List<Team> teams = qr.query(sql, new BeanListHandler<>(Team.class));
+		for (Team team : teams) {
 			logger.info("---------------------------------------------------------------------------");
-			logger.info(team.name + " 日程・結果登録");
+			logger.info(team.getTeamName() + " 日程・結果登録");
 			logger.info("---------------------------------------------------------------------------");
 	        String season = new SimpleDateFormat("yyyy").format(new Date());
-			QueryRunner qr = DB.createQueryRunner();
 			// 一旦削除
-			qr.update("DELETE FROM " + team.id + "Results WHERE season=" + season);
+			qr.update("DELETE FROM " + team.getTeamId() + "Results WHERE season=" + season);
 	
 			// resultsテーブルから対象クラブの情報のみSELECTしてINSERT
-			String insertSql = "INSERT INTO " + team.id + "Results \n"
+			String insertSql = "INSERT INTO " + team.getTeamId() + "Results \n"
 	        		+ "SELECT season,compe,game_date1,game_date2,kickoff_time,stadium,\n"
 	        		+ " case when home_team='${TEAM_NAME}' then true else false end as home_flg,\n"
 	        		+ " case when home_team='${TEAM_NAME}' then away_team else home_team end as vs_team,\n"
@@ -286,27 +266,17 @@ public class JLeagueResultsSaver {
 					+ " now()\n"
 					+ " FROM results \n"
 					+ " where season=" + season
-					+ " AND home_team='${TEAM_NAME}' or away_team='${TEAM_NAME}'\n"
+					+ " AND (home_team='${TEAM_NAME}' or away_team='${TEAM_NAME}')\n"
 					+ " order by game_date1";
-			insertSql = StringUtils.replace(insertSql, "${TEAM_NAME}", team.name);
+			insertSql = StringUtils.replace(insertSql, "${TEAM_NAME}", team.getTeamName());
 			logger.info(insertSql);
 			int count = qr.update(insertSql);
-	        logger.info(team.name + " 登録件数：" + count);
+			if (count == 0) {
+				throw new RuntimeException("登録件数０  " + team.getTeamName());
+			}
+	        logger.info(team.getTeamName() + " 登録件数：" + count);
 		}
 		sw.stop();
 		logger.info((sw.getTime()/1000.0) + "秒");
 	}	
-}
-/**
- * チームID、チーム名を持つクラス
- * @author motoy3d
- *
- */
-class Team {
-	public String id;
-	public String name;
-	public Team(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
 }

@@ -138,19 +138,23 @@ public class TeamUtils {
 		TEAM_NAMES_SHORT_FULL.put("讃岐", "カマタマーレ讃岐");
 		TEAM_NAMES_SHORT_FULL.put("山口", "レノファ山口FC");
 		
-		TEAM_NAMES_SHORT_FULL.put("SHA", "上海上港");
-		TEAM_NAMES_SHORT_FULL.put("SEO", "ＦＣソウル");
-		TEAM_NAMES_SHORT_FULL.put("CHO", "チョンブリ");
-		TEAM_NAMES_SHORT_FULL.put("JEO", "全北現代");
-		TEAM_NAMES_SHORT_FULL.put("SHD", "山東魯能");
-		TEAM_NAMES_SHORT_FULL.put("SUW", "水原三星");
-		TEAM_NAMES_SHORT_FULL.put("SYD", "シドニーＦＣ");
-		TEAM_NAMES_SHORT_FULL.put("BIN", "ビンズオン");
-		TEAM_NAMES_SHORT_FULL.put("MEL", "メルボルンビクトリー");
-		TEAM_NAMES_SHORT_FULL.put("POH", "浦項");
-		TEAM_NAMES_SHORT_FULL.put("JIA", "江蘇蘇寧");
-		TEAM_NAMES_SHORT_FULL.put("BUR", "ブリーラム");
-		TEAM_NAMES_SHORT_FULL.put("GUA", "広州恒大");
+		// TEAM_NAMES_FULL_SHORTと同期
+		TEAM_NAMES_SHORT_FULL.put("SHA", "上海上港");//中国
+		TEAM_NAMES_SHORT_FULL.put("SHD", "山東魯能");//中国
+		TEAM_NAMES_SHORT_FULL.put("GUA", "広州恒大");//中国
+		TEAM_NAMES_SHORT_FULL.put("JIA", "江蘇蘇寧");//中国
+		TEAM_NAMES_SHORT_FULL.put("SEO", "ＦＣソウル");//韓国
+		TEAM_NAMES_SHORT_FULL.put("JEO", "全北現代");//韓国
+		TEAM_NAMES_SHORT_FULL.put("SUW", "水原三星");//韓国
+		TEAM_NAMES_SHORT_FULL.put("POH", "浦項");//韓国
+		TEAM_NAMES_SHORT_FULL.put("CHO", "チョンブリ");//タイ
+		TEAM_NAMES_SHORT_FULL.put("BIN", "ビンズオン");	//タイ
+		TEAM_NAMES_SHORT_FULL.put("MUA", "ムアントン");	//タイ
+		TEAM_NAMES_SHORT_FULL.put("BUR", "ブリーラム");//タイ
+		TEAM_NAMES_SHORT_FULL.put("SYD", "シドニーＦＣ");	//オーストラリア
+		TEAM_NAMES_SHORT_FULL.put("WSW", "ウェスタンシドニー");	//オーストラリア
+		TEAM_NAMES_SHORT_FULL.put("MEL", "メルボルンビクトリー");//オーストラリア
+		TEAM_NAMES_SHORT_FULL.put("EST", "イースタンSC");//香港
 	}
 
 	/**
@@ -214,19 +218,23 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("カマタマーレ讃岐", "讃岐");
 		TEAM_NAMES_FULL_SHORT.put("レノファ山口FC", "山口");
 		
-		TEAM_NAMES_FULL_SHORT.put("SHA", "上海上港");
-		TEAM_NAMES_FULL_SHORT.put("SEO", "ＦＣソウル");
-		TEAM_NAMES_FULL_SHORT.put("CHO", "チョンブリ");
-		TEAM_NAMES_FULL_SHORT.put("JEO", "全北現代");
-		TEAM_NAMES_FULL_SHORT.put("SHD", "山東魯能");
-		TEAM_NAMES_FULL_SHORT.put("SUW", "水原三星");
-		TEAM_NAMES_FULL_SHORT.put("SYD", "シドニーＦＣ");
-		TEAM_NAMES_FULL_SHORT.put("BIN", "ビンズオン");
-		TEAM_NAMES_FULL_SHORT.put("MEL", "メルボルンビクトリー");
-		TEAM_NAMES_FULL_SHORT.put("POH", "浦項");
-		TEAM_NAMES_FULL_SHORT.put("JIA", "江蘇蘇寧");
-		TEAM_NAMES_FULL_SHORT.put("BUR", "ブリーラム");
-		TEAM_NAMES_FULL_SHORT.put("GUA", "広州恒大");		
+		// TEAM_NAMES_SHORT_FULLと同期
+		TEAM_NAMES_FULL_SHORT.put("SHA", "上海上港");//中国
+		TEAM_NAMES_FULL_SHORT.put("SHD", "山東魯能");//中国
+		TEAM_NAMES_FULL_SHORT.put("GUA", "広州恒大");//中国
+		TEAM_NAMES_FULL_SHORT.put("JIA", "江蘇蘇寧");//中国
+		TEAM_NAMES_FULL_SHORT.put("SEO", "ＦＣソウル");//韓国
+		TEAM_NAMES_FULL_SHORT.put("JEO", "全北現代");//韓国
+		TEAM_NAMES_FULL_SHORT.put("SUW", "水原三星");//韓国
+		TEAM_NAMES_FULL_SHORT.put("POH", "浦項");//韓国
+		TEAM_NAMES_FULL_SHORT.put("CHO", "チョンブリ");//タイ
+		TEAM_NAMES_FULL_SHORT.put("BIN", "ビンズオン");	//タイ
+		TEAM_NAMES_FULL_SHORT.put("MUA", "ムアントン");	//タイ
+		TEAM_NAMES_FULL_SHORT.put("BUR", "ブリーラム");//タイ
+		TEAM_NAMES_FULL_SHORT.put("SYD", "シドニーＦＣ");	//オーストラリア
+		TEAM_NAMES_FULL_SHORT.put("WSW", "ウェスタンシドニー");	//オーストラリア
+		TEAM_NAMES_FULL_SHORT.put("MEL", "メルボルンビクトリー");//オーストラリア
+		TEAM_NAMES_FULL_SHORT.put("EST", "イースタンSC");//香港
 	}
 
 	/**

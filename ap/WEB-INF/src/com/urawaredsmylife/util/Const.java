@@ -8,7 +8,7 @@ public class Const {
 	/**
 	 * J1開幕日
 	 */
-	public static final String J1_OPEN_DATE = "2015/03/07";
+	public static final String J1_OPEN_DATE = "2017/02/25";
 	/**
 	 * J2開幕日
 	 */

@@ -1,6 +1,8 @@
 package com.urawaredsmylife.service;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +34,8 @@ public class StandingsService {
 		try {
 			QueryRunner qr = DB.createQueryRunner();
 			String season = (String)params.get("season");
+			season = new SimpleDateFormat("yyyy").format(new Date());	//パラメータに関わらず今年をセット
 			String teamId = (String)params.get("teamId");
-			String stage = (String)params.get("stage");
 			// 大会(J, Nabisco, ACL)
 			String compe = StringUtils.defaultIfEmpty((String)params.get("compe"), "J");
 			String sort = (String)params.get("sort");
@@ -55,7 +57,7 @@ public class StandingsService {
 			}
 			String sql = null;
 			if ("J".equals(compe)) {
-				sql = createSqlForJ(qr, season, teamId, stage, sort);
+				sql = createSqlForJ(qr, season, teamId, sort);
 			} else if ("Nabisco".equals(compe)) {
 				sql = createSqlForNabisco(qr, season, teamId);
 			} else if ("ACL".equals(compe)) {
@@ -87,12 +89,9 @@ public class StandingsService {
 	 * @throws SQLException
 	 */
 	private String createSqlForJ(QueryRunner qr, String season,
-			String teamId, String stage, String sort) throws SQLException {
+			String teamId, String sort) throws SQLException {
 		String sql;
 		String league = "J1";
-		if (StringUtils.isBlank(stage)) {
-			stage = "1st";
-		}
 		// チームのリーグカテゴリを検索
 		if (StringUtils.isNotBlank(teamId)) {
 			String teamName = TeamUtils.getTeamName(teamId);
@@ -108,16 +107,9 @@ public class StandingsService {
 				}
 			}
 		}
-		// ステージ
-		String stageCond = "";
-		if ("J1".equals(league)) {
-			stageCond = " AND stage=" + DB.quote(stage);
-		}
-
 		sql = "SELECT *, team_name AS team FROM standings WHERE"
 				+ " season=" + season 
 				+ " AND league='" + league + "'"
-				+ stageCond
 				+ " ORDER BY " + sort;
 		return sql;
 	}
