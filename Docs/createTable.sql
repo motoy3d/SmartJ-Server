@@ -179,3 +179,14 @@ create table ngImageSite(
   url_keyword varchar(40)
 );
 
+/**
+ * フィード取得に失敗したURLを保存
+ */
+create table failedFeed(
+  feed_url varchar(200) /*フィードURL*/	-- primary keyがtoo longとエラーになる
+  ,team_id varchar(20) /*チームID*/
+  ,feed_name varchar(200)	/*フィード名*/
+  ,count int /*失敗回数*/
+  ,up_date timestamp
+);
+

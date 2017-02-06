@@ -25,6 +25,7 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
@@ -69,13 +70,20 @@ public class FeedEntrySaver {
 	 */
 	public static void main(String[] args) {
 		try {
-			QueryRunner qr = DB.createQueryRunner();
-			String sql = "SELECT team_id FROM teamMaster ORDER BY team_id";
-			List<Map<String, Object>> teamList = qr.query(sql, new MapListHandler());
-			for(Map<String, Object> team : teamList) {
-				String teamId = (String)team.get("team_id");
-				FeedEntrySaver srv = new FeedEntrySaver(teamId);
-				srv.collectFeedEntries();
+			if (0 < args.length) {	//コマンド引数でチームID指定
+				for(String teamId : args) {
+					FeedEntrySaver srv = new FeedEntrySaver(teamId);
+					srv.collectFeedEntries();
+				}
+			} else {	//チームマスター分実行
+				QueryRunner qr = DB.createQueryRunner();
+				String sql = "SELECT team_id FROM teamMaster ORDER BY team_id";
+				List<Map<String, Object>> teamList = qr.query(sql, new MapListHandler());
+				for(Map<String, Object> team : teamList) {
+					String teamId = (String)team.get("team_id");
+					FeedEntrySaver srv = new FeedEntrySaver(teamId);
+					srv.collectFeedEntries();
+				}
 			}
 		} catch(Exception ex) {
 			ex.printStackTrace();
@@ -120,10 +128,16 @@ public class FeedEntrySaver {
 				String feedUrl = targetFeed.getFeedUrl();
 				URL url = new URL(feedUrl);
 				logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
-				SyndFeed feed = new SyndFeedInput().build(new XmlReader(url));
-
-				//logger.info("★feed＝" + feedResult.getTitle() + "  " + feedResult.getFeedUrl());
-				saveEntry(targetFeed, feed, ngImageKeywordList, qr);
+				try {
+					SyndFeed feed = new SyndFeedInput().build(new XmlReader(url));
+					//logger.info("★feed＝" + feedResult.getTitle() + "  " + feedResult.getFeedUrl());
+					saveEntry(targetFeed, feed, ngImageKeywordList, qr);
+				} catch (Exception ex0) {
+					saveFailedFeed(feedUrl, targetFeed.getSiteName(), teamId, qr);
+					logger.warn("フィード読み込みエラー(" + feedUrl + ")", ex0);
+//					Mail.send("フィード読み込みエラー(" + teamId + " : " + feedUrl + ")\n " +
+//							ExceptionUtils.getFullStackTrace(ex0));
+				}
 			}
 		} catch (Exception e) {
 			logger.error("フィード読み込みエラー", e);
@@ -186,12 +200,13 @@ public class FeedEntrySaver {
 			}
 
 			// NGワードチェック
-			String ngSql = "SELECT word FROM feedKeywordMaster WHERE team_id=? OR team_id='all' AND ok_flg=false";
+			String ngSql = "SELECT word FROM feedKeywordMaster"
+					+ " WHERE (team_id=? OR team_id='all') AND ok_flg=false";
 			List<Map<String, Object>> ngWordList = qr.query(ngSql, new MapListHandler(), teamId);
 			boolean isNg = false;
 			for(Map<String, Object> ngMap : ngWordList) {
 				if(entryTitle.contains((String)ngMap.get("word"))) {
-					logger.info("NGワード:" + entryTitle);
+					logger.info("NGワード: [" + ngMap.get("word") + "] " + entryTitle);
 					isNg = true; break;
 				}
 			}
@@ -205,13 +220,18 @@ public class FeedEntrySaver {
 			Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), e.getLink(), entryTitle);
 			Long cnt = (Long)cntMap.get("CNT");
 			if(cnt.intValue() == 0) {
-				String content = e.getDescription().getValue();
+				String description = e.getDescription().getValue();
+				List<SyndContent> contents = e.getContents();
+				String fullContent = "";
+				for (SyndContent con : contents) {
+					fullContent += con.getValue();
+				}
 				String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-				ImageInfo img = getImageInContent(e.getLink(), content, ngImageKeywordList);
+				ImageInfo img = getImageInContent(e.getLink(), fullContent, ngImageKeywordList);
 				Object[] inseartParams = new Object[] {
 						e.getLink()
 						,entryTitle
-						,content
+						,description
 						,img.url
 						,img.width
 						,img.height
@@ -224,9 +244,27 @@ public class FeedEntrySaver {
 					int count = qr.update(insertSql, inseartParams);
 					logger.info("結果：" + count);
 				} catch(Exception ex) {
-					logger.error("フィード読み込みエラー", ex);
+					logger.error("エントリ登録エラー", ex);
 				}
 			}
+		}
+	}
+	/**
+	 * フィード取得に失敗した情報をDB保存する
+	 * @param feedUrl
+	 * @param feedName
+	 * @param teamId
+	 * @param qr
+	 * @throws SQLException
+	 */
+	protected static void saveFailedFeed(String feedUrl, String feedName, 
+			String teamId, QueryRunner qr) throws SQLException {
+		String sql = "UPDATE failedFeed SET count=count+1, up_date=now()"
+				+ " WHERE feed_url=?";
+		int count = qr.update(sql, feedUrl);
+		if (count == 0) {
+			sql = "INSERT INTO failedFeed VALUES(?, ?, ?, 1, now())";
+			qr.update(sql, feedUrl, teamId, feedName);
 		}
 	}
 

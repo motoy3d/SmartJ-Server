@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 
 import com.urawaredsmylife.util.DB;
+import com.urawaredsmylife.util.Mail;
 
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -79,6 +80,7 @@ public class SearchTweetsSaver {
 				logger.info(teamId + " 登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 			}
 		} catch (Exception ex) {
+			Mail.send(ex);
 			ex.printStackTrace();
 			System.out.println("Failed to search tweets: " + ex.getMessage());
 			System.exit(-1);

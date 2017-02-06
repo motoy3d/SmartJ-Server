@@ -18,10 +18,6 @@
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/nekohtml-0.9.5.jar"/>
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/xercesImpl-2.6.1.jar"/>
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/xmlParserAPIs-2.6.1.jar"/>
-	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-async-3.0.5.jar"/>
-	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-core-3.0.5.jar"/>
-	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-media-support-3.0.5.jar"/>
-	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-stream-3.0.5.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/servlet-api.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/jasper.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/jsp-api.jar"/>
@@ -51,5 +47,9 @@
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/rome-1.7.1.jar"/>
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/rome-utils-1.7.1.jar"/>
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/slf4j-api-1.7.22.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-async-4.0.4.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-core-4.0.4.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-media-support-4.0.4.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-stream-4.0.4.jar"/>
 	<classpathentry kind="output" path="ap/WEB-INF/classes"/>
 </classpath>

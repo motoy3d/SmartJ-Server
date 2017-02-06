@@ -18,16 +18,8 @@ public class Mail {
 	private static final String FROM = "motoy@sub0000499082.hmk-temp.com";
 	private static final String TO = "motoy3d@gmail.com";
 	private static boolean debug = true;
-
-	/**
-	 * エラーメール送信
-	 * @param th
-	 */
-	public static void send(Throwable th) {
-		if (!"true".equals(ResourceBundle.getBundle("app").getString("mail.enable"))) {
-			return;
-		}
-		Properties props = new Properties();
+	private static Properties props = new Properties();
+	{
 		props.put("mail.smtp.host", HOST);
 		props.put("mail.smtp.from", FROM);
 //		props.put("mail.host", HOST);
@@ -35,12 +27,18 @@ public class Mail {
 		if (true) {
 			props.put("mail.debug", "true");
 		}
+	}
+	/**
+	 * エラーメール送信
+	 * @param th
+	 */
+	public static void send(String msgText) {
+		if (!"true".equals(ResourceBundle.getBundle("app").getString("mail.enable"))) {
+			return;
+		}
 		String subject = "SmartJ Error " + new Date();
-		String msgText = ExceptionUtils.getFullStackTrace(th);
-
 		Session session = Session.getInstance(props);
 		session.setDebug(debug);
-
 		try {
 			MimeMessage msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(FROM));
@@ -60,6 +58,18 @@ public class Mail {
 			System.out.println("¥n--Exception handling in msgsendsample.java");
 			mex.printStackTrace();
 		}
+	}
+	
+	/**
+	 * エラーメール送信
+	 * @param th
+	 */
+	public static void send(Throwable th) {
+		if (!"true".equals(ResourceBundle.getBundle("app").getString("mail.enable"))) {
+			return;
+		}
+		String msgText = ExceptionUtils.getFullStackTrace(th);
+		send(msgText);
 	}
 	
 	public static void main(String[] args) {

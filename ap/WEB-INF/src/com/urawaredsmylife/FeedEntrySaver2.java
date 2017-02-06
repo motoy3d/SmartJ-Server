@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
+import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
@@ -113,12 +114,18 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				String feedUrl = targetFeed.getFeedUrl();
 				URL url = new URL(feedUrl);
 				logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
-
-				SyndFeed feed = new SyndFeedInput().build(new XmlReader(url));
-				SyndFeedHolder feedHolder = new SyndFeedHolder(feed, targetFeed.getFeedId(), targetFeed.getSiteName());
-
-				logger.info("★件数＝" + feed.getEntries().size() + "  " + targetFeed.getSiteName());
-				entryList.add(feedHolder);
+				try {
+					SyndFeed feed = new SyndFeedInput().build(new XmlReader(url));
+					SyndFeedHolder feedHolder = new SyndFeedHolder(
+							feed, targetFeed.getFeedId(), targetFeed.getSiteName());	
+					logger.info("★件数＝" + feed.getEntries().size() + "  " + targetFeed.getSiteName());
+					entryList.add(feedHolder);
+				} catch (Exception ex0) {
+					saveFailedFeed(feedUrl, targetFeed.getSiteName(), null, qr);
+					logger.warn("フィード読み込みエラー(" + feedUrl + ")", ex0);
+//					Mail.send("フィード読み込みエラー(" + teamId + " : " + feedUrl + ")\n " +
+//							ExceptionUtils.getFullStackTrace(ex0));
+				}
 			}
 		} catch (Exception e) {
 			logger.error("フィード読み込みエラー", e);
@@ -168,9 +175,9 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 	private void saveEntry(/*Feed targetFeed,*/ List<SyndFeedHolder> feedResults
 			, List<Map<String, Object>> ngImageKeywordList, QueryRunner qr) throws SQLException {
 		//OK・NGワードリスト
-		String ngSql = "SELECT word FROM feedKeywordMaster WHERE team_id=? OR team_id='all' AND ok_flg=false";
+		String ngSql = "SELECT word FROM feedKeywordMaster WHERE (team_id=? OR team_id='all') AND ok_flg=false";
 		List<Map<String, Object>> ngWordList = qr.query(ngSql, new MapListHandler(), teamId);
-		String okSql = "SELECT word FROM feedKeywordMaster WHERE team_id=? OR team_id='all' AND ok_flg=true";
+		String okSql = "SELECT word FROM feedKeywordMaster WHERE (team_id=? OR team_id='all') AND ok_flg=true";
 		List<Map<String, Object>>  okWordList = qr.query(okSql, new MapListHandler(), teamId);
 		Map<String, Object> teamName1Map = new HashMap<>();
 		teamName1Map.put("word", teamName1);
@@ -189,7 +196,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 			String entryTable = teamId + "Entry";
 			for(SyndEntry e : entries) {
 				String entryTitle = StringEscapeUtils.unescapeHtml(e.getTitle());
-				String entryContent = e.getDescription() == null? "" : e.getDescription().getValue();
+				String entryDescription = e.getDescription() == null? "" : e.getDescription().getValue();
 				boolean isNg = false;
 				// NGワードチェック
 				for(Map<String, Object> ngMap : ngWordList) {
@@ -205,10 +212,10 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				boolean isOk = false;
 				for (Map<String, Object> okMap : okWordList) {
 					String ok = (String)okMap.get("word");
-					if (entryTitle == null || entryContent == null) {
+					if (entryTitle == null || entryDescription == null) {
 						continue;
 					}
-					if (entryTitle.contains(ok) || entryContent.contains(ok)) {
+					if (entryTitle.contains(ok) || entryDescription.contains(ok)) {
 						isOk = true;
 						break;
 					}
@@ -235,11 +242,16 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				Long cnt = (Long)cntMap.get("CNT");
 				if(cnt.intValue() == 0) {
 					String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-					ImageInfo img = getImageInContent(e.getLink(), entryContent, ngImageKeywordList);
+					List<SyndContent> contents = e.getContents();
+					String fullContent = "";
+					for (SyndContent con : contents) {
+						fullContent += con.getValue();
+					}
+					ImageInfo img = getImageInContent(e.getLink(), fullContent, ngImageKeywordList);
 					Object[] inseartParams = new Object[] {
 							e.getLink()
 							,entryTitle
-							,entryContent
+							,entryDescription
 							,img.url
 							,img.width
 							,img.height
