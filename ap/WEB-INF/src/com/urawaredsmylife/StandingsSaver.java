@@ -21,8 +21,8 @@ import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.TeamUtils;
 
 /**
- * TODO ACL取得先を報知からJリーグ公式サイトに変更
  * YahooスポーツからJリーグ、ルヴァンカップの順位表を取得してDBに保存する。
+ * ACL取得先を報知からJリーグ公式サイトに変更（済）
  * 本処理はバッチで定期的に実行する。
  * @author motoy3d
  */
@@ -34,10 +34,7 @@ public class StandingsSaver {
 	private static final String SRC_URL_J1 = "http://soccer.yahoo.co.jp/jleague/standings/j1";
 	private static final String SRC_URL_J2 = "http://soccer.yahoo.co.jp/jleague/standings/j2";
 	private static final String SRC_URL_NABISCO = "http://soccer.yahoo.co.jp/jleague/standings/jleaguecup";
-	private static final String SRC_URL_ACL1 = "http://www.hochi.co.jp/soccer/data/world/acl/group_E.html";
-	private static final String SRC_URL_ACL2= "http://www.hochi.co.jp/soccer/data/world/acl/group_F.html";
-	private static final String SRC_URL_ACL3 = "http://www.hochi.co.jp/soccer/data/world/acl/group_G.html";
-	private static final String SRC_URL_ACL4 = "http://www.hochi.co.jp/soccer/data/world/acl/group_H.html";
+	private static final String SRC_URL_ACL = "http://www.jleague.jp/standings/acl.html";
 
 	/**
 	 * ルヴァンカップ参加チーム数（年によって変わる可能性あり）
@@ -91,16 +88,12 @@ public class StandingsSaver {
 				nabiscoResult = insertNabisco();
 			}
 			//ACL
-			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
-			int aclResult = 0;
-			if (aclOpenDate.getTime() < new Date().getTime()) {
-				
-				
-				//TODO 取得先を報知からJリーグ公式サイトに変更
+			int aclResult = insertACL();
+//			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+//			int aclResult = 0;
+//			if (aclOpenDate.getTime() < new Date().getTime()) {
 //				aclResult = insertACL();
-				
-				
-			}
+//			}
 			
 			return j1Result + j2Result + nabiscoResult + aclResult;
 		} catch(Exception ex) {
@@ -263,38 +256,37 @@ public class StandingsSaver {
 		HttpUnitOptions.setScriptingEnabled(false);
 		try {
 			logger.info("----------------------------------------");
-			logger.info(SRC_URL_ACL1);
-			logger.info(SRC_URL_ACL2);
-			logger.info(SRC_URL_ACL3);
-			logger.info(SRC_URL_ACL4);
+			logger.info(SRC_URL_ACL);
 			logger.info("----------------------------------------");
-			String[] urlList = new String[] {SRC_URL_ACL1, SRC_URL_ACL2, SRC_URL_ACL3, SRC_URL_ACL4};
 			String[] groupNameList = new String[] {"E", "F", "G", "H"};
             String insertSql = "INSERT INTO aclStandings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             Object[][] insertDataList = new Object[ACL_TEAM_COUNT][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
             
             int rowIdx = 0;
-			for(int g=0; g<urlList.length; g++) {
-				String url = urlList[g];
-				GetMethodWebRequest req = new GetMethodWebRequest(url);
-				WebResponse res = wc.getResponse(req);
-				WebTable[] tables = res.getTables();
-				WebTable table = tables[0];
+			GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL_ACL);
+			WebResponse res = wc.getResponse(req);
+			WebTable[] tables = res.getTables();	//4グループ分のテーブル
+			for (int grpIdx = 0; grpIdx<tables.length; grpIdx++) {
+				WebTable table = tables[grpIdx];
 				TableRow[] rows = table.getRows();
 				for(int r=1; r<rows.length; r++) {
 					System.out.println("-----------------------------");
 					String rank = table.getCellAsText(r, 0).replace("-", "1");
 					String team = table.getCellAsText(r, 1);
-					String point = table.getCellAsText(r, 2);
-					String games = table.getCellAsText(r, 3);
-					String win = table.getCellAsText(r, 4);
-					String draw = table.getCellAsText(r, 5);
-					String lose = table.getCellAsText(r, 6);
-					String gotGoal = table.getCellAsText(r, 7);
-					String lostGoal = table.getCellAsText(r, 8);
-					String diff = table.getCellAsText(r, 9);
-					String group = groupNameList[g];
+					if ("ＦＣソウルＦＣソウル".equals(team)) {	//サイト側のhtmlミス対応
+						team = "ＦＣソウル";
+					}
+					team = TeamUtils.getShortTeamName(team);
+					String games = table.getCellAsText(r, 2);
+					String win = table.getCellAsText(r, 3);
+					String draw = table.getCellAsText(r, 4);
+					String lose = table.getCellAsText(r, 5);
+					String gotGoal = table.getCellAsText(r, 6);
+					String lostGoal = table.getCellAsText(r, 7);
+					String diff = table.getCellAsText(r, 8);
+					String point = table.getCellAsText(r, 9);
+					String group = groupNameList[grpIdx];
 					System.out.println(group + "-" + rank + " : " + team);
 					int c = 0;
 					insertDataList[rowIdx] = new Object[13];

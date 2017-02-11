@@ -227,14 +227,20 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("JEO", "全北現代");//韓国
 		TEAM_NAMES_FULL_SHORT.put("SUW", "水原三星");//韓国
 		TEAM_NAMES_FULL_SHORT.put("POH", "浦項");//韓国
+		TEAM_NAMES_FULL_SHORT.put("済州ユナイテッド", "済州");//韓国
 		TEAM_NAMES_FULL_SHORT.put("CHO", "チョンブリ");//タイ
 		TEAM_NAMES_FULL_SHORT.put("BIN", "ビンズオン");	//タイ
 		TEAM_NAMES_FULL_SHORT.put("MUA", "ムアントン");	//タイ
+		TEAM_NAMES_FULL_SHORT.put("ムアントン・ユナイテッド", "ムアントン");	//タイ
 		TEAM_NAMES_FULL_SHORT.put("BUR", "ブリーラム");//タイ
 		TEAM_NAMES_FULL_SHORT.put("SYD", "シドニーＦＣ");	//オーストラリア
-		TEAM_NAMES_FULL_SHORT.put("WSW", "ウェスタンシドニー");	//オーストラリア
-		TEAM_NAMES_FULL_SHORT.put("MEL", "メルボルンビクトリー");//オーストラリア
+		TEAM_NAMES_FULL_SHORT.put("WSW", "Wシドニー");	//オーストラリア
+		TEAM_NAMES_FULL_SHORT.put("ウェスタン・シドニー・ワンダラーズ", "Wシドニー");	//オーストラリア
+		TEAM_NAMES_FULL_SHORT.put("MEL", "メルボルン");//オーストラリア
+		TEAM_NAMES_FULL_SHORT.put("ADE", "アデレード");//オーストラリア
+		TEAM_NAMES_FULL_SHORT.put("アデレード・ユナイテッド", "アデレード");//オーストラリア
 		TEAM_NAMES_FULL_SHORT.put("EST", "イースタンSC");//香港
+		
 	}
 
 	/**

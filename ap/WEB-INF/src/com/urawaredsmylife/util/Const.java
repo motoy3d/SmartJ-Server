@@ -12,19 +12,13 @@ public class Const {
 	/**
 	 * J2開幕日
 	 */
-	public static final String J2_OPEN_DATE = "2015/03/08";
+	public static final String J2_OPEN_DATE = "2017/02/26";
 	/**
 	 * ルヴァン開幕日
 	 */
-	public static final String NABISCO_OPEN_DATE = "2015/03/18";
+	public static final String NABISCO_OPEN_DATE = "2017/03/15";
 	/**
 	 * ACL開幕日
 	 */
-	public static final String ACL_OPEN_DATE = "2015/02/24";
-
-	/**
-	 * 2ndステージ開幕日
-	 */
-	public static final String J1_SECOND_STAGE_OPEN_DATE = "2015/07/11";
-
+	public static final String ACL_OPEN_DATE = "2017/02/21";
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -146,19 +147,8 @@ public class StandingsService {
 	 */
 	private String createSqlForACL(QueryRunner qr, String season,
 			String teamId) throws SQLException {
-		String teamName = TeamUtils.getTeamName(teamId);
-		if (teamId.equals("reds")) {
-			teamName = "浦和";
-		}
-		if (teamId.equals("gamba")) {
-			teamName = "Ｇ大阪";
-		}
-		if (teamId.equals("sanfrecce")) {
-			teamName = "広島";
-		}
-		if (teamId.equals("fctokyo")) {
-			teamName = "Ｆ東京";
-		}
+		String teamSql = "SELECT team_name3 FROM teamMaster WHERE team_id=?";
+		String teamName = qr.query(teamSql, new ScalarHandler<String>(), teamId);
 
 		String sql = "SELECT * FROM aclStandings WHERE"
 				+ " season=" + season 

@@ -1,9 +1,7 @@
 package com.urawaredsmylife.service;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +10,9 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 
 import com.urawaredsmylife.dto.NoDataResult;
-import com.urawaredsmylife.util.Const;
 import com.urawaredsmylife.util.DB;
 
 /**
@@ -76,18 +72,19 @@ public class ConfigService {
 			conf.put("is2stages", "false");
 			
 			// 現在のステージ
-			try {
-				Date secondStageOpenDate = DateUtils.parseDate(
-						Const.J1_SECOND_STAGE_OPEN_DATE, new String[] {"yyyy/MM/dd"});
-				if (new Date().getTime() < secondStageOpenDate.getTime()) {
-//				TODO アプリ側で順位表初期表示時にタブが2ndに切り替わらないため、とりあえず1st固定としておく。
-					conf.put("currentStage", "1st");
-				} else {
-					conf.put("currentStage", "total");
-//					conf.put("currentStage", "2nd");
-				}
-			} catch (ParseException e) {
-			}
+			conf.put("currentStage", "total");
+//			try {
+//				Date secondStageOpenDate = DateUtils.parseDate(
+//						Const.J1_SECOND_STAGE_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+//				if (new Date().getTime() < secondStageOpenDate.getTime()) {
+////				TODO アプリ側で順位表初期表示時にタブが2ndに切り替わらないため、とりあえず1st固定としておく。
+//					conf.put("currentStage", "1st");
+//				} else {
+//					conf.put("currentStage", "total");
+////					conf.put("currentStage", "2nd");
+//				}
+//			} catch (ParseException e) {
+//			}
 			
 			// NGサイトリスト(リジェクト対策)
 			String sql3 = "SELECT * FROM ngSite";
