@@ -176,7 +176,7 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("柏レイソル", "柏");
 		TEAM_NAMES_FULL_SHORT.put("名古屋グランパス", "名古屋");
 		TEAM_NAMES_FULL_SHORT.put("ヴィッセル神戸", "神戸");
-		TEAM_NAMES_FULL_SHORT.put("アルディージャ大宮", "大宮");
+		TEAM_NAMES_FULL_SHORT.put("大宮アルディージャ", "大宮");
 		TEAM_NAMES_FULL_SHORT.put("ガンバ大阪", "G大阪");
 		TEAM_NAMES_FULL_SHORT.put("アルビレックス新潟", "新潟");
 		TEAM_NAMES_FULL_SHORT.put("北海道コンサドーレ札幌", "札幌");
