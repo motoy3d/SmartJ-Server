@@ -16,7 +16,7 @@ public class Const {
 	/**
 	 * ルヴァン開幕日
 	 */
-	public static final String NABISCO_OPEN_DATE = "2017/03/15";
+	public static final String LEVAIN_OPEN_DATE = "2017/03/15";
 	/**
 	 * ACL開幕日
 	 */

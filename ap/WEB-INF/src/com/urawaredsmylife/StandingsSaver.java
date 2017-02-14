@@ -11,7 +11,9 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 
 import com.meterware.httpunit.GetMethodWebRequest;
+import com.meterware.httpunit.HTMLElement;
 import com.meterware.httpunit.HttpUnitOptions;
+import com.meterware.httpunit.TableCell;
 import com.meterware.httpunit.TableRow;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
@@ -33,13 +35,13 @@ public class StandingsSaver {
 	 */
 	private static final String SRC_URL_J1 = "http://soccer.yahoo.co.jp/jleague/standings/j1";
 	private static final String SRC_URL_J2 = "http://soccer.yahoo.co.jp/jleague/standings/j2";
-	private static final String SRC_URL_NABISCO = "http://soccer.yahoo.co.jp/jleague/standings/jleaguecup";
+	private static final String SRC_URL_LEVAIN = "http://www.jleague.jp/standings/leaguecup.html";
 	private static final String SRC_URL_ACL = "http://www.jleague.jp/standings/acl.html";
 
 	/**
 	 * ルヴァンカップ参加チーム数（年によって変わる可能性あり）
 	 */
-	private static final int NABISCO_TEAM_COUNT = 14;
+	private static final int NABISCO_TEAM_COUNT = 15;
 	/**
 	 * ACLチーム数（年によって変わる可能性あり）
 	 */
@@ -82,11 +84,12 @@ public class StandingsSaver {
 				j2Result = insertJ(SRC_URL_J2, "J2", "", 22);
 			}
 			// ルヴァンカップ
-			Date nabiscoOpenDate = DateUtils.parseDate(Const.NABISCO_OPEN_DATE, new String[] {"yyyy/MM/dd"});
-			int nabiscoResult = 0;
-			if (nabiscoOpenDate.getTime() < new Date().getTime()) {
-				nabiscoResult = insertNabisco();
-			}
+			Date levainOpenDate = DateUtils.parseDate(Const.LEVAIN_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			int levainResult = 0;
+			levainResult = insertLevain();
+//			if (nabiscoOpenDate.getTime() < new Date().getTime()) {
+//				nabiscoResult = insertNabisco();
+//			}
 			//ACL
 			int aclResult = insertACL();
 //			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
@@ -95,7 +98,7 @@ public class StandingsSaver {
 //				aclResult = insertACL();
 //			}
 			
-			return j1Result + j2Result + nabiscoResult + aclResult;
+			return j1Result + j2Result + levainResult + aclResult;
 		} catch(Exception ex) {
 			logger.error("順位表取得エラー", ex);
 			return 1;
@@ -184,13 +187,13 @@ public class StandingsSaver {
 	 * ルヴァンカップ順位表URLにアクセスして解析し、nabiscoStandingsテーブルにINSERTする。
 	 * @return
 	 */
-	private int insertNabisco() {
+	private int insertLevain() {
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
 		logger.info("----------------------------------------");
-		logger.info(SRC_URL_NABISCO);
+		logger.info(SRC_URL_LEVAIN);
 		logger.info("----------------------------------------");
-		GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL_NABISCO);
+		GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL_LEVAIN);
 		try {
 			WebResponse res = wc.getResponse(req);
 			WebTable[] tables = res.getTables();
@@ -205,8 +208,9 @@ public class StandingsSaver {
 				TableRow[] rows = table.getRows();
 				for(int r=1; r<rows.length; r++) {
 					System.out.println("-----------------------------");
-					String rank = table.getCellAsText(r, 0);
-					String team = table.getCellAsText(r, 1);
+					String rank = table.getCellAsText(r, 0).replace("-", "1");
+					TableCell teamCell = table.getTableCell(r, 1);
+					String team = teamCell.getNode().getFirstChild().getFirstChild().getFirstChild().getNodeValue();
 					String point = table.getCellAsText(r, 2);
 					String games = table.getCellAsText(r, 3);
 					String win = table.getCellAsText(r, 4);
@@ -273,9 +277,13 @@ public class StandingsSaver {
 				for(int r=1; r<rows.length; r++) {
 					System.out.println("-----------------------------");
 					String rank = table.getCellAsText(r, 0).replace("-", "1");
-					String team = table.getCellAsText(r, 1);
-					if ("ＦＣソウルＦＣソウル".equals(team)) {	//サイト側のhtmlミス対応
-						team = "ＦＣソウル";
+					TableCell teamCell = table.getTableCell(r, 1);
+					HTMLElement[] teamSpan = teamCell.getElementsWithAttribute("class", "teamName");
+					String team = null;
+					if (0 < teamSpan.length) {
+						team = teamSpan[0].getText();
+					} else {
+						team = table.getCellAsText(r, 0);
 					}
 					team = TeamUtils.getShortTeamName(team);
 					String games = table.getCellAsText(r, 2);

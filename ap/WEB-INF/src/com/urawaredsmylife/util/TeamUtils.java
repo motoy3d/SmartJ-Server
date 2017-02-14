@@ -168,9 +168,11 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("清水エスパルス", "清水");
 		TEAM_NAMES_FULL_SHORT.put("浦和レッズ", "浦和");
 		TEAM_NAMES_FULL_SHORT.put("FC東京", "F東京");
+		TEAM_NAMES_FULL_SHORT.put("ＦＣ東京", "F東京");
 		TEAM_NAMES_FULL_SHORT.put("川崎フロンターレ", "川崎");
 		TEAM_NAMES_FULL_SHORT.put("サガン鳥栖", "鳥栖");
 		TEAM_NAMES_FULL_SHORT.put("横浜F・マリノス", "横浜FM");
+		TEAM_NAMES_FULL_SHORT.put("横浜Ｆ・マリノス", "横浜FM");
 		TEAM_NAMES_FULL_SHORT.put("鹿島アントラーズ", "鹿島");
 		TEAM_NAMES_FULL_SHORT.put("セレッソ大阪", "C大阪");
 		TEAM_NAMES_FULL_SHORT.put("柏レイソル", "柏");
@@ -188,11 +190,14 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("東京ヴェルディ", "東京V");
 		TEAM_NAMES_FULL_SHORT.put("モンテディオ山形", "山形");
 		TEAM_NAMES_FULL_SHORT.put("横浜FC", "横浜FC");
+		TEAM_NAMES_FULL_SHORT.put("横浜ＦＣ", "横浜FC");
 		TEAM_NAMES_FULL_SHORT.put("栃木FC", "栃木");
+		TEAM_NAMES_FULL_SHORT.put("栃木ＦＣ", "栃木");
 		TEAM_NAMES_FULL_SHORT.put("北九州ギラヴァンツ", "北九州");
 		TEAM_NAMES_FULL_SHORT.put("ファジアーノ岡山", "岡山");
 		TEAM_NAMES_FULL_SHORT.put("水戸ホーリーホック", "水戸");
 		TEAM_NAMES_FULL_SHORT.put("松本山雅FC", "松本山雅");
+		TEAM_NAMES_FULL_SHORT.put("松本山雅ＦＣ", "松本山雅");
 		TEAM_NAMES_FULL_SHORT.put("徳島ヴォルティス", "徳島");
 		TEAM_NAMES_FULL_SHORT.put("群馬ザスパクサツ", "群馬");
 		
@@ -200,15 +205,21 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("ロアッソ熊本", "熊本");
 		TEAM_NAMES_FULL_SHORT.put("アビスパ福岡", "福岡");
 		TEAM_NAMES_FULL_SHORT.put("愛媛FC", "愛媛");
+		TEAM_NAMES_FULL_SHORT.put("愛媛ＦＣ", "愛媛");
 		TEAM_NAMES_FULL_SHORT.put("岐阜FC", "岐阜");
+		TEAM_NAMES_FULL_SHORT.put("岐阜ＦＣ", "岐阜");
 		TEAM_NAMES_FULL_SHORT.put("カターレ富山", "富山");
 		TEAM_NAMES_FULL_SHORT.put("ガイナーレ鳥取", "鳥取");
 		TEAM_NAMES_FULL_SHORT.put("FC町田ゼルビア", "町田");
+		TEAM_NAMES_FULL_SHORT.put("ＦＣ町田ゼルビア", "町田");
 		TEAM_NAMES_FULL_SHORT.put("ツエーゲン金沢", "金沢");
 		TEAM_NAMES_FULL_SHORT.put("AC長野パルセイロ", "長野");
+		TEAM_NAMES_FULL_SHORT.put("AＣ長野パルセイロ", "長野");
 		TEAM_NAMES_FULL_SHORT.put("グルージャ盛岡", "盛岡");
 		TEAM_NAMES_FULL_SHORT.put("SC相模原", "相模原");
+		TEAM_NAMES_FULL_SHORT.put("ＳＣ相模原", "相模原");
 		TEAM_NAMES_FULL_SHORT.put("FC琉球", "琉球");
+		TEAM_NAMES_FULL_SHORT.put("ＦＣ琉球", "琉球");
 		TEAM_NAMES_FULL_SHORT.put("福島ユナイテッドFC", "福島");
 		TEAM_NAMES_FULL_SHORT.put("秋田ブラウブリッツ", "秋田");
 		TEAM_NAMES_FULL_SHORT.put("Jリーグ・アンダー22選抜", "J-22");
@@ -226,8 +237,10 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("SEO", "ＦＣソウル");//韓国
 		TEAM_NAMES_FULL_SHORT.put("JEO", "全北現代");//韓国
 		TEAM_NAMES_FULL_SHORT.put("SUW", "水原三星");//韓国
+		TEAM_NAMES_FULL_SHORT.put("水原三星ブルーウイングス", "水原三星");//韓国
 		TEAM_NAMES_FULL_SHORT.put("POH", "浦項");//韓国
 		TEAM_NAMES_FULL_SHORT.put("済州ユナイテッド", "済州");//韓国
+		TEAM_NAMES_FULL_SHORT.put("済州ユナイテッドＦＣ", "済州");//韓国
 		TEAM_NAMES_FULL_SHORT.put("CHO", "チョンブリ");//タイ
 		TEAM_NAMES_FULL_SHORT.put("BIN", "ビンズオン");	//タイ
 		TEAM_NAMES_FULL_SHORT.put("MUA", "ムアントン");	//タイ
@@ -236,6 +249,7 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("SYD", "シドニーＦＣ");	//オーストラリア
 		TEAM_NAMES_FULL_SHORT.put("WSW", "Wシドニー");	//オーストラリア
 		TEAM_NAMES_FULL_SHORT.put("ウェスタン・シドニー・ワンダラーズ", "Wシドニー");	//オーストラリア
+		TEAM_NAMES_FULL_SHORT.put("ブリスベン ロアー", "ブリスベン");	//オーストラリア
 		TEAM_NAMES_FULL_SHORT.put("MEL", "メルボルン");//オーストラリア
 		TEAM_NAMES_FULL_SHORT.put("ADE", "アデレード");//オーストラリア
 		TEAM_NAMES_FULL_SHORT.put("アデレード・ユナイテッド", "アデレード");//オーストラリア
@@ -281,7 +295,10 @@ public class TeamUtils {
 	public static final String getShortTeamName(String officialTeamName) {
 		String shortName = TEAM_NAMES_FULL_SHORT.get(officialTeamName);
 		if (shortName == null) {
-			return officialTeamName;
+			shortName = TEAM_NAMES_FULL_SHORT.get(officialTeamName.replaceAll("　", "・"));
+			if (shortName == null) {
+				return officialTeamName;
+			}
 		}
 		return shortName;
 	}
