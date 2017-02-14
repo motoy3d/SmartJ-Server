@@ -26,6 +26,7 @@ import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndEnclosure;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
@@ -173,24 +174,24 @@ public class FeedEntrySaver {
 			, List<Map<String, Object>> ngImageKeywordList, QueryRunner qr) throws SQLException {
 		List<SyndEntry> entries = feed.getEntries();
 		String entryTable = teamId + "Entry";
-		for(SyndEntry e : entries) {
-			String entryTitle = StringEscapeUtils.unescapeHtml(e.getTitle());
+		for(SyndEntry entry : entries) {
+			String entryTitle = StringEscapeUtils.unescapeHtml(entry.getTitle());
 			// エントリタイトルからサイト名を抽出
 			String siteName = targetFeed.getSiteName();
-			if(e.getLink().startsWith("http://web.gekisaka.jp")) {
+			if(entry.getLink().startsWith("http://web.gekisaka.jp")) {
 				siteName = "ゲキサカ";
 			}
-			else if(e.getLink().startsWith("http://www.nikkansports.com")) {
+			else if(entry.getLink().startsWith("http://www.nikkansports.com")) {
 				siteName = "日刊スポーツ";
 			}
-			else if(e.getLink().startsWith("http://www.soccerdigestweb.com/")) {
+			else if(entry.getLink().startsWith("http://www.soccerdigestweb.com/")) {
 				siteName = "サッカーダイジェストWeb";
 			}
 			if(StringUtils.isBlank(siteName)) {
-				siteName = extractSiteName(e.getLink());
+				siteName = extractSiteName(entry.getLink());
 			}
-			Date pubDate = e.getPublishedDate();
-			if (pubDate == null || e.getLink().startsWith("http://www.soccerdigestweb.com/")) {
+			Date pubDate = entry.getPublishedDate();
+			if (pubDate == null || entry.getLink().startsWith("http://www.soccerdigestweb.com/")) {
 				pubDate = new Date();
 			}
 			//logger.info("■" + new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle + "  -  " + siteName);
@@ -217,19 +218,14 @@ public class FeedEntrySaver {
 			// 既に同一URLが登録済みの場合は登録しない
 			String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable
 					+ " WHERE entry_url=? OR entry_title=?";
-			Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), e.getLink(), entryTitle);
+			Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), entry.getLink(), entryTitle);
 			Long cnt = (Long)cntMap.get("CNT");
 			if(cnt.intValue() == 0) {
-				String description = e.getDescription().getValue();
-				List<SyndContent> contents = e.getContents();
-				String fullContent = "";
-				for (SyndContent con : contents) {
-					fullContent += con.getValue();
-				}
+				String description = entry.getDescription().getValue();
 				String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-				ImageInfo img = getImageInContent(e.getLink(), fullContent, ngImageKeywordList);
+				ImageInfo img = getImageInContent(entry, ngImageKeywordList);
 				Object[] inseartParams = new Object[] {
-						e.getLink()
+						entry.getLink()
 						,entryTitle
 						,description
 						,img.url
@@ -326,47 +322,69 @@ public class FeedEntrySaver {
 	 * @param ngImageKeywordList イメージURL保存NGなサイトURLのキーワードリスト
 	 * @return
 	 */
-	protected ImageInfo getImageInContent(String sourceUrl, String content
+	protected ImageInfo getImageInContent(SyndEntry entry
+			//String sourceUrl, String content
 			, List<Map<String, Object>> ngImageKeywordList) {
+		String sourceUrl = entry.getLink();
 		ImageInfo img = new ImageInfo();
+		List<SyndContent> contents = entry.getContents();
+		String content = "";
+		for (SyndContent con : contents) {
+			content += con.getValue();
+		}		
         int imgTagIdx = content.indexOf("<img");
+        logger.info("getImageContent.  sourceUrl=" + sourceUrl + "★ imgTagIdx=" + imgTagIdx);
+        
+        String imgUrl = null;
         if(imgTagIdx != -1) {
 	        int srcIdx = content.indexOf("src=", imgTagIdx);
 	        if(srcIdx != -1) {
+	        	logger.debug("◯srcIdx=" + srcIdx);
 	            int urlStartIdx = srcIdx + 5;
 	            int urlEndIdx = content.indexOf('"', urlStartIdx);
-	            String imgUrl = content.substring(urlStartIdx, urlEndIdx);
+	            imgUrl = content.substring(urlStartIdx, urlEndIdx);
 	            imgUrl = imgUrl.replaceAll("&amp;", "&");
-
-	            // イメージ保存NGチェック
-	            boolean isNgImage = false;
-	            for (Map<String, Object> ngWord : ngImageKeywordList) {
-	            	if (imgUrl.contains((String)ngWord.get("url_keyword"))) {
-	            		isNgImage = true;
-	            		break;
-	            	}
-	            }
-	            if(isNgImage) {
-	                imgUrl = "";
-	            } else {
-	        		try {
-	        			if (imgUrl.startsWith("/")) {
-	        				int idx1 = sourceUrl.indexOf("//");
-							imgUrl = sourceUrl.substring(0, sourceUrl.indexOf("/", idx1+2)) + imgUrl;
-	        				logger.debug("🌟" + imgUrl);
-	        			}
-	        			URL u = new URL(imgUrl);
-	        			BufferedImage bimg = ImageIO.read(u);
-	        			if (bimg != null) {
-		        			img.url = imgUrl;
-			        		img.width = bimg.getWidth();
-			        		img.height = bimg.getHeight();
-	        			}
-	        		} catch (IOException e) {
-	        			logger.warn("image loading exception", e);
-	        		}
-	            }
 	        }
+        } else {
+        	List<SyndEnclosure> enclosures = entry.getEnclosures();	//画像等の関連ファイル
+        	for (SyndEnclosure enc : enclosures) {
+        		if (enc.getType().startsWith("image")) {
+        			imgUrl = enc.getUrl();
+        			break;
+        		}
+        	}
+        }
+
+        if (imgUrl != null) {
+            // イメージ保存NGチェック
+            boolean isNgImage = false;
+            for (Map<String, Object> ngWord : ngImageKeywordList) {
+            	if (imgUrl.contains((String)ngWord.get("url_keyword"))) {
+            		logger.info("isNgImage. " + imgUrl + " ★ keyword=" + ngWord.get("url_keyword"));
+            		isNgImage = true;
+            		break;
+            	}
+            }
+            if(isNgImage) {
+                imgUrl = "";
+            } else {
+        		try {
+        			if (imgUrl.startsWith("/")) {
+        				int idx1 = sourceUrl.indexOf("//");
+						imgUrl = sourceUrl.substring(0, sourceUrl.indexOf("/", idx1+2)) + imgUrl;
+        				logger.debug("🌟" + imgUrl);
+        			}
+        			URL u = new URL(imgUrl);
+        			BufferedImage bimg = ImageIO.read(u);
+        			if (bimg != null) {
+	        			img.url = imgUrl;
+		        		img.width = bimg.getWidth();
+		        		img.height = bimg.getHeight();
+        			}
+        		} catch (IOException e) {
+        			logger.warn("image loading exception", e);
+        		}
+            }
         }
 		return img;
 	}

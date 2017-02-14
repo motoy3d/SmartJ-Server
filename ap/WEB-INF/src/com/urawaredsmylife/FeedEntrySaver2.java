@@ -18,7 +18,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
-import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
@@ -194,9 +193,9 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 		for(SyndFeedHolder feedResultHolder : feedResults) {
 			List<SyndEntry> entries = feedResultHolder.syndFeed.getEntries();
 			String entryTable = teamId + "Entry";
-			for(SyndEntry e : entries) {
-				String entryTitle = StringEscapeUtils.unescapeHtml(e.getTitle());
-				String entryDescription = e.getDescription() == null? "" : e.getDescription().getValue();
+			for(SyndEntry entry : entries) {
+				String entryTitle = StringEscapeUtils.unescapeHtml(entry.getTitle());
+				String entryDescription = entry.getDescription() == null? "" : entry.getDescription().getValue();
 				boolean isNg = false;
 				// NGワードチェック
 				for(Map<String, Object> ngMap : ngWordList) {
@@ -223,33 +222,28 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				if(!isOk) {
 					continue;
 				}
-				Date pubDate = e.getPublishedDate();
-				if (pubDate == null || e.getLink().startsWith("http://www.soccerdigestweb.com/")) {
+				Date pubDate = entry.getPublishedDate();
+				if (pubDate == null || entry.getLink().startsWith("http://www.soccerdigestweb.com/")) {
 					pubDate = new Date();
 				}
 //				System.out.println((isNg? "🔴" : "🔵") + "(" + teamName2 + ") "
 //						+ new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle/*+ " : " + entryContent*/);
 
-				System.out.println("(" + teamName2 + ") "
+				logger.info("(" + teamName2 + ") "
 						+ new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle
-						+ " : " + e.getLink() /*+ " : " + entryContent*/);
+						+ " : " + entry.getLink() /*+ " : " + entryContent*/);
 				String siteName = feedResultHolder.siteName;
 				siteName = siteName.replace("（", "").replace("）", "");
 				// 既に同一URLが登録済みの場合は登録しない
 				String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable
 						+ " WHERE entry_url=? OR entry_title=?";
-				Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), e.getLink(), entryTitle);
+				Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), entry.getLink(), entryTitle);
 				Long cnt = (Long)cntMap.get("CNT");
 				if(cnt.intValue() == 0) {
 					String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-					List<SyndContent> contents = e.getContents();
-					String fullContent = "";
-					for (SyndContent con : contents) {
-						fullContent += con.getValue();
-					}
-					ImageInfo img = getImageInContent(e.getLink(), fullContent, ngImageKeywordList);
+					ImageInfo img = getImageInContent(entry, ngImageKeywordList);
 					Object[] inseartParams = new Object[] {
-							e.getLink()
+							entry.getLink()
 							,entryTitle
 							,entryDescription
 							,img.url
