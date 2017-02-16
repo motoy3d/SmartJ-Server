@@ -51,5 +51,6 @@
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-core-4.0.4.jar"/>
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-media-support-4.0.4.jar"/>
 	<classpathentry kind="lib" path="ap/WEB-INF/lib/twitter4j-stream-4.0.4.jar"/>
+	<classpathentry kind="lib" path="ap/WEB-INF/lib/rome-modules-1.7.1.jar"/>
 	<classpathentry kind="output" path="ap/WEB-INF/classes"/>
 </classpath>

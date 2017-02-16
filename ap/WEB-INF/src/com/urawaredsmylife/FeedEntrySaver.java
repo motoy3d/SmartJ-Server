@@ -25,6 +25,10 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import com.rometools.modules.mediarss.MediaEntryModule;
+import com.rometools.modules.mediarss.MediaModule;
+import com.rometools.modules.mediarss.types.MediaGroup;
+import com.rometools.modules.mediarss.types.Thumbnail;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEnclosure;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -346,6 +350,28 @@ public class FeedEntrySaver {
 	            imgUrl = imgUrl.replaceAll("&amp;", "&");
 	        }
         } else {
+        	// <media:thumbnail... から画像取得
+        	final MediaEntryModule module = (MediaEntryModule) entry.getModule(MediaModule.URI);
+//            Thumbnail[] thumbnails = module.getMetadata().getThumbnail();		//NullPointerが発生した
+//            if (0 < thumbnails.length) {
+//            	imgUrl = thumbnails[0].getUrl().toString();
+//            	logger.info("🌟サムネイル=" + imgUrl);
+//            } else {
+        	// YouTube RSSでは<media:group...内に<media:thumbnail..がある
+        	if (module != null) {
+            	MediaGroup[] mediaGroups = module.getMediaGroups();
+            	for (MediaGroup mg : mediaGroups) {
+            		if (mg.getMetadata() == null) {continue;}
+            		Thumbnail[] thumbnails = mg.getMetadata().getThumbnail();
+            		if (0 < thumbnails.length) {
+	                	imgUrl = thumbnails[0].getUrl().toString();
+	                	logger.info("🌟サムネイル=" + imgUrl);
+	                	break;
+            		}
+            	}
+            }
+            
+        	// <enclosure...から画像取得
         	List<SyndEnclosure> enclosures = entry.getEnclosures();	//画像等の関連ファイル
         	for (SyndEnclosure enc : enclosures) {
         		if (enc.getType().startsWith("image")) {
