@@ -65,15 +65,18 @@ public class TicketSaver {
 			logger.info("------------------------------------------------------------------");
 			// JリーグチケットサイトからチームごとにチケットURLを取得
 			Document doc = Jsoup.connect(url).maxBodySize(0).timeout(60 * 1000).get();
-			Elements games = doc.select("div.gDetailInner");
-
-			Iterator<Element> gamesItr = games.iterator();
+			
+			//////////////////////////////////
+			// Jリーグ主催試合(リーグ戦、ルヴァンカップ)
+			Elements jGames = doc.select("div.gDetailInner");
+			Iterator<Element> gamesItr = jGames.iterator();
 			while (gamesItr.hasNext()) {
 				Element game = gamesItr.next();
 				logger.info("---------------------------------------");
 //				logger.info(game.text());
 				Elements dateTime = game.select("p.time");
-				if (dateTime.isEmpty()) {
+				logger.info("🔴dateTime=" + dateTime);
+				if (dateTime.isEmpty()) {	//ACLは形式が違うので↓の方で別途処理
 					continue;
 				}
 				Element dateEle = dateTime.get(0);
@@ -84,13 +87,50 @@ public class TicketSaver {
 				String ticketUrl = TICKET_URL_BASE + link.attr("href");
 				logger.info(ticketUrl);
 				// 各チームのResultsテーブルに更新する。
-				String updateSql = "UPDATE " + teamId + "Results SET "
-						+ "ticket_url=" + DB.quote(ticketUrl) 
-						+ " WHERE game_date1=" + DB.quote(date);
-				logger.info(updateSql);
-				qr.update(updateSql);
+				updateDb(qr, teamId, date, ticketUrl);
+			}
+
+			//////////////////////////////////
+			// ACL (天皇杯も？)
+			Elements otherGames = doc.select("div.otherTktWrap > a");
+			gamesItr = otherGames.iterator();
+			while (gamesItr.hasNext()) {
+				Element game = gamesItr.next();
+				logger.info("---------------------------------------");
+//				logger.info(game.text());
+				Elements dateTime = game.select("p.day");
+				if (dateTime.isEmpty()) {
+					logger.info("🔴dateTimeがEmpty");
+					continue;
+				}
+				Element dateEle = dateTime.get(0);
+				String date = dateEle.text().substring(0, 10);
+				logger.info(date);
+				
+				String ticketUrl = TICKET_URL_BASE + game.attr("href");
+				logger.info(ticketUrl);
+				// 各チームのResultsテーブルに更新する。
+				updateDb(qr, teamId, date, ticketUrl);
 			}
 		}
+	}
+
+	/**
+	 * DBの結果テーブルのチケットURLを更新する。
+	 * @param qr
+	 * @param teamId
+	 * @param date
+	 * @param ticketUrl
+	 * @return
+	 * @throws SQLException
+	 */
+	private static int updateDb(QueryRunner qr, String teamId, String date, String ticketUrl) throws SQLException {
+		String table = teamId + "Results";
+		String updateSql = "UPDATE " + table + " SET "
+				+ "ticket_url=?" 
+				+ " WHERE game_date1=?";
+		logger.info(updateSql);
+		return qr.update(updateSql, ticketUrl, date);
 	}
 		
 }
