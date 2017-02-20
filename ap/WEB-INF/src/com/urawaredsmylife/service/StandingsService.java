@@ -131,7 +131,7 @@ public class StandingsService {
 		String sql = "SELECT * FROM nabiscoStandings WHERE"
 				+ " season=" + season 
 				+ " AND group_name=(SELECT group_name FROM nabiscoStandings"
-				+ " WHERE season=" + season + " AND team_name=" + DB.quote(teamName) + ")"
+				+ " WHERE season=" + season + " AND team_name collate utf8_unicode_ci LIKE " + DB.quote(teamName) + ")"
 				+ " ORDER BY seq";
 		return sql;
 	}
@@ -153,7 +153,7 @@ public class StandingsService {
 		String sql = "SELECT * FROM aclStandings WHERE"
 				+ " season=" + season 
 				+ " AND group_name=(SELECT group_name FROM aclStandings WHERE"
-				+ " team_name=" + DB.quote(teamName) + " AND season=" + season + ")"
+				+ " team_name collate utf8_unicode_ci LIKE " + DB.quote(teamName) + " AND season=" + season + ")"
 				+ " ORDER BY seq";
 		return sql;
 	}
