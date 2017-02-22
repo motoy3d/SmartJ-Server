@@ -41,7 +41,7 @@ public class StandingsSaver {
 	/**
 	 * ルヴァンカップ参加チーム数（年によって変わる可能性あり）
 	 */
-	private static final int NABISCO_TEAM_COUNT = 15;
+	private static final int NABISCO_TEAM_COUNT = 14;
 	/**
 	 * ACLチーム数（年によって変わる可能性あり）
 	 */
@@ -84,7 +84,7 @@ public class StandingsSaver {
 				j2Result = insertJ(SRC_URL_J2, "J2", "", 22);
 			}
 			// ルヴァンカップ
-			Date levainOpenDate = DateUtils.parseDate(Const.LEVAIN_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+//			Date levainOpenDate = DateUtils.parseDate(Const.LEVAIN_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int levainResult = 0;
 			levainResult = insertLevain();
 //			if (nabiscoOpenDate.getTime() < new Date().getTime()) {
@@ -286,14 +286,14 @@ public class StandingsSaver {
 						team = table.getCellAsText(r, 0);
 					}
 					team = TeamUtils.getShortTeamName(team);
-					String games = table.getCellAsText(r, 2);
-					String win = table.getCellAsText(r, 3);
-					String draw = table.getCellAsText(r, 4);
-					String lose = table.getCellAsText(r, 5);
-					String gotGoal = table.getCellAsText(r, 6);
-					String lostGoal = table.getCellAsText(r, 7);
-					String diff = table.getCellAsText(r, 8);
-					String point = table.getCellAsText(r, 9);
+					String point = table.getCellAsText(r, 2);
+					String games = table.getCellAsText(r, 3);
+					String win = table.getCellAsText(r, 4);
+					String draw = table.getCellAsText(r, 5);
+					String lose = table.getCellAsText(r, 6);
+					String gotGoal = table.getCellAsText(r, 7);
+					String lostGoal = table.getCellAsText(r, 8);
+					String diff = table.getCellAsText(r, 9);
 					String group = groupNameList[grpIdx];
 					System.out.println(group + "-" + rank + " : " + team);
 					int c = 0;
