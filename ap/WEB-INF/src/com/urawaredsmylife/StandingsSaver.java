@@ -1,5 +1,6 @@
 package com.urawaredsmylife;
 
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,8 +24,7 @@ import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.TeamUtils;
 
 /**
- * YahooスポーツからJリーグ、ルヴァンカップの順位表を取得してDBに保存する。
- * ACL取得先を報知からJリーグ公式サイトに変更（済）
+ * Jリーグ公式サイトからJリーグ、ルヴァンカップ、ACLの順位表を取得してDBに保存する。
  * 本処理はバッチで定期的に実行する。
  * @author motoy3d
  */
@@ -33,8 +33,8 @@ public class StandingsSaver {
 	/**
 	 * 順位表URL
 	 */
-	private static final String SRC_URL_J1 = "http://soccer.yahoo.co.jp/jleague/standings/j1";
-	private static final String SRC_URL_J2 = "http://soccer.yahoo.co.jp/jleague/standings/j2";
+	private static final String SRC_URL_J1 = "http://www.jleague.jp/standings/j1.html";
+	private static final String SRC_URL_J2 = "http://www.jleague.jp/standings/j2.html";
 	private static final String SRC_URL_LEVAIN = "http://www.jleague.jp/standings/leaguecup.html";
 	private static final String SRC_URL_ACL = "http://www.jleague.jp/standings/acl.html";
 
@@ -46,7 +46,7 @@ public class StandingsSaver {
 	 * ACLチーム数（年によって変わる可能性あり）
 	 */
 	private static final int ACL_TEAM_COUNT = 16;
-	
+
 	/**
 	 * メインメソッド
 	 * @param args
@@ -67,7 +67,7 @@ public class StandingsSaver {
 	/**
 	 * Yahooスポーツにアクセスし、順位表を抽出する
 	 * @return
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
 	private int extractStandings() {
 		try {
@@ -75,7 +75,7 @@ public class StandingsSaver {
 			Date j1OpenDate = DateUtils.parseDate(Const.J1_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int j1Result = 0;
 			if (j1OpenDate.getTime() < new Date().getTime()) {
-				j1Result = insertJ(SRC_URL_J1, "J1", "1st", 18);
+				j1Result = insertJ(SRC_URL_J1, "J1", "", 18);
 			}
 			// J2
 			Date j2OpenDate = DateUtils.parseDate(Const.J2_OPEN_DATE, new String[] {"yyyy/MM/dd"});
@@ -97,7 +97,7 @@ public class StandingsSaver {
 //			if (aclOpenDate.getTime() < new Date().getTime()) {
 //				aclResult = insertACL();
 //			}
-			
+
 			return j1Result + j2Result + levainResult + aclResult;
 		} catch(Exception ex) {
 			logger.error("順位表取得エラー", ex);
@@ -130,19 +130,21 @@ public class StandingsSaver {
             String season = new SimpleDateFormat("yyyy").format(new Date());
 			for(int r=1; r<rows.length; r++) {
 				System.out.println("-----------------------------" + tables[0].getRows()[1]);
-				String rank = tables[0].getCellAsText(r, 0);
-				String team = tables[0].getTableCell(r, 1).getText();
-				String point = tables[0].getCellAsText(r, 2);
-				String games = tables[0].getCellAsText(r, 3);
-				String win = tables[0].getCellAsText(r, 4);
-				String draw = tables[0].getCellAsText(r, 5);
-				String lose = tables[0].getCellAsText(r, 6);
-				String gotGoal = tables[0].getCellAsText(r, 7);
-				String lostGoal = tables[0].getCellAsText(r, 8);
-				String diff = tables[0].getCellAsText(r, 9);
+				String rank = tables[0].getCellAsText(r, 1);
+				String team = tables[0].getTableCell(r, 2).getText();
+				team = team.substring(0, team.length()/2);	//getText()するとチーム名が２回連続したテキストが返ってくるため。例：「浦和レッズ浦和レッズ」
+				team = Normalizer.normalize(team, Normalizer.Form.NFKC);	//全角アルファベットを半角に変換
+				String point = tables[0].getCellAsText(r, 3);
+				String games = tables[0].getCellAsText(r, 4);
+				String win = tables[0].getCellAsText(r, 5);
+				String draw = tables[0].getCellAsText(r, 6);
+				String lose = tables[0].getCellAsText(r, 7);
+				String gotGoal = tables[0].getCellAsText(r, 8);
+				String lostGoal = tables[0].getCellAsText(r, 9);
+				String diff = tables[0].getCellAsText(r, 10);
 				String teamId = TeamUtils.getTeamId(team);
 				System.out.println(rank + " : [" + team + "] " + teamId);
-				if ("V・ファーレン長崎".equals(team)) {
+				if ("V・ファーレン長崎".equals(team)) {	//・のせいか、正しくヒットしないので無理やりセット
 					System.out.println("🌟 V・ファーレン長崎");
 					teamId = "v_varen";
 				}
@@ -239,7 +241,7 @@ public class StandingsSaver {
 					rowIdx++;
 				}
 			}
-			
+
 			QueryRunner qr = DB.createQueryRunner();
 			qr.update("DELETE FROM nabiscoStandings WHERE season=" + season);
             int[] resultCount = qr.batch(insertSql, insertDataList);
@@ -266,7 +268,7 @@ public class StandingsSaver {
             String insertSql = "INSERT INTO aclStandings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             Object[][] insertDataList = new Object[ACL_TEAM_COUNT][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            
+
             int rowIdx = 0;
 			GetMethodWebRequest req = new GetMethodWebRequest(SRC_URL_ACL);
 			WebResponse res = wc.getResponse(req);
@@ -314,7 +316,7 @@ public class StandingsSaver {
 					rowIdx++;
 				}
 			}
-			
+
 			QueryRunner qr = DB.createQueryRunner();
 			qr.update("DELETE FROM aclStandings WHERE season=" + season);
             int[] resultCount = qr.batch(insertSql, insertDataList);
