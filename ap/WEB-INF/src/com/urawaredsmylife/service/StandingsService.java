@@ -25,7 +25,7 @@ import com.urawaredsmylife.util.TeamUtils;
  */
 public class StandingsService {
 	private Logger logger = Logger.getLogger(StandingsService.class.getName());
-	
+
 	/**
 	 * DBに格納されている順位表から検索し、JSONを返す。
 	 * @param params
@@ -54,7 +54,7 @@ public class StandingsService {
 			} else if("diff".equals(sort)) {
 				sort = "diff DESC, seq";
 			} else {
-				sort = "seq";
+				sort = "rank, diff, got_goal, seq";
 			}
 			String sql = null;
 			if ("J".equals(compe)) {
@@ -109,7 +109,7 @@ public class StandingsService {
 			}
 		}
 		sql = "SELECT *, team_name AS team FROM standings WHERE"
-				+ " season=" + season 
+				+ " season=" + season
 				+ " AND league='" + league + "'"
 				+ " ORDER BY " + sort;
 		return sql;
@@ -129,7 +129,7 @@ public class StandingsService {
 		String teamName = TeamUtils.getTeamName(teamId);
 
 		String sql = "SELECT * FROM nabiscoStandings WHERE"
-				+ " season=" + season 
+				+ " season=" + season
 				+ " AND group_name=(SELECT group_name FROM nabiscoStandings"
 				+ " WHERE season=" + season + " AND team_name collate utf8_unicode_ci LIKE " + DB.quote(teamName) + ")"
 				+ " ORDER BY seq";
@@ -151,7 +151,7 @@ public class StandingsService {
 		String teamName = qr.query(teamSql, new ScalarHandler<String>(), teamId);
 
 		String sql = "SELECT * FROM aclStandings WHERE"
-				+ " season=" + season 
+				+ " season=" + season
 				+ " AND group_name=(SELECT group_name FROM aclStandings WHERE"
 				+ " team_name collate utf8_unicode_ci LIKE " + DB.quote(teamName) + " AND season=" + season + ")"
 				+ " ORDER BY seq";
