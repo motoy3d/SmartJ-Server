@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 
@@ -38,6 +39,9 @@ public class SearchTweetsSaver {
 			for (Map<String, Object> team : teamList) {
 				String teamId = (String) team.get("team_id");
 				String searchTweetsKeyword = (String) team.get("search_tweets_keyword");
+				if (StringUtils.isBlank(searchTweetsKeyword)) {
+					continue;
+				}
 
 				Query query = new Query(searchTweetsKeyword + " -ヤフオク");
 				query.setCount(100);
