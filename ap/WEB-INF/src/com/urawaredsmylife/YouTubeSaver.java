@@ -68,12 +68,7 @@ public class YouTubeSaver {
     	Logger logger = Logger.getLogger(YouTubeSaver.class.getName());
         try {
             QueryRunner qr = DB.createQueryRunner();
-//TODO			String sql = "SELECT team_id, team_name FROM teamMaster ORDER BY team_id";
-            
-            
-            
-            String sql = "SELECT team_id, team_name FROM teamMaster WHERE team_id='reds' ORDER BY team_id";
-            
+			String sql = "SELECT team_id, team_name FROM teamMaster ORDER BY team_id";
             List<Map<String, Object>> teamList = qr.query(sql, new MapListHandler());
 			for(Map<String, Object> team : teamList) {
 				String teamId = (String)team.get("team_id");
