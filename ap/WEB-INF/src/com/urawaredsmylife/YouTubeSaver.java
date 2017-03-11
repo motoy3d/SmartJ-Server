@@ -68,7 +68,12 @@ public class YouTubeSaver {
     	Logger logger = Logger.getLogger(YouTubeSaver.class.getName());
         try {
             QueryRunner qr = DB.createQueryRunner();
-			String sql = "SELECT team_id, team_name FROM teamMaster ORDER BY team_id";
+//TODO			String sql = "SELECT team_id, team_name FROM teamMaster ORDER BY team_id";
+            
+            
+            
+            String sql = "SELECT team_id, team_name FROM teamMaster WHERE team_id='reds' ORDER BY team_id";
+            
             List<Map<String, Object>> teamList = qr.query(sql, new MapListHandler());
 			for(Map<String, Object> team : teamList) {
 				String teamId = (String)team.get("team_id");
@@ -138,7 +143,8 @@ public class YouTubeSaver {
 	        // Prompt the user to enter a query term.
 	        String gameDate1 = new SimpleDateFormat("yyyy/MM/dd").format(gameDate);
 	        String queryTerm1 = teamName + " " + vsTeamName + " " + gameDate1;
-	        String queryTerm2 = "スカパー ハイライト " + teamName + " " + vsTeamName + " " + compe;
+	        String queryTerm2 = "【公式】 " + teamName + " " + vsTeamName + " " + compe;
+	        logger.info("queryTerm1=" + queryTerm1 + ",  queryTerm2=" + queryTerm2);
 	        // Define the API request for retrieving search results.
 	        YouTube.Search.List search = youtube.search().list("id,snippet");
 	
@@ -217,18 +223,10 @@ public class YouTubeSaver {
 	            Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getHigh();
 	            String title = singleVideo.getSnippet().getTitle();
 //	            DateTime publishedAt = singleVideo.getSnippet().getPublishedAt();
-	            // スカパーハイライトの場合は、タイトルに両チーム名がない場合は除外
-	            if (title.contains("【ハイライト】")) {
-	            	if (!title.contains(teamName) || !title.contains(vsTeamName)){
-//		            	System.out.println(".....スカパーハイライトの場合は、タイトルに両チーム名がない場合は除外 " + title);
-		            	continue;
-	            	}
-	            } else {
-	            	//どちらのチーム名も入っていない場合は除外
-	            	if (!title.contains(teamName) && !title.contains(vsTeamName)){
-		            	continue;
-	            	}
-	            }
+            	//どちらのチーム名も入っていない場合は除外
+            	if (!title.contains(teamName) && !title.contains(vsTeamName)){
+	            	continue;
+            	}
 				String videoId = singleVideo.getId().getVideoId();
 				// 再生回数取得
 		        YouTube.Videos.List videos = youtube.videos().list("id,statistics");			    	
