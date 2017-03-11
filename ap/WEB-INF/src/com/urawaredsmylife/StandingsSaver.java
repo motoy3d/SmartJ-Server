@@ -35,7 +35,7 @@ public class StandingsSaver {
 	 */
 	private static final String SRC_URL_J1 = "http://www.jleague.jp/standings/j1.html";
 	private static final String SRC_URL_J2 = "http://www.jleague.jp/standings/j2.html";
-	private static final String SRC_URL_LEVAIN = "http://www.jleague.jp/standings/leaguecup.html";
+	private static final String SRC_URL_LEVAIN = "http://www.jleague.jp/standings/leaguecup/";
 	private static final String SRC_URL_ACL = "http://www.jleague.jp/standings/acl.html";
 
 	/**
@@ -91,7 +91,8 @@ public class StandingsSaver {
 //				nabiscoResult = insertNabisco();
 //			}
 			//ACL
-			int aclResult = insertACL();
+			int aclResult = 0;
+			aclResult = insertACL();
 //			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 //			int aclResult = 0;
 //			if (aclOpenDate.getTime() < new Date().getTime()) {
@@ -200,7 +201,11 @@ public class StandingsSaver {
 			WebResponse res = wc.getResponse(req);
 			WebTable[] tables = res.getTables();
 			System.out.println("テーブル数：" + tables.length);
-            String insertSql = "INSERT INTO nabiscoStandings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+            
+			HTMLElement[] grids = res.getElementsWithAttribute("role", "grid");
+			grids[0].getClass();
+			
+			String insertSql = "INSERT INTO nabiscoStandings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             Object[][] insertDataList = new Object[NABISCO_TEAM_COUNT][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
             // tables = グループごと
@@ -239,6 +244,8 @@ public class StandingsSaver {
 					insertDataList[rowIdx][c++] = lostGoal;
 					insertDataList[rowIdx][c++] = diff;
 					rowIdx++;
+					logger.info("Levain: " + season + ", " + group + ", " + r + ", " + rank + ", " + team + ", " + point + ", "
+							+ games + ", " + win + ", " + draw + ", " + lose + ", " + gotGoal + ", " + lostGoal + ", " + diff);
 				}
 			}
 
