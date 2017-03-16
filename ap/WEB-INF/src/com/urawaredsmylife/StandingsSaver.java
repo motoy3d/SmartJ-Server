@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
@@ -21,6 +20,7 @@ import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
 import com.urawaredsmylife.util.Const;
 import com.urawaredsmylife.util.DB;
+import com.urawaredsmylife.util.Mail;
 import com.urawaredsmylife.util.TeamUtils;
 
 /**
@@ -84,20 +84,17 @@ public class StandingsSaver {
 				j2Result = insertJ(SRC_URL_J2, "J2", "", 22);
 			}
 			// ルヴァンカップ
-//			Date levainOpenDate = DateUtils.parseDate(Const.LEVAIN_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+			Date levainOpenDate = DateUtils.parseDate(Const.LEVAIN_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int levainResult = 0;
-			levainResult = insertLevain();
-//			if (nabiscoOpenDate.getTime() < new Date().getTime()) {
-//				nabiscoResult = insertNabisco();
-//			}
+			if (levainOpenDate.getTime() < new Date().getTime()) {
+				levainResult = insertLevain();
+			}
 			//ACL
+			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int aclResult = 0;
-			aclResult = insertACL();
-//			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
-//			int aclResult = 0;
-//			if (aclOpenDate.getTime() < new Date().getTime()) {
-//				aclResult = insertACL();
-//			}
+			if (aclOpenDate.getTime() < new Date().getTime()) {
+				aclResult = insertACL();
+			}
 
 			return j1Result + j2Result + levainResult + aclResult;
 		} catch(Exception ex) {
@@ -122,6 +119,7 @@ public class StandingsSaver {
 		logger.info("----------------------------------------");
 		GetMethodWebRequest req = new GetMethodWebRequest(srcUrl);
 		try {
+			// HTTPリクエスト
 			WebResponse res = wc.getResponse(req);
 			WebTable[] tables = res.getTables();
 			System.out.println("tables=" + ToStringBuilder.reflectionToString(tables));
@@ -129,6 +127,7 @@ public class StandingsSaver {
             String insertSql = "INSERT INTO standings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             Object[][] insertDataList = new Object[teamCount][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
+            // tableタグからデータ抽出
 			for(int r=1; r<rows.length; r++) {
 				System.out.println("-----------------------------" + tables[0].getRows()[1]);
 				String rank = tables[0].getCellAsText(r, 1);
@@ -172,12 +171,11 @@ public class StandingsSaver {
 				return -1;
 			}
 			QueryRunner qr = DB.createQueryRunner();
-			String delSql = "DELETE FROM standings WHERE season=" + season + " AND league='" + league + "'"
-					+ (StringUtils.isNotBlank(stage)? " AND stage='" + stage + "'" : "");
-			logger.info("J2削除=" + delSql);
-			int deletedCount = qr.update(delSql);
-			logger.info("J2削除件数: " + deletedCount);
-            int[] resultCount = qr.batch(insertSql, insertDataList);
+			String delSql = "DELETE FROM standings WHERE season=? AND league=?";
+			logger.info("順位表一旦削除=" + delSql);
+			int deletedCount = qr.update(delSql, season, league);
+			logger.info("削除件数: " + deletedCount);
+            int[] resultCount = qr.batch(insertSql, insertDataList);	//一括登録
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("J1/J2順位表抽出エラー", e);
@@ -202,9 +200,6 @@ public class StandingsSaver {
 			WebTable[] tables = res.getTables();
 			System.out.println("テーブル数：" + tables.length);
             
-			HTMLElement[] grids = res.getElementsWithAttribute("role", "grid");
-			grids[0].getClass();
-			
 			String insertSql = "INSERT INTO nabiscoStandings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             Object[][] insertDataList = new Object[NABISCO_TEAM_COUNT][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
@@ -215,17 +210,17 @@ public class StandingsSaver {
 				TableRow[] rows = table.getRows();
 				for(int r=1; r<rows.length; r++) {
 					System.out.println("-----------------------------");
-					String rank = table.getCellAsText(r, 0).replace("-", "1");
-					TableCell teamCell = table.getTableCell(r, 1);
+					String rank = table.getCellAsText(r, 1).replace("-", "1");
+					TableCell teamCell = table.getTableCell(r, 2);
 					String team = teamCell.getNode().getFirstChild().getFirstChild().getFirstChild().getNodeValue();
-					String point = table.getCellAsText(r, 2);
-					String games = table.getCellAsText(r, 3);
-					String win = table.getCellAsText(r, 4);
-					String draw = table.getCellAsText(r, 5);
-					String lose = table.getCellAsText(r, 6);
-					String gotGoal = table.getCellAsText(r, 7);
-					String lostGoal = table.getCellAsText(r, 8);
-					String diff = table.getCellAsText(r, 9);
+					String point = table.getCellAsText(r, 3);
+					String games = table.getCellAsText(r, 4);
+					String win = table.getCellAsText(r, 5);
+					String draw = table.getCellAsText(r, 6);
+					String lose = table.getCellAsText(r, 7);
+					String gotGoal = table.getCellAsText(r, 8);
+					String lostGoal = table.getCellAsText(r, 9);
+					String diff = table.getCellAsText(r, 10);
 					String group = g == 0? "A" : "B";
 					System.out.println(group + "-" + rank + " : " + team);
 					int c = 0;
@@ -255,6 +250,7 @@ public class StandingsSaver {
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("ルヴァンカップ順位表抽出エラー", e);
+			Mail.send(e);
 			return 1;
 		}
 		return 0;
