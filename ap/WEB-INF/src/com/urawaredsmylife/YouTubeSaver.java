@@ -32,7 +32,7 @@ import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.youtube.Auth;
 
 /**
- * YouTubeからキーワード検索で試合動画を検索し、DBに保存する。
+ * YouTubeから試合日程に沿ってキーワード検索で試合動画を検索し、DBに保存する。
  * 本処理はバッチで定期的に実行する。
  * @author motoy3d
  */
@@ -68,11 +68,13 @@ public class YouTubeSaver {
     	Logger logger = Logger.getLogger(YouTubeSaver.class.getName());
         try {
             QueryRunner qr = DB.createQueryRunner();
+            // チームマスタから全チーム取得
 			String sql = "SELECT team_id, team_name FROM teamMaster ORDER BY team_id";
             List<Map<String, Object>> teamList = qr.query(sql, new MapListHandler());
 			for(Map<String, Object> team : teamList) {
 				String teamId = (String)team.get("team_id");
 				String teamName = (String)team.get("team_name");
+				// 各チームごとにYoutube APIで試合日程に沿って動画検索
 				YouTubeSaver srv = new YouTubeSaver(teamId, teamName);
 				srv.collectVideos();
 			}
@@ -86,14 +88,17 @@ public class YouTubeSaver {
 	}
 
 	/**
-	 * 試合関連動画を検索し、DBに保存する。
+	 * 試合日程に沿って試合関連動画を検索し、DBに保存する。
 	 */
 	private void collectVideos() {
         try {
             QueryRunner qr = DB.createQueryRunner();
             String season = new SimpleDateFormat("yyyy").format(new Date());
-			String gamesSql = "SELECT game_date1, compe, vs_team, score FROM " + teamId + "Results"
-					+ " WHERE season= " + season + " AND result IS NOT NULL AND result != '' ORDER BY game_date1";
+            // 試合日程取得
+			String gamesSql = String.format(
+					"SELECT game_date1, compe, vs_team, score FROM %sResults"
+					+ " WHERE season=%s AND result IS NOT NULL AND result != '' ORDER BY game_date1"
+					, teamId, season);
 			logger.info(gamesSql);
 			List<Map<String, Object>> gameList = qr.query(gamesSql, new MapListHandler());
 			for(Map<String, Object> game : gameList) {
@@ -107,6 +112,7 @@ public class YouTubeSaver {
 					compe = compe.replace("YNC", "ルヴァンカップ");
 				}
 				Date gameDate = (Date)game.get("game_date1");
+				// Youtube APIで検索
 				searchYouTube(teamName, vsTeamName, gameDate, compe, score);
 			}
         } catch(Exception ex) {
@@ -115,14 +121,15 @@ public class YouTubeSaver {
 	}
 	
 	/**
-	 * YouTubeで検索してDB保存する
+	 * YouTube APIで検索してDB保存する
 	 * @param teamName
 	 * @param vsTeamName
 	 * @param gameDate
 	 * @param compe
 	 * @param score
 	 */
-	private void searchYouTube(String teamName, String vsTeamName, Date gameDate, String compe, String score) {
+	private void searchYouTube(String teamName, String vsTeamName, Date gameDate, 
+			String compe, String score) {
 		logger.info("🌟" + teamName + " vs " + vsTeamName + " (" + gameDate + ") " + compe 
 				+ "  " + score + " -----------------------------------------");
 		try {
@@ -161,22 +168,20 @@ public class YouTubeSaver {
 	        // https://developers.google.com/youtube/v3/docs/search/list#type
 	        search.setType("video");
 	
-	        // To increase efficiency, only retrieve the fields that the
-	        // application uses.
+	        // To increase efficiency, only retrieve the fields that the application uses.
 	        search.setFields("items(id/kind,id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/high/url)");
 	        search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
 	
 			QueryRunner qr = DB.createQueryRunner();
-		    // DBから一旦削除
+		    // DBから一旦動画情報を削除
 			String deleteAllSql = "DELETE FROM " + teamId + "Video WHERE game_date=?";
 			logger.info("DBから一旦削除：" + deleteAllSql + " -- " + gameDate);
 			qr.update(deleteAllSql, gameDate);
-
+			// 第1キーワードで検索
 	        saveDb(search, teamName, vsTeamName, gameDate);
-	        
+			// 第2キーワードで検索	        
 	        search.setQ(queryTerm2);
 	        saveDb(search, teamName, vsTeamName, gameDate);
-
 		} catch (GoogleJsonResponseException e) {
 	        logger.error("There was a service error: " + e.getDetails().getCode() + " : "
 	                + e.getDetails().getMessage());
@@ -196,18 +201,18 @@ public class YouTubeSaver {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	private void saveDb(
-			YouTube.Search.List search, String teamName, String vsTeamName, Date gameDate)
+	private void saveDb(YouTube.Search.List search, String teamName, String vsTeamName, Date gameDate)
 					throws IOException, SQLException {
 		// Call the API and print results.
 		SearchListResponse searchResponse = search.execute();
 		List<SearchResult> searchResultList = searchResponse.getItems();
 		if (searchResultList == null || searchResultList.isEmpty()) {
-			logger.info("");
+			logger.info("検索結果0件");
 			return;
 		}
 		QueryRunner qr = DB.createQueryRunner();
 
+		// 検索結果ループ
 		Iterator<SearchResult> iteratorSearchResults = searchResultList.iterator();
 	    while (iteratorSearchResults.hasNext()) {
 	        SearchResult singleVideo = iteratorSearchResults.next();
@@ -215,6 +220,7 @@ public class YouTubeSaver {
 	        // Confirm that the result represents a video. Otherwise, the
 	        // item will not contain a video ID.
 	        if (rId.getKind().equals("youtube#video")) {
+	        	// Highクオリティのサムネイル
 	            Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getHigh();
 	            String title = singleVideo.getSnippet().getTitle();
 //	            DateTime publishedAt = singleVideo.getSnippet().getPublishedAt();
@@ -241,7 +247,7 @@ public class YouTubeSaver {
 		        }
 				logger.info("    " /*+ publishedAt + "  "*/ + title + "  " + thumbnail.getUrl() 
 						+ "   viewCount:" + viewCount + "  " + videoId);
-				
+				// DB登録
 				String insertSql = "INSERT IGNORE INTO " + teamId + "Video VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 				qr.update(insertSql, videoId, title, gameDate, thumbnail.getUrl(), 
 						viewCount, likeCount, dislikeCount, new Date());
