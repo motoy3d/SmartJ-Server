@@ -45,25 +45,9 @@ import com.urawaredsmylife.util.RemoveUnderscoreBeanProcessor;
  * xxxEntryテーブルに格納する。
  * 本処理はバッチで定期的に実行する。
  * @author motoy3d
- *
  */
 public class FeedEntrySaver {
 	private Logger logger = Logger.getLogger(FeedEntrySaver.class.getName());
-	/**
-	 * Google Feed API のURLベース
-	 */
-	protected static final String URL_BASE = "https://ajax.googleapis.com/ajax/services/feed/load?"
-			+ "v=1.0&q=%s&num=%s&userip=%s";
-	/**
-	 * デフォルトのフィード取得件数
-	 */
-	protected static final int DEFAULT_FEED_COUNT = 10;
-	/**
-	 * NGサイト名リスト（保存しない）
-	 */
-	protected static final String[] NG_SITES = new String[] {
-		"（ゲキサカ）", "（SOCCER"
-	};
 	/**
 	 * チームID
 	 */
@@ -176,21 +160,21 @@ public class FeedEntrySaver {
 	 */
 	private void saveEntry(Feed targetFeed, SyndFeed feed
 			, List<Map<String, Object>> ngImageKeywordList, QueryRunner qr) throws SQLException {
-		List<SyndEntry> entries = feed.getEntries();
+		List<SyndEntry> entries = feed.getEntries();		//フィードのエントリリスト
 		String entryTable = teamId + "Entry";
 		for(SyndEntry entry : entries) {
 			String entryTitle = StringEscapeUtils.unescapeHtml(entry.getTitle());
 			// エントリタイトルからサイト名を抽出
 			String siteName = targetFeed.getSiteName();
-			if(entry.getLink().startsWith("http://web.gekisaka.jp")) {
-				siteName = "ゲキサカ";
-			}
-			else if(entry.getLink().startsWith("http://www.nikkansports.com")) {
-				siteName = "日刊スポーツ";
-			}
-			else if(entry.getLink().startsWith("http://www.soccerdigestweb.com/")) {
-				siteName = "サッカーダイジェストWeb";
-			}
+//			if(entry.getLink().startsWith("http://web.gekisaka.jp")) {
+//				siteName = "ゲキサカ";
+//			}
+//			else if(entry.getLink().startsWith("http://www.nikkansports.com")) {
+//				siteName = "日刊スポーツ";
+//			}
+//			else if(entry.getLink().startsWith("http://www.soccerdigestweb.com/")) {
+//				siteName = "サッカーダイジェストWeb";
+//			}
 			if(StringUtils.isBlank(siteName)) {
 				siteName = extractSiteName(entry.getLink());
 			}
@@ -199,23 +183,9 @@ public class FeedEntrySaver {
 				pubDate = new Date();
 			}
 			//logger.info("■" + new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle + "  -  " + siteName);
-			if(ArrayUtils.contains(NG_SITES, siteName)) {
-				logger.info("NGサイト:" + siteName);
-				continue;
-			}
 
-			// NGワードチェック
-			String ngSql = "SELECT word FROM feedKeywordMaster"
-					+ " WHERE (team_id=? OR team_id='all') AND ok_flg=false";
-			List<Map<String, Object>> ngWordList = qr.query(ngSql, new MapListHandler(), teamId);
-			boolean isNg = false;
-			for(Map<String, Object> ngMap : ngWordList) {
-				if(entryTitle.contains((String)ngMap.get("word"))) {
-					logger.info("NGワード: [" + ngMap.get("word") + "] " + entryTitle);
-					isNg = true; break;
-				}
-			}
-			if(isNg) {
+			// NGワードが含まれていたら保存しない
+			if(isContainsNgWord(qr, entryTitle)) {
 				continue;
 			}
 			siteName = siteName.replace("（", "").replace("）", "");
@@ -249,8 +219,30 @@ public class FeedEntrySaver {
 			}
 		}
 	}
+
 	/**
-	 * フィード取得に失敗した情報をDB保存する
+	 * エントリタイトルにNGワードが含まれていたらtrueを返す。
+	 * @param qr
+	 * @param entryTitle
+	 * @return
+	 * @throws SQLException
+	 */
+	private boolean isContainsNgWord(QueryRunner qr, String entryTitle) throws SQLException {
+		String ngSql = "SELECT word FROM feedKeywordMaster"
+				+ " WHERE (team_id=? OR team_id='all') AND ok_flg=false";
+		List<Map<String, Object>> ngWordList = qr.query(ngSql, new MapListHandler(), teamId);
+		boolean isNg = false;
+		for(Map<String, Object> ngMap : ngWordList) {
+			if(entryTitle.contains((String)ngMap.get("word"))) {
+				logger.info("NGワード: [" + ngMap.get("word") + "] " + entryTitle);
+				isNg = true;
+				break;
+			}
+		}
+		return isNg;
+	}
+	/**
+	 * フィード取得に失敗した情報をDB保存する(failedFeedテーブル)
 	 * @param feedUrl
 	 * @param feedName
 	 * @param teamId
@@ -307,12 +299,6 @@ public class FeedEntrySaver {
 					return split[1];
 				}
 			}
-//			// h1 ※ウェブリブログ用
-//			HTMLElement[] h1 = res.getElementsByTagName("h1");
-//			if(h1.length != 0) {
-//				String siteName = h1[0].getNode().getChildNodes().item(0).getTextContent();
-//				System.out.println("結果３＝" + h1[0].getNode().getChildNodes());
-//			}
 		} catch (Exception e) {
 			logger.warn("サイト名抽出エラー", e);
 		}
@@ -320,7 +306,7 @@ public class FeedEntrySaver {
 	}
 
 	/**
-	 * コンテンツ内のイメージ情報を返す。
+	 * エントリコンテンツ内のイメージ情報を返す。
 	 * @param sourceUrl
 	 * @param content
 	 * @param ngImageKeywordList イメージURL保存NGなサイトURLのキーワードリスト
@@ -394,25 +380,36 @@ public class FeedEntrySaver {
             if(isNgImage) {
                 imgUrl = "";
             } else {
-        		try {
-        			if (imgUrl.startsWith("/")) {
-        				int idx1 = sourceUrl.indexOf("//");
-						imgUrl = sourceUrl.substring(0, sourceUrl.indexOf("/", idx1+2)) + imgUrl;
-        				logger.debug("🌟" + imgUrl);
-        			}
-        			URL u = new URL(imgUrl);
-        			BufferedImage bimg = ImageIO.read(u);
-        			if (bimg != null) {
-	        			img.url = imgUrl;
-		        		img.width = bimg.getWidth();
-		        		img.height = bimg.getHeight();
-        			}
-        		} catch (IOException e) {
-        			logger.warn("image loading exception", e);
-        		}
+            	// 画像を読み込んでサイズ(縦横)をimgにセットする。
+        		setImageSize(sourceUrl, imgUrl, img);
             }
         }
 		return img;
+	}
+
+	/**
+	 * 画像を読み込んでサイズ(縦横)をimgにセットする。
+	 * @param sourceUrl
+	 * @param imgUrl
+	 * @param img
+	 */
+	private void setImageSize(String sourceUrl, String imgUrl, ImageInfo img) {
+		try {
+			if (imgUrl.startsWith("/")) {
+				int idx1 = sourceUrl.indexOf("//");
+				imgUrl = sourceUrl.substring(0, sourceUrl.indexOf("/", idx1+2)) + imgUrl;
+				logger.debug("🌟" + imgUrl);
+			}
+			URL url = new URL(imgUrl);
+			BufferedImage bimg = ImageIO.read(url);
+			if (bimg != null) {
+				img.url = imgUrl;
+				img.width = bimg.getWidth();
+				img.height = bimg.getHeight();
+			}
+		} catch (IOException e) {
+			logger.warn("イメージ読み込み失敗", e);
+		}
 	}
 
 	/**

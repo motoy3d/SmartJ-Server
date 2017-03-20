@@ -28,27 +28,27 @@ import com.urawaredsmylife.util.RemoveUnderscoreBeanProcessor;
 
 /**
  * 全チーム共通のfeedMasterからフィードリストを取得して、
- * google feed apiを使用して各フィードのエントリリストを取得し、
+ * ROMEを使用して各フィードのエントリリストを取得し、
  * feedKeywordMasterのキーワードで抽出・除外してentryテーブルに格納する。
  * 本処理はバッチで定期的に実行する。
  * @author motoy3d
  */
 public class FeedEntrySaver2 extends FeedEntrySaver {
-	private Logger logger = Logger.getLogger(FeedEntrySaver2.class.getName());
+	private static Logger logger = Logger.getLogger(FeedEntrySaver2.class.getName());
 	/**
 	 * チームID
 	 */
 	private String teamId;
 	/**
-	 * チーム名１
+	 * チーム名１(例：川崎フロンターレ)
 	 */
 	private String teamName1;
 	/**
-	 * チーム名２
+	 * チーム名２(例：フロンターレ)
 	 */
 	private String teamName2;
 	/**
-	 * チーム名３
+	 * チーム名３(例：川崎)
 	 */
 	private String teamName3;
 
@@ -63,9 +63,11 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 			String sqlNgImage = "SELECT url_keyword FROM ngImageSite";
 			List<Map<String, Object>> ngImageKeywordList = qr.query(sqlNgImage, new MapListHandler());
 
-			String sql = "SELECT * FROM teamMaster ORDER BY team_id";
+			// ROMEを使用してRSS/ATOMフィードからエントリリストを取得(全チーム用)
 			List<SyndFeedHolder> entryList = collectFeedEntriesForAllTeams();
+			String sql = "SELECT * FROM teamMaster ORDER BY team_id";
 			List<Map<String, Object>> teamList = qr.query(sql, new MapListHandler());
+			// 各チーム毎にキーワードにヒットした内容をDB保存する。
 			for(Map<String, Object> team : teamList) {
 				String teamId = (String)team.get("team_id");
 				String teamName1 = (String)team.get("team_name");
@@ -75,7 +77,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				srv.saveEntry(entryList, ngImageKeywordList, qr);
 			}
 		} catch(Exception ex) {
-			ex.printStackTrace();
+			logger.error("フィード取得エラー", ex);
 		}
 	}
 
@@ -96,7 +98,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 
 	/**
 	 * 全チーム用のfeedMasterからフィードリストを取得して、
-	 * google feed apiを使用して各フィードのエントリリストを取得して返す。
+	 * ROMEを使用して各フィードのエントリリストを取得して返す。
 	 * @param params
 	 * @return
 	 */
@@ -148,36 +150,23 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 		BasicRowProcessor rowProcessor = new BasicRowProcessor(new RemoveUnderscoreBeanProcessor());
 		return qr.query(sql, new BeanListHandler<Feed>(Feed.class, rowProcessor));
 	}
-//
-//	/**
-//	 * 取得したエントリリストをDBに保存する
-////	 * @param targetFeed マスターから取得した読み込み対象フィード
-//	 * @param feedResult Google Feed APIから取得した読み込み結果
-//	 * @param qr
-//	 * @throws SQLException
-//	 */
-//	public void saveEntries(/*Feed targetFeed,*/ List<Feed> entryList, QueryRunner qr) throws SQLException {
-//		//TODO
-//		for(Feed entry : entryList) {
-//			saveEntry(entry, qr);
-//		}
-//	}
 
 	/**
 	 * 取得したエントリリストをDBに保存する
-//	 * @param targetFeed マスターから取得した読み込み対象フィード
-	 * @param feedResults Google Feed APIから取得した読み込み結果
+	 * @param feedResults ROMEから取得した読み込み結果
 	 * @param ngImageKeywordList イメージURL保存NGなサイトURLのキーワードリスト
 	 * @param qr
 	 * @throws SQLException
 	 */
-	private void saveEntry(/*Feed targetFeed,*/ List<SyndFeedHolder> feedResults
+	private void saveEntry(List<SyndFeedHolder> feedResults
 			, List<Map<String, Object>> ngImageKeywordList, QueryRunner qr) throws SQLException {
 		//OK・NGワードリスト
 		String ngSql = "SELECT word FROM feedKeywordMaster WHERE (team_id=? OR team_id='all') AND ok_flg=false";
 		List<Map<String, Object>> ngWordList = qr.query(ngSql, new MapListHandler(), teamId);
+		
 		String okSql = "SELECT word FROM feedKeywordMaster WHERE (team_id=? OR team_id='all') AND ok_flg=true";
 		List<Map<String, Object>>  okWordList = qr.query(okSql, new MapListHandler(), teamId);
+		
 		Map<String, Object> teamName1Map = new HashMap<>();
 		teamName1Map.put("word", teamName1);
 		okWordList.add(teamName1Map);
@@ -196,52 +185,27 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 			for(SyndEntry entry : entries) {
 				String entryTitle = StringEscapeUtils.unescapeHtml(entry.getTitle());
 				String entryDescription = entry.getDescription() == null? "" : entry.getDescription().getValue();
-				boolean isNg = false;
-				// NGワードチェック
-				for(Map<String, Object> ngMap : ngWordList) {
-					if(entryTitle.contains((String)ngMap.get("word"))) {
-//						logger.info("NGワード:" + entryTitle);
-						isNg = true; break;
-					}
-				}
-				if(isNg) {
+				// エントリタイトルにNGワードがある
+				if(isNgEntry(ngWordList, entryTitle)) {
 					continue;
 				}
 				// OKワード・チーム名チェック
-				boolean isOk = false;
-				for (Map<String, Object> okMap : okWordList) {
-					String ok = (String)okMap.get("word");
-					if (entryTitle == null || entryDescription == null) {
-						continue;
-					}
-					if (entryTitle.contains(ok) || entryDescription.contains(ok)) {
-						isOk = true;
-						break;
-					}
-				}
-				if(!isOk) {
+				if(! isOKEntry(okWordList, entryTitle, entryDescription)) {
 					continue;
 				}
 				Date pubDate = entry.getPublishedDate();
 				if (pubDate == null || entry.getLink().startsWith("http://www.soccerdigestweb.com/")) {
 					pubDate = new Date();
 				}
-//				System.out.println((isNg? "🔴" : "🔵") + "(" + teamName2 + ") "
-//						+ new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle/*+ " : " + entryContent*/);
-
 				logger.info("(" + teamName2 + ") "
 						+ new SimpleDateFormat("yyyy/MM/dd").format(pubDate) + "  " + entryTitle
 						+ " : " + entry.getLink() /*+ " : " + entryContent*/);
-				String siteName = feedResultHolder.siteName;
-				siteName = siteName.replace("（", "").replace("）", "");
+				String siteName = feedResultHolder.siteName.replace("（", "").replace("）", "");
 				// 既に同一URLが登録済みの場合は登録しない
-				String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable
-						+ " WHERE entry_url=? OR entry_title=?";
-				Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), entry.getLink(), entryTitle);
-				Long cnt = (Long)cntMap.get("CNT");
-				if(cnt.intValue() == 0) {
-					String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-					ImageInfo img = getImageInContent(entry, ngImageKeywordList);
+				if(isEntryExistsInDB(qr, entryTable, entryTitle, entry.getLink())) {
+					String insertSql = "INSERT INTO " + entryTable 
+							+ " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
+					ImageInfo img = getImageInContent(entry, ngImageKeywordList);	//画像情報取得
 					Object[] inseartParams = new Object[] {
 							entry.getLink()
 							,entryTitle
@@ -249,7 +213,8 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 							,img.url
 							,img.width
 							,img.height
-							,10000 + Integer.parseInt(feedResultHolder.feedId)	//チームごとのフィードのIDと全チーム共通フィードのIDが重複しないよう10000を足す。
+							//チームごとのフィードのIDと全チーム共通フィードのIDが重複しないよう10000を足す。
+							,10000 + Integer.parseInt(feedResultHolder.feedId)
 							,siteName
 							,pubDate
 					};
@@ -266,13 +231,67 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 			}
 		}
 	}
-}
 
+	/**
+	 * エントリタイトルまたはDescription(本文の一部)にOKワードが含まれている場合にtrueを返す。
+	 * @param okWordList
+	 * @param entryTitle
+	 * @param entryDescription
+	 * @return
+	 */
+	private boolean isOKEntry(List<Map<String, Object>> okWordList, String entryTitle, 
+			String entryDescription) {
+		for (Map<String, Object> okMap : okWordList) {
+			String okWord = (String)okMap.get("word");
+			if (entryTitle == null || entryDescription == null) {
+				continue;
+			}
+			if (entryTitle.contains(okWord) || entryDescription.contains(okWord)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * エントリタイトルにNGワードが含まれる場合にtrueを返す。
+	 * @param ngWordList
+	 * @param entryTitle
+	 * @return
+	 */
+	private boolean isNgEntry(List<Map<String, Object>> ngWordList, String entryTitle) {
+		for(Map<String, Object> ngMap : ngWordList) {
+			if(entryTitle.contains((String)ngMap.get("word"))) {
+//						logger.info("NGワード:" + entryTitle);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * エントリが既にDBに保存されている場合にtrueを返す。
+	 * @param qr
+	 * @param entryTable
+	 * @param entryTitle
+	 * @param entryLink
+	 * @return
+	 * @throws SQLException
+	 */
+	private boolean isEntryExistsInDB(QueryRunner qr, String entryTable
+			, String entryTitle, String entryLink) throws SQLException {
+		// タイトルまたはURLが既に登録済みかどうか
+		String selectSql = "SELECT COUNT(*) AS CNT FROM " + entryTable
+				+ " WHERE entry_url=? OR entry_title=?";
+		Map<String, Object> cntMap = qr.query(selectSql, new MapHandler(), entryLink, entryTitle);
+		Long cnt = (Long)cntMap.get("CNT");
+		return cnt.intValue() == 0;
+	}
+}
 
 /**
  * SyndFeedとfeedIdをセットで保持するクラス
- * @author nob
- *
+ * @author motoy3d
  */
 class SyndFeedHolder {
 	public SyndFeed syndFeed;
