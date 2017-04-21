@@ -1,14 +1,8 @@
-package com.urawaredsmylife.dto.googlefeedapi;
+package com.urawaredsmylife.dto;
 
 /**
- * Google Feed APIで取得したフィードオブジェクト
- * GoogleFeedAPIResponse
- *   - GoogleFeedAPIResponseData
- *     - Feed
- *       - FeedEntry
- *  https://developers.google.com/feed/v1/jsondevguide
+ * RSS/ATOMから取得したフィードオブジェクト
  * @author motoy3d
- *
  */
 public class Feed {
 	/**

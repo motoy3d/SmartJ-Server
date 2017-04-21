@@ -35,7 +35,7 @@ import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import com.urawaredsmylife.dto.googlefeedapi.Feed;
+import com.urawaredsmylife.dto.Feed;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.RemoveUnderscoreBeanProcessor;
 
