@@ -104,16 +104,35 @@ public class JLeagueResultsSaver {
 				logger.info("★gameDate=" + gameDate);
 				String gameDate1 = null;
 				String gameDate2 = "";
-				if (gameDate.contains("開催日未定")) {
-					gameDate2 = "開催日未定";
-				} else {
-					gameDate1 = gameDate.replace("年", "/").replaceFirst("月", "/").replaceFirst("日", "").replace("（", "(");
-					gameDate1 = gameDate1.substring(0, gameDate1.indexOf("("));
-					gameDate2 = gameDate.substring(5).replaceFirst("月", "/").replaceFirst("日", "");
-				}
 				// 大会名、節
 				Elements h5 = matchSection.select("h5");
+				Elements komes = matchSection.select("p.kome");	//日程未定の記載
 				for (int i=0; i<h5.size(); i++) {	//1日に複数の節の試合がある場合がある
+					String kaisaibiMiteiComment = "";
+					boolean isMitei = false;
+					if (komes != null && !komes.isEmpty()) {
+						isMitei = true;
+						if (komes.size() <= i) {
+							logger.info("日程候補も未定のため登録できない。" + h5);
+							continue;
+						} else {
+							kaisaibiMiteiComment = komes.get(i).text().substring(1).replace("に開催予定", "")
+									.replace(" or ", "").trim();
+							gameDate = season + "年" + 
+									kaisaibiMiteiComment.replace("/", "月").substring(0, kaisaibiMiteiComment.indexOf("(")) + "日";
+							logger.info("🔵🔵🔵開催日未定＝" + kaisaibiMiteiComment + " / " + gameDate);
+						}
+					}
+					gameDate1 = gameDate.replace("年", "/").replaceFirst("月", "/").replaceFirst("日", "").replace("（", "(");
+					if(gameDate1.indexOf("(") != -1) {
+						gameDate1 = gameDate1.substring(0, gameDate1.indexOf("("));
+					}
+					if (isMitei) {
+						gameDate2 = kaisaibiMiteiComment;
+					} else {
+						gameDate2 = gameDate.substring(5).replaceFirst("月", "/").replaceFirst("日", "");
+					}
+					
 					String compe = h5.get(i).text();
 					compe = compe.replace("明治安田生命Ｊ１リーグ", "J1")
 							.replace("明治安田生命Ｊ２リーグ", "J2")
@@ -210,7 +229,7 @@ public class JLeagueResultsSaver {
 						oneRec[c++] = homePk;
 						oneRec[c++] = awayPk;
 						oneRec[c++] = detailUrl;
-						if (gameDate1 != null) {	//TODO 開催日未定を登録する
+						if (gameDate1 != null) {
 							insertDataList.add(oneRec);
 						}
 

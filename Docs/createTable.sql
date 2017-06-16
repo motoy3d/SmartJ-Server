@@ -157,7 +157,7 @@ create table results(
  season year
  ,compe varchar(40)
  ,game_date1 date
- ,game_date2 varchar(10)
+ ,game_date2 varchar(30)
  ,kickoff_time varchar(5)
  ,stadium varchar(50)
  ,home_team varchar(50)
@@ -190,3 +190,18 @@ create table failedFeed(
   ,up_date timestamp
 );
 
+/**
+ *  得点ランキング
+ */
+create table goalRanking(
+  season year
+  ,league varchar(4) -- J1, J2, YLC, ACL(TODO)
+  ,seq int
+  ,rank int
+  ,player_name varchar(30)
+  ,goals int
+  ,position varchar(4)
+  ,team varchar(30)
+  ,up_date timestamp
+  ,primary key(season, league, seq)
+);
