@@ -34,7 +34,7 @@ public class TeamUtils {
 		TEAMS.put("consadole", "北海道コンサドーレ札幌");
 		TEAMS.put("ventforet", "ヴァンフォーレ甲府");
 		TEAMS.put("bellmare", "湘南ベルマーレ");
-		TEAMS.put("torinita", "大分トリニータ");
+		TEAMS.put("trinita", "大分トリニータ");
 		TEAMS.put("sanga", "京都サンガF.C.");
 		TEAMS.put("jef", "ジェフユナイテッド千葉");
 		TEAMS.put("verdy", "東京ヴェルディ");
