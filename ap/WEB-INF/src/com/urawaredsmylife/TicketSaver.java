@@ -38,7 +38,7 @@ public class TicketSaver {
 		try {
 			updateTicketUrl();
 		} catch(Exception ex) {
-			logger.error("日程・結果更新エラー", ex);
+			logger.error("チケットURL更新エラー", ex);
 			Mail.send(ex);
 		} finally {
 			sw.stop();
@@ -60,7 +60,7 @@ public class TicketSaver {
 		for (Map<String, Object> team : teamNames) {
 			String teamId = (String)team.get("team_id");
 			String teamName4 = (String)team.get("team_name4");
-			String url = TICKET_LIST_URL_BASE + teamName4 + "/";
+			String url = TICKET_LIST_URL_BASE + teamName4 + "/top/";
 			logger.info("------------------------------------------------------------------");
 			logger.info(url);
 			logger.info("------------------------------------------------------------------");
@@ -69,7 +69,7 @@ public class TicketSaver {
 			// Jリーグ主催試合(リーグ戦、ルヴァンカップ)のチケット情報を保存
 			saveJLeagueAndLevainCup(season, qr, teamId, doc);
 			// ACL のチケット情報を保存　TODO 天皇杯も?
-			saveACL(qr, teamId, doc);
+//			saveACL(qr, teamId, doc);
 		}
 	}
 
@@ -81,24 +81,26 @@ public class TicketSaver {
 	 * @param doc
 	 * @throws SQLException
 	 */
-	private static void saveJLeagueAndLevainCup(String season, QueryRunner qr, String teamId, Document doc)
+	private static void saveJLeagueAndLevainCup(
+			String season, QueryRunner qr, String teamId, Document doc)
 			throws SQLException {
-		Elements jGames = doc.select("div.gDetailInner");
+		Elements jGames = doc.select("div.game-list > ul > li");
+//		System.out.println("jGames=" + jGames.html());
 		Iterator<Element> gamesItr = jGames.iterator();
 		while (gamesItr.hasNext()) {
 			Element game = gamesItr.next();
 			logger.info("---------------------------------------");
 //				logger.info(game.text());
-			Elements dateTime = game.select("p.time");
-			logger.info("🔴dateTime=" + dateTime);
-			if (dateTime.isEmpty()) {	//ACLは形式が違うので↓の方で別途処理
+			Elements dateTime = game.select("span.vs-box-info-day");
+//			logger.info("🔴dateTime=" + dateTime);
+			if (dateTime.isEmpty()) {	//ACLは形式が違うので別メソッドで別途処理 TODO サイトフォーマットが変更になったので2018年に要確認
 				continue;
 			}
 			Element dateEle = dateTime.get(0);
 			String date = season + "/" + dateEle.text();
-			logger.info(date);
+//			logger.info("date=" + date);
 			
-			Element link = game.parent().parent().parent();
+			Element link = game.select("div.vs-box-ticket > span").first();
 			String ticketUrl = TICKET_URL_BASE + link.attr("href");
 			logger.info(ticketUrl);
 			// 各チームのResultsテーブルに更新する。
@@ -151,7 +153,7 @@ public class TicketSaver {
 		String updateSql = "UPDATE " + table + " SET "
 				+ "ticket_url=?" 
 				+ " WHERE game_date1=?";
-		logger.info(updateSql);
+		logger.info(updateSql + " (" + ticketUrl + ", " + date + ")");
 		return qr.update(updateSql, ticketUrl, date);
 	}
 }
