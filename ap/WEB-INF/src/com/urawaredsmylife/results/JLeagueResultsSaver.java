@@ -39,10 +39,11 @@ public class JLeagueResultsSaver {
 	private static final String FUJI_XEROX_RESULTS_URL = "http://www.jleague.jp/match/search/fxsc/all/";
 //	private static final String NEWYEAR_CUP_RESULTS_URL = "http://www.jleague.jp/match/search/nyc/all/";
 	private static final String SURUGA_RESULTS_URL = "http://www.jleague.jp/match/search/suruga/all/";
+	private static final String J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL = "http://www.jleague.jp/match/search/jwc/all/";
 	private static final String[] URLS = new String[] {
 			J1_RESULTS_URL, J2_RESULTS_URL, LEAGUECUP_RESULTS_URL, ACL_RESULTS_URL
 			,TENNOHAI_RESULTS_URL, SURUGA_RESULTS_URL, J1SHOKAKU_PLAYOFF_RESULTS_URL
-			, FUJI_XEROX_RESULTS_URL
+			, FUJI_XEROX_RESULTS_URL, J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL
 	};
 	private static final String DETAIL_URL_BASE = "http://www.jleague.jp";
 	private static Logger logger = Logger.getLogger(JLeagueResultsSaver.class.getName());
@@ -117,7 +118,7 @@ public class JLeagueResultsSaver {
 							continue;
 						} else {
 							kaisaibiMiteiComment = komes.get(i).text().substring(1).replace("に開催予定", "")
-									.replace(" or ", "").trim();
+									.replace(" or ", "or").trim();
 							gameDate = season + "年" + 
 									kaisaibiMiteiComment.replace("/", "月").substring(0, kaisaibiMiteiComment.indexOf("(")) + "日";
 							logger.info("🔵🔵🔵開催日未定＝" + kaisaibiMiteiComment + " / " + gameDate);
@@ -134,19 +135,7 @@ public class JLeagueResultsSaver {
 					}
 					
 					String compe = h5.get(i).text();
-					compe = compe.replace("明治安田生命Ｊ１リーグ", "J1")
-							.replace("明治安田生命Ｊ２リーグ", "J2")
-							.replace("　１ｓｔステージ　", " 1st ")
-							.replace("　２ｎｄステージ　", " 2nd ")
-							.replace("ＡＦＣチャンピオンズリーグ", "ACL")
-							.replace("ＪリーグYBCルヴァンカップ", "ルヴァン")
-							.replace("ヤマザキナビスコカップ", "ナビスコ")
-							.replace("グループステージ", "GS ")
-							.replace("ラウンド１６　", "ラウンド16")
-							.replace("ＭＤ", "MD")
-							.replaceAll("ＦＵＪＩ ＸＥＲＯＸ ＳＵＰＥＲ ＣＵＰ", "FUJI XEROX SUPER CUP")
-							.replace("　", "")
-							;
+					compe = getCompe(compe);
 					System.out.println("🌟 " + gameDate + "  " + compe);
 					// 試合
 					Elements matchTables = matchSection.select("table.matchTable");
@@ -245,6 +234,29 @@ public class JLeagueResultsSaver {
 		String insertSql = "INSERT INTO results VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
 		int[] resultCount = qr.batch(insertSql, insertDataList.toArray(new Object[insertDataList.size()][]));
 		logger.info(ToStringBuilder.reflectionToString(resultCount));
+	}
+
+	/**
+	 * 大会名を変換して返す。
+	 * @param compe
+	 * @return
+	 */
+	private static String getCompe(String compe) {
+		compe = compe.replace("明治安田生命Ｊ１リーグ", "J1")
+				.replace("明治安田生命Ｊ２リーグ", "J2")
+				.replace("　１ｓｔステージ　", " 1st ")
+				.replace("　２ｎｄステージ　", " 2nd ")
+				.replace("ＡＦＣチャンピオンズリーグ", "ACL")
+				.replace("ＪリーグYBCルヴァンカップ", "ルヴァン")
+				.replace("ヤマザキナビスコカップ", "ナビスコ")
+				.replace("グループステージ", "GS ")
+				.replace("ラウンド１６　", "ラウンド16")
+				.replace("ＭＤ", "MD")
+				.replaceAll("ＦＵＪＩ ＸＥＲＯＸ ＳＵＰＥＲ ＣＵＰ", "FUJI XEROX SUPER CUP")
+				.replaceAll("明治安田生命Ｊリーグワールドチャレンジ", "ワールドチャレンジ")
+				.replace("　", "")
+				;
+		return compe;
 	}
 	
 	/**
