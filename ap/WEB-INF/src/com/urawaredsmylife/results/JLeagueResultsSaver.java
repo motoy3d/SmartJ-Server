@@ -109,16 +109,25 @@ public class JLeagueResultsSaver {
 				Elements h5 = matchSection.select("h5");
 				Elements komes = matchSection.select("p.kome");	//日程未定の記載
 				for (int i=0; i<h5.size(); i++) {	//1日に複数の節の試合がある場合がある
+					String compe = h5.get(i).text();
+					compe = getCompe(compe);
+					logger.info("🔶" + compe + "  /  " + komes);
 					String kaisaibiMiteiComment = "";
 					boolean isMitei = false;
 					if (komes != null && !komes.isEmpty()) {
 						isMitei = true;
-						if (komes.size() <= i) {
+						if (komes.size() <= i || !komes.get(i).text().contains("に開催予定")) {
 							logger.info("日程候補も未定のため登録できない。" + h5);
 							continue;
 						} else {
 							kaisaibiMiteiComment = komes.get(i).text().substring(1).replace("に開催予定", "")
 									.replace(" or ", "or").trim();
+							if (kaisaibiMiteiComment.contains("　")) {
+								kaisaibiMiteiComment = kaisaibiMiteiComment.substring(0, kaisaibiMiteiComment.indexOf("　"));
+							}
+							if (30 < kaisaibiMiteiComment.length()) {
+								kaisaibiMiteiComment = kaisaibiMiteiComment.substring(0, 30);
+							}
 							gameDate = season + "年" + 
 									kaisaibiMiteiComment.replace("/", "月").substring(0, kaisaibiMiteiComment.indexOf("(")) + "日";
 							logger.info("🔵🔵🔵開催日未定＝" + kaisaibiMiteiComment + " / " + gameDate);
@@ -131,11 +140,9 @@ public class JLeagueResultsSaver {
 					if (isMitei) {
 						gameDate2 = kaisaibiMiteiComment;
 					} else {
-						gameDate2 = gameDate.substring(5).replaceFirst("月", "/").replaceFirst("日", "");
+						gameDate2 = gameDate.substring(5).replaceFirst("月", "/").replaceFirst("日", "").trim();
 					}
 					
-					String compe = h5.get(i).text();
-					compe = getCompe(compe);
 					System.out.println("🌟 " + gameDate + "  " + compe);
 					// 試合
 					Elements matchTables = matchSection.select("table.matchTable");
