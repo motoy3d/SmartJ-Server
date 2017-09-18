@@ -157,6 +157,7 @@ public class TeamUtils {
 		TEAM_NAMES_SHORT_FULL.put("EST", "イースタンSC");//香港
 		TEAM_NAMES_SHORT_FULL.put("BVB", "ドルトムント");//ドイツ
 		TEAM_NAMES_SHORT_FULL.put("SFC", "セビージャ");//スペイン
+		TEAM_NAMES_SHORT_FULL.put("シャペ", "シャペコエンセ");//ブラジル
 	}
 
 	/**
@@ -258,7 +259,7 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("EST", "イースタンSC");//香港
 		TEAM_NAMES_FULL_SHORT.put("BVB", "ドルトムント");//ドイツ
 		TEAM_NAMES_FULL_SHORT.put("SFC", "セビージャ");//スペイン
-		
+		TEAM_NAMES_FULL_SHORT.put("シャペ", "シャペコエンセ");//ブラジル
 	}
 
 	/**
