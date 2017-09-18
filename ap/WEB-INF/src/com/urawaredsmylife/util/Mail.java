@@ -14,8 +14,8 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class Mail {
-	private static final String HOST = "sub0000499082.hmk-temp.com";
-	private static final String FROM = "motoy@sub0000499082.hmk-temp.com";
+	private static final String HOST = "localhost";
+	private static final String FROM = "motoy@smartj.mobi";
 	private static final String TO = "motoy3d@gmail.com";
 	private static boolean debug = true;
 	private static Properties props = new Properties();
