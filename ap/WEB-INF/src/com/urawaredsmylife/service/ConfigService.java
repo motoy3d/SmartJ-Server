@@ -48,10 +48,9 @@ public class ConfigService {
 			List<Map<String, Object>> messageList = qr.query(sql, new MapListHandler());
 			
 			// 設定
-			String sql2 = "SELECT * FROM teamMaster WHERE" 
-					+ " team_id = " + DB.quote(teamId);
-			logger.info(sql2);
-			Map<String, Object> team = qr.query(sql2, new MapHandler());
+			String sql2 = "SELECT * FROM teamMaster WHERE team_id = ?";
+			logger.info(sql2 + " / " + teamId);
+			Map<String, Object> team = qr.query(sql2, new MapHandler(), teamId);
 			
 			List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 			Map<String, Object> conf = new HashMap<String, Object>();
