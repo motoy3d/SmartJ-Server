@@ -19,13 +19,19 @@ insert into marinosFeedMaster values(default,'http://rssblog.ameba.jp/kikomari/r
 insert into marinosFeedMaster values(default,'http://tricotrico.seesaa.net/index.rdf','とりこと横浜Ｆ・マリノス','とりこと横浜Ｆ・マリノス',now());
 insert into marinosFeedMaster values(default,'http://blog.livedoor.jp/who_nya/index.rdf','Walk on the Wild Side','Walk on the Wild Side',now());
 insert into marinosFeedMaster values(default,'http://rss.phew.homeip.net/v10/10015.xml','横浜F・マリノス公式','横浜F・マリノス公式',now());
-
-
-
-insert into marinosFeedMaster values(default,'http','xx','xx',now());
-insert into marinosFeedMaster values(default,'http','xx','xx',now());
-
-
+insert into marinosFeedMaster values(default,'http://blog.lirionet.jp/taka/rss.xml','扇原貴宏 OFFICIAL BLOG','扇原貴宏 OFFICIAL BLOG',now());
+insert into marinosFeedMaster values(default,'http://www.f-schale.com/feed','銀皿航海 蹴球７日制','銀皿航海 蹴球７日制',now());
+insert into marinosFeedMaster values(default,'http://blog.goo.ne.jp/carlos-adf/rss2.xml','ぷっしゃ　び～だ','ぷっしゃ　び～だ',now());
+insert into marinosFeedMaster values(default,'http://blog.livedoor.jp/kogomi23/index.rdf','In this Corner of the Nissan Stadium','In this Corner of the Nissan Stadium',now());
+insert into marinosFeedMaster values(default,'http://blog.livedoor.jp/wakame04/index.rdf','マリノス君、マリノスケ 時々 くり','マリノス君、マリノスケ 時々 くり',now());
+insert into marinosFeedMaster values(default,'http://funkyrun.seesaa.net/index.rdf','主にマリノス観戦記録','主にマリノス観戦記録',now());
+insert into marinosFeedMaster values(default,'http://ziztakibi.blog.so-net.ne.jp/index.rdf','じず。☆つれづれ。。。','じず。☆つれづれ。。。',now());
+insert into marinosFeedMaster values(default,'http://rssblog.ameba.jp/kikomari/rss20.xml','ｋｉｋｏ@with F・Marinosブログ','ｋｉｋｏ@with F・Marinosブログ',now());
+insert into marinosFeedMaster values(default,'http://blog.goo.ne.jp/bxd05575_001/rss2.xml','トリコロールに命を懸けろ！','トリコロールに命を懸けろ！',now());
+insert into marinosFeedMaster values(default,'http://www.plus-blog.sportsnavi.com/my25tiger/rss2_0/feed.xml','SPORTS BULLetin','SPORTS BULLetin',now());
+insert into marinosFeedMaster values(default,'http://rssblog.ameba.jp/bankenblog/rss20.xml','ハマの番犬のブログ','ハマの番犬のブログ',now());
+insert into marinosFeedMaster values(default,'http://blog.livedoor.jp/who_nya/index.rdf','Walk on the Wild Side','Walk on the Wild Side',now());
+insert into marinosFeedMaster values(default,'http://minposi.com/marisapo/feed/','絶対横浜FM主義','絶対横浜FM主義',now());
 
 
 insert into marinosFeedMaster values(default,'http','xx','xx',now());

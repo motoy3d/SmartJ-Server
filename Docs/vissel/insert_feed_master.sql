@@ -15,6 +15,13 @@ insert into visselFeedMaster values(default,'http://kobe.kensyusokko.com/feed/',
 insert into visselFeedMaster values(default,'http://rssblog.ameba.jp/shunki-takahashi/rss20.xml','高橋峻希オフィシャルブログ','高橋峻希オフィシャルブログ',now());
 insert into visselFeedMaster values(default,'http://api.plaza.rakuten.ne.jp/koberiver/rss/','がんばれヴィッセル神戸～koberiverのブログ','がんばれヴィッセル神戸～koberiverのブログ',now());
 insert into visselFeedMaster values(default,'http://rss.phew.homeip.net/v10/10026.xml','ヴィッセル神戸公式','ヴィッセル神戸公式',now());
+insert into visselFeedMaster values(default,'https://api.plaza.rakuten.ne.jp/visselashiya/rss/','VISSEL KOBEとｺﾍﾞﾙｺｽﾃｨ-ﾗ-ｽﾞ■□応援します、Ashiyaから','VISSEL KOBEとｺﾍﾞﾙｺｽﾃｨ-ﾗ-ｽﾞ■□応援します、Ashiyaから',now());
+insert into visselFeedMaster values(default,'http://dojidojid.blog40.fc2.com/?xml','よっしぃの徒然なるままに・・・','よっしぃの徒然なるままに・・・',now());
+insert into visselFeedMaster values(default,'https://api.plaza.rakuten.ne.jp/1995117vissel/rss/','考え事ほか','考え事ほか',now());
+insert into visselFeedMaster values(default,'http://blog.livedoor.jp/kaisei_kanren/index.rdf','神戸海征塾＆関西蹴球國士連合公式BLOG','神戸海征塾＆関西蹴球國士連合公式BLOG',now());
+insert into visselFeedMaster values(default,'https://api.plaza.rakuten.ne.jp/visselsupporter/rss/','神戸魂','神戸魂',now());
+insert into visselFeedMaster values(default,'https://api.plaza.rakuten.ne.jp/visselist/rss/','臙脂の闘志   ヴィッセル応援大陸','臙脂の闘志   ヴィッセル応援大陸',now());
+insert into visselFeedMaster values(default,'https://api.plaza.rakuten.ne.jp/koberiver/rss/','がんばれヴィッセル神戸～koberiverのブログ','がんばれヴィッセル神戸～koberiverのブログ',now());
+insert into visselFeedMaster values(default,'https://lineblog.me/tanakajunya/index.rdf','田中順也 公式ブログ','田中順也 公式ブログ',now());
 
 insert into visselFeedMaster values(default,'http','xx','xx',now());
-

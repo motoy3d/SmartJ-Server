@@ -70,5 +70,11 @@ insert into redsFeedMaster values(default,'http://lineblog.me/mr_makino0511/inde
 insert into redsFeedMaster values(default,'http://rss.phew.homeip.net/v10/10008.xml','浦和レッズ公式','浦和レッズ公式',now());
 insert into redsFeedMaster values(default,'http://urawaislife.seesaa.net/index.rdf','浦和 is Life','浦和 is Life',now());
 
+insert into redsFeedMaster values(default,'http://fetchrss.com/rss/599d033b8a93f89d038b4567351661117.xml','浦議','浦議',now());
+insert into redsFeedMaster values(default,'http://fetchrss.com/rss/599d033b8a93f89d038b4567755137562.xml','浦議','浦議',now());
+insert into redsFeedMaster values(default,'http','xx','xx',now());
+insert into redsFeedMaster values(default,'http','xx','xx',now());
+
+
 
 insert into redsFeedMaster values(default,'http','xx','xx',now());

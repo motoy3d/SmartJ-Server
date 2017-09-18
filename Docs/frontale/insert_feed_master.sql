@@ -13,6 +13,18 @@ insert into frontaleFeedMaster values(default,'http://fxhr.blog.fc2.com/?xml','�
 insert into frontaleFeedMaster values(default,'http://rssblog.ameba.jp/fantasiska18/rss20.xml','フロンターレフットボールクレイジー','フロンターレフットボールクレイジー',now());
 insert into frontaleFeedMaster values(default,'http://blog.lirionet.jp/sota_blog/rss.xml','中澤聡太 OFFICIAL BLOG','中澤聡太 OFFICIAL BLOG',now());
 insert into frontaleFeedMaster values(default,'http://rss.phew.homeip.net/v10/10014.xml','川崎フロンターレ公式','川崎フロンターレ公式',now());
+insert into frontaleFeedMaster values(default,'http://xn--vcktab9fwb6ef2c0edb7846k4gc.com/blog/feed/atom','川崎フロンターレサポーターデータベース','川崎フロンターレサポーターデータベース',now());
+insert into frontaleFeedMaster values(default,'http://www.lovefrontalewin.win/feed','フロンターレを優勝に導く！ ','フロンターレを優勝に導く！ ',now());
+insert into frontaleFeedMaster values(default,'http://blog.livedoor.jp/k_sp_bito31/index.rdf','川崎魂は傷つかない!?','川崎魂は傷つかない!?',now());
+insert into frontaleFeedMaster values(default,'http://frosuki.com/feed','川崎フロンターレ応援ブログ　フロスキ！','川崎フロンターレ応援ブログ　フロスキ！',now());
+insert into frontaleFeedMaster values(default,'http://pikobin.blog74.fc2.com/?xml','フロンターレどうでしょう。','フロンターレどうでしょう。',now());
+insert into frontaleFeedMaster values(default,'http://blog.livedoor.jp/marufro/index.rdf','フロンターレと出会って"','フロンターレと出会って"',now());
+insert into frontaleFeedMaster values(default,'http://norman.jp/football/?feed=rss2','FOOTBALL RECOARDS　〜サッカー観戦記（Ｊリーグホーム＆アウェイ）','FOOTBALL RECOARDS　〜サッカー観戦記（Ｊリーグホーム＆アウェイ）',now());
+insert into frontaleFeedMaster values(default,'http://minposi.com/kawasaki/feed/','フロンターレ華族','フロンターレ華族',now());
+insert into frontaleFeedMaster values(default,'http://www.targma.jp/kawasaki/feed/','川崎フットボールアディクト','川崎フットボールアディクト',now());
+insert into frontaleFeedMaster values(default,'http://rssblog.ameba.jp/frontale2007/rss20.xml','FOOTBALL IS MY LIFE','FOOTBALL IS MY LIFE',now());
+insert into frontaleFeedMaster values(default,'http://bluemagazine3.blog.so-net.ne.jp/index.rdf','BLUE MAGAZINE 3.0','BLUE MAGAZINE 3.0',now());
+insert into frontaleFeedMaster values(default,'http://wog.jpn.org/feed/','はらまき','はらまき',now());
 
 insert into frontaleFeedMaster values(default,'http','xx','xx',now());
 

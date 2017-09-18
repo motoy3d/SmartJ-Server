@@ -22,7 +22,16 @@ insert into gambaFeedMaster values(default,'http://gambaka9244.blog.fc2.com/?xml
 insert into gambaFeedMaster values(default,'http://level42j.blog.fc2.com/?xml','おじさんのチャリチャリつれづれ','おじさんのチャリチャリつれづれ',now());
 insert into gambaFeedMaster values(default,'http://blog.livedoor.jp/gamba_pinapon/index.rdf','お一人様サッカー観戦記〜フォルツァガンバ！','お一人様サッカー観戦記〜フォルツァガンバ！',now());
 insert into gambaFeedMaster values(default,'http://api.plaza.rakuten.ne.jp/suda6473/rss/','Resistance','Resistance',now());
-
+insert into gambaFeedMaster values(default,'https://lineblog.me/yasuhito_endo/index.rdf','遠藤保仁 公式ブログ','遠藤保仁 公式ブログ',now());
+insert into gambaFeedMaster values(default,'http://rssblog.ameba.jp/jungo-fujimoto/rss20.xml','藤本淳吾オフィシャルブログ「マイペースな左足」','藤本淳吾オフィシャルブログ「マイペースな左足」',now());
+insert into gambaFeedMaster values(default,'http://gambatimes.com/feed/','ガンバ大阪応援サイト「GAMBA TIMES（ガンバタイムス）」','ガンバ大阪応援サイト「GAMBA TIMES（ガンバタイムス）」',now());
+insert into gambaFeedMaster values(default,'http://blog.goo.ne.jp/ijdhdy/rss2.xml','イケさんの「日々これ辛抱」','イケさんの「日々これ辛抱」',now());
+insert into gambaFeedMaster values(default,'http://rssblog.ameba.jp/myuko333/rss20.xml','さるサンのブログ','さるサンのブログ',now());
+insert into gambaFeedMaster values(default,'http://syotubasa.cocolog-nifty.com/blog/atom.xml','オー ミア・ガンバ大阪','オー ミア・ガンバ大阪',now());
+insert into gambaFeedMaster values(default,'http://rssblog.ameba.jp/gambasuitalady/rss20.xml','GAMBAな女子のブログ','GAMBAな女子のブログ',now());
+insert into gambaFeedMaster values(default,'http://rssblog.ameba.jp/akiakiaki1993/rss20.xml','あきのガンバ大阪のほのぼのブログ','あきのガンバ大阪のほのぼのブログ',now());
+insert into gambaFeedMaster values(default,'http://www.neroblulife.com/feed','Nero Blu Life - ガンバ大阪サポーターのブログ','Nero Blu Life - ガンバ大阪サポーターのブログ',now());
+insert into gambaFeedMaster values(default,'http://www.motoko3.com/index.rdf','Glamorous Life','Glamorous Life',now());
 
 
 insert into gambaFeedMaster values(default,'http','xx','xx',now());

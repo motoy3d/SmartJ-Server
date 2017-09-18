@@ -16,6 +16,18 @@ insert into cerezoFeedMaster values(default,'http://ofssoyokazei3.blog.shinobi.j
 insert into cerezoFeedMaster values(default,'http://iten2014.blog.jp/index.rdf','さつきつつじと桜花','さつきつつじと桜花',now());
 insert into cerezoFeedMaster values(default,'http://cerezoman.com/?feed=rss2','セレッソマン','セレッソマン',now());
 insert into cerezoFeedMaster values(default,'http://rss.phew.homeip.net/v10/10025.xml','セレッソ大阪公式','セレッソ大阪公式',now());
+insert into cerezoFeedMaster values(default,'http://kojiharrison.blogspot.com/feeds/posts/default','頭の中にあるセレッソのことを文章にしていく','頭の中にあるセレッソのことを文章にしていく',now());
+insert into cerezoFeedMaster values(default,'http://cerezoyasuro.blogspot.com/feeds/posts/default','土曜日はスタヂアムで ~Let''s go to the stadium on Saturday','土曜日はスタヂアムで ~Let''s go to the stadium on Saturday',now());
+insert into cerezoFeedMaster values(default,'http://shigeobaba.blog.so-net.ne.jp/index.rdf','ばばしげ格付け研究所 so-netトラベルセンター','ばばしげ格付け研究所 so-netトラベルセンター',now());
+insert into cerezoFeedMaster values(default,'http://osakadrive.blog.fc2.com/?xml','桜阪drive　（セレッソ大阪を応援）','桜阪drive　（セレッソ大阪を応援）',now());
+insert into cerezoFeedMaster values(default,'http://takada-osaka.cocolog-nifty.com/blog/rss.xml','大阪、おおさか、OSAKA（桜＆虎＆鉄版）【旧】','大阪、おおさか、OSAKA（桜＆虎＆鉄版）【旧】',now());
+insert into cerezoFeedMaster values(default,'http://bowshaped.blog53.fc2.com/?xml','MAGIC ARROW','MAGIC ARROW',now());
+insert into cerezoFeedMaster values(default,'http://blog.livedoor.jp/crzgoal/index.rdf','CEREZO Golazo！ セレッソ大阪ブログ','CEREZO Golazo！ セレッソ大阪ブログ',now());
+insert into cerezoFeedMaster values(default,'http://shigeobaba.blog71.fc2.com/?xml','ばばしげ格付け研究所FC２通信局','ばばしげ格付け研究所FC２通信局',now());
+insert into cerezoFeedMaster values(default,'https://cerezonishinaka.blogspot.com/feeds/posts/default','セレッソ大阪狂乱観戦記　O lunatico amou futebol','セレッソ大阪狂乱観戦記　O lunatico amou futebol',now());
+insert into cerezoFeedMaster values(default,'http://www.plus-blog.sportsnavi.com/roslin/rss2_0/feed.xml','Power ＆ The Glory～セレッソ大阪応援ブログ','Power ＆ The Glory～セレッソ大阪応援ブログ',now());
+insert into cerezoFeedMaster values(default,'http://blogola.jp/t/cosaka/feed','BLOGORA','BLOGORA',now());
+insert into cerezoFeedMaster values(default,'http://footballerplus.net/sekiguchi/?feed=rss2','関口訓充公式ブログ','関口訓充公式ブログ',now());
 
 
 insert into cerezoFeedMaster values(default,'http','xx','xx',now());

@@ -12,6 +12,15 @@ insert into reysolFeedMaster values(default,'http://rssblog.ameba.jp/asym-net/rs
 insert into reysolFeedMaster values(default,'http://hyu021.blog115.fc2.com/?xml&category=0','こしあんかしわもち','こしあんかしわもち',now());
 insert into reysolFeedMaster values(default,'http://www.plus-blog.sportsnavi.com/takenoco0803/rss2_0/feed.xml','のこJournal','のこJournal',now());
 
+insert into reysolFeedMaster values(default,'http://ajt.pupu.jp/rayfan/feed/','柏レイソルと野良猫と','柏レイソルと野良猫と',now());
+insert into reysolFeedMaster values(default,'http://tassiy.jugem.cc/?mode=atom','Tassiy’s Blog：柏レイソルのことをうだうだ書くブログ','Tassiy’s Blog：柏レイソルのことをうだうだ書くブログ',now());
+insert into reysolFeedMaster values(default,'http://b.crystal-white.com/reysol/xml/atom.xml','white*crystal　(サッカー版)','white*crystal　(サッカー版)',now());
+insert into reysolFeedMaster values(default,'http://clippingreysol.blog.jp/index.rdf','Clipping Reysol','Clipping Reysol',now());
+insert into reysolFeedMaster values(default,'http://38078027.at.webry.info/theme/fc86f65247.rdf','あああ','あああ',now());
+insert into reysolFeedMaster values(default,'http://www.plus-blog.sportsnavi.com/reysolista/rss2_0/feed.xml','柏から世界へ　〜ビッククラブへの道〜','柏から世界へ　〜ビッククラブへの道〜',now());
+insert into reysolFeedMaster values(default,'http://www.hitachidai.net/log/top_log/atom.xml','柏レイソルのゴール裏','柏レイソルのゴール裏',now());
+insert into reysolFeedMaster values(default,'http://reysol.antenam.info/rss1s.rss','柏レイソルアンテナ','柏レイソルアンテナ',now());
+insert into reysolFeedMaster values(default,'https://lineblog.me/otsuyuki/index.rdf','大津祐樹 公式ブログ','大津祐樹 公式ブログ',now());
 
 insert into reysolFeedMaster values(default,'http','xx','xx',now());
 
