@@ -33,10 +33,10 @@ public class StandingsSaver {
 	/**
 	 * 順位表URL
 	 */
-	private static final String SRC_URL_J1 = "http://www.jleague.jp/standings/j1.html";
-	private static final String SRC_URL_J2 = "http://www.jleague.jp/standings/j2.html";
+	private static final String SRC_URL_J1 = "http://www.jleague.jp/standings/j1/";
+	private static final String SRC_URL_J2 = "http://www.jleague.jp/standings/j2/";
 	private static final String SRC_URL_LEVAIN = "http://www.jleague.jp/standings/leaguecup/";
-	private static final String SRC_URL_ACL = "http://www.jleague.jp/standings/acl.html";
+	private static final String SRC_URL_ACL = "http://www.jleague.jp/standings/acl/";
 
 	/**
 	 * ルヴァンカップ参加チーム数（年によって変わる可能性あり）
@@ -99,6 +99,7 @@ public class StandingsSaver {
 			return j1Result + j2Result + levainResult + aclResult;
 		} catch(Exception ex) {
 			logger.error("順位表取得エラー", ex);
+			Mail.send(ex);
 			return 1;
 		}
 	}
@@ -179,6 +180,7 @@ public class StandingsSaver {
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("J1/J2順位表抽出エラー", e);
+			Mail.send(e);
 			return 1;
 		}
 		return 0;
@@ -326,6 +328,7 @@ public class StandingsSaver {
             logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
 		} catch (Exception e) {
 			logger.error("ACL順位表抽出エラー", e);
+			Mail.send(e);
 			return 1;
 		}
 		return 0;
