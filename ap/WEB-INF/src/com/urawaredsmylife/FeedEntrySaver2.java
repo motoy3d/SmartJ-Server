@@ -116,7 +116,9 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				URL url = new URL(feedUrl);
 				logger.info("targetFeed=" + targetFeed.getSiteName() + " : " + url.toString());
 				try {
-					SyndFeed feed = new SyndFeedInput().build(new XmlReader(url));
+					SyndFeedInput syndFeedInput = new SyndFeedInput();
+					syndFeedInput.setAllowDoctypes(true);	//DOCTYPE is disallowed....回避。
+					SyndFeed feed = syndFeedInput.build(new XmlReader(url));
 					SyndFeedHolder feedHolder = new SyndFeedHolder(
 							feed, targetFeed.getFeedId(), targetFeed.getSiteName());	
 					logger.info("★件数＝" + feed.getEntries().size() + "  " + targetFeed.getSiteName());
