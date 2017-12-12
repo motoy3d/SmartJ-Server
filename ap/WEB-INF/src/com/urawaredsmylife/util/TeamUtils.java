@@ -158,6 +158,9 @@ public class TeamUtils {
 		TEAM_NAMES_SHORT_FULL.put("BVB", "ドルトムント");//ドイツ
 		TEAM_NAMES_SHORT_FULL.put("SFC", "セビージャ");//スペイン
 		TEAM_NAMES_SHORT_FULL.put("シャペ", "シャペコエンセ");//ブラジル
+		TEAM_NAMES_SHORT_FULL.put("ALH", "アル・ヒラル");//サウジアラビア
+		TEAM_NAMES_SHORT_FULL.put("ALJ", "アルジャジーラ");//UAE
+		TEAM_NAMES_SHORT_FULL.put("WYD", "ウィダード・カサブランカ");//モロッコ
 	}
 
 	/**
@@ -260,6 +263,9 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("BVB", "ドルトムント");//ドイツ
 		TEAM_NAMES_FULL_SHORT.put("SFC", "セビージャ");//スペイン
 		TEAM_NAMES_FULL_SHORT.put("シャペ", "シャペコエンセ");//ブラジル
+		TEAM_NAMES_FULL_SHORT.put("ALH", "アル・ヒラル");//サウジアラビア
+		TEAM_NAMES_FULL_SHORT.put("ALJ", "アルジャジーラ");//UAE
+		TEAM_NAMES_FULL_SHORT.put("WYD", "ウィダード・カサブランカ");//モロッコ
 	}
 
 	/**

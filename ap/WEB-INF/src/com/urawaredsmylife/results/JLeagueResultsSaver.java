@@ -40,10 +40,12 @@ public class JLeagueResultsSaver {
 //	private static final String NEWYEAR_CUP_RESULTS_URL = "http://www.jleague.jp/match/search/nyc/all/";
 	private static final String SURUGA_RESULTS_URL = "http://www.jleague.jp/match/search/suruga/all/";
 	private static final String J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL = "http://www.jleague.jp/match/search/jwc/all/";
+	private static final String CLUB_WORLD_CUP_RESULTS_URL = "http://www.jleague.jp/match/search/fcwc/all/";
 	private static final String[] URLS = new String[] {
 			J1_RESULTS_URL, J2_RESULTS_URL, LEAGUECUP_RESULTS_URL, ACL_RESULTS_URL
 			,TENNOHAI_RESULTS_URL, SURUGA_RESULTS_URL, J1SHOKAKU_PLAYOFF_RESULTS_URL
 			, FUJI_XEROX_RESULTS_URL, J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL
+			,CLUB_WORLD_CUP_RESULTS_URL
 	};
 	private static final String DETAIL_URL_BASE = "http://www.jleague.jp";
 	private static Logger logger = Logger.getLogger(JLeagueResultsSaver.class.getName());
