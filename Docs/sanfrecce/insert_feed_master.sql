@@ -15,6 +15,14 @@ insert into sanfrecceFeedMaster values(default,'http://sanfretamasi.blog.fc2.com
 insert into sanfrecceFeedMaster values(default,'http://sachikumatei.blog63.fc2.com/?xml','幸熊亭　サンフレッチェ応援ブログ','幸熊亭　サンフレッチェ応援ブログ',now());
 insert into sanfrecceFeedMaster values(default,'http://rss.phew.homeip.net/v10/10027.xml','サンフレッチェ広島公式','サンフレッチェ広島公式',now());
 
+insert into sanfrecceFeedMaster values(default,'http://rssblog.ameba.jp/kitan233/rss20.xml','gogo!320che⇒サンフレッチェ','gogo!320che⇒サンフレッチェ',now());
+insert into sanfrecceFeedMaster values(default,'http://blog.livedoor.jp/tn10/index.rdf','スポーツ観戦紀～サンフレッチェ広島編～','スポーツ観戦紀～サンフレッチェ広島編～',now());
+insert into sanfrecceFeedMaster values(default,'http://tico-jpn.com/feed','広島、晴れのち晴れ | 大体サンフレッチェの事。たまに日常の事を書きます。','広島、晴れのち晴れ | 大体サンフレッチェの事。たまに日常の事を書きます。',now());
+insert into sanfrecceFeedMaster values(default,'http://inhale-sanfrecce.cocolog-nifty.com/blog/atom.xml','サンフ欠乏症ブログ','サンフ欠乏症ブログ',now());
+insert into sanfrecceFeedMaster values(default,'http://wagahaitosanhurecche.blog.fc2.com/?xml','吾輩とサンフレッチェ広島','吾輩とサンフレッチェ広島',now());
+insert into sanfrecceFeedMaster values(default,'http://seto.way-nifty.com/sanfreccediary/atom.xml','せと☆ひできのサッカーコラム','せと☆ひできのサッカーコラム',now());
+insert into sanfrecceFeedMaster values(default,'http://www.targma.jp/sigmaclub/feed/','SIGMACLUBweb','SIGMACLUBweb',now());
+insert into sanfrecceFeedMaster values(default,'http://rssblog.ameba.jp/kanto-sanfrecce/rss20.xml','サンフ応援オヤジのブログ','サンフ応援オヤジのブログ',now());
 
 insert into sanfrecceFeedMaster values(default,'http','xx','xx',now());
 

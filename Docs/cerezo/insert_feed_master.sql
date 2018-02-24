@@ -28,6 +28,14 @@ insert into cerezoFeedMaster values(default,'https://cerezonishinaka.blogspot.co
 insert into cerezoFeedMaster values(default,'http://www.plus-blog.sportsnavi.com/roslin/rss2_0/feed.xml','Power ＆ The Glory～セレッソ大阪応援ブログ','Power ＆ The Glory～セレッソ大阪応援ブログ',now());
 insert into cerezoFeedMaster values(default,'http://blogola.jp/t/cosaka/feed','BLOGORA','BLOGORA',now());
 insert into cerezoFeedMaster values(default,'http://footballerplus.net/sekiguchi/?feed=rss2','関口訓充公式ブログ','関口訓充公式ブログ',now());
+insert into cerezoFeedMaster values(default,'http://okonomi-chant.jugem.jp/?mode=atom','ＣＨＡＮＴ de 会おうぜ！','ＣＨＡＮＴ de 会おうぜ！',now());
+insert into cerezoFeedMaster values(default,'http://blog.goo.ne.jp/yoshi08/rss2.xml','VIVA セレッソ大阪','VIVA セレッソ大阪',now());
+insert into cerezoFeedMaster values(default,'http://blog.livedoor.jp/jintan_ld/index.rdf','サクラ咲く・・・','サクラ咲く・・・',now());
+insert into cerezoFeedMaster values(default,'https://blogs.yahoo.co.jp/nagainosakura2002/rss.xml','季節外れの桜満開（桜応援ブログ）','季節外れの桜満開（桜応援ブログ）',now());
+insert into cerezoFeedMaster values(default,'http://kojiharrison.blogspot.com/feeds/posts/default','頭の中にあるセレッソのことを文章にしていく ','頭の中にあるセレッソのことを文章にしていく ',now());
+insert into cerezoFeedMaster values(default,'http://blog.livedoor.jp/nuruporus/index.rdf','今日もどこかでぬるぽラす','今日もどこかでぬるぽラす',now());
+
+
 
 
 insert into cerezoFeedMaster values(default,'http','xx','xx',now());
