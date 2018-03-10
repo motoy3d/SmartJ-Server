@@ -41,7 +41,9 @@ public class StandingsSaver {
 	/**
 	 * ルヴァンカップ参加チーム数（年によって変わる可能性あり）
 	 */
-	private static final int NABISCO_TEAM_COUNT = 14;
+	private static final int LEVAIN_TEAM_COUNT = 16;
+	private static final String[] LEVAIN_GROUPS = new String[] {"A", "B", "C", "D"};
+	
 	/**
 	 * ACLチーム数（年によって変わる可能性あり）
 	 */
@@ -203,7 +205,7 @@ public class StandingsSaver {
 			System.out.println("テーブル数：" + tables.length);
             
 			String insertSql = "INSERT INTO nabiscoStandings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-            Object[][] insertDataList = new Object[NABISCO_TEAM_COUNT][];
+            Object[][] insertDataList = new Object[LEVAIN_TEAM_COUNT][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
             // tables = グループごと
             int rowIdx = 0;
@@ -223,8 +225,8 @@ public class StandingsSaver {
 					String gotGoal = table.getCellAsText(r, 8);
 					String lostGoal = table.getCellAsText(r, 9);
 					String diff = table.getCellAsText(r, 10);
-					String group = g == 0? "A" : "B";
-					System.out.println(group + "-" + rank + " : " + team);
+					String group = LEVAIN_GROUPS[g];
+					System.out.println(group + "-" + r + ", " + rank + " : " + team);
 					int c = 0;
 					insertDataList[rowIdx] = new Object[13];
 					insertDataList[rowIdx][c++] = season;
