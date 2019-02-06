@@ -134,8 +134,9 @@ public class JLeagueResultsSaver {
 							if (30 < kaisaibiMiteiComment.length()) {
 								kaisaibiMiteiComment = kaisaibiMiteiComment.substring(0, 30);
 							}
-							gameDate = season + "年" + 
-									kaisaibiMiteiComment.replace("/", "月").substring(0, kaisaibiMiteiComment.indexOf("(")) + "日";
+//							gameDate = season + "年" + 
+//									kaisaibiMiteiComment.replace("/", "月").substring(0, kaisaibiMiteiComment.indexOf("(")) + "日";
+							gameDate = "開催日未定";
 							logger.info("🔵🔵🔵開催日未定＝" + kaisaibiMiteiComment + " / " + gameDate);
 						}
 					}
@@ -231,7 +232,7 @@ public class JLeagueResultsSaver {
 						oneRec[c++] = homePk;
 						oneRec[c++] = awayPk;
 						oneRec[c++] = detailUrl;
-						if (gameDate1 != null) {
+						if (gameDate1 != null && !"開催未定".equals(gameDate1) && !"開催日未定".equals(gameDate1)) {
 							insertDataList.add(oneRec);
 						}
 
