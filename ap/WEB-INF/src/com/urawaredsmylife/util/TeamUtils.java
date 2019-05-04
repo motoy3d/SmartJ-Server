@@ -252,6 +252,7 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("MUA", "ムアントン");	//タイ
 		TEAM_NAMES_FULL_SHORT.put("ムアントン・ユナイテッド", "ムアントン");	//タイ
 		TEAM_NAMES_FULL_SHORT.put("BUR", "ブリーラム");//タイ
+		TEAM_NAMES_FULL_SHORT.put("ブリーラム ユナイテッド", "ブリーラム");//タイ
 		TEAM_NAMES_FULL_SHORT.put("SYD", "シドニーＦＣ");	//オーストラリア
 		TEAM_NAMES_FULL_SHORT.put("WSW", "Wシドニー");	//オーストラリア
 		TEAM_NAMES_FULL_SHORT.put("ウェスタン・シドニー・ワンダラーズ", "Wシドニー");	//オーストラリア

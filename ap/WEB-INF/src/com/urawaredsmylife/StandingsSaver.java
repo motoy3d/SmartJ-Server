@@ -9,15 +9,18 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
+import org.w3c.dom.NodeList;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HTMLElement;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.TableCell;
 import com.meterware.httpunit.TableRow;
+import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import com.meterware.httpunit.dom.NodeListImpl;
 import com.urawaredsmylife.util.Const;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.Mail;
@@ -287,12 +290,13 @@ public class StandingsSaver {
 					System.out.println("-----------------------------");
 					String rank = table.getCellAsText(r, 0).replace("-", "1");
 					TableCell teamCell = table.getTableCell(r, 1);
-					HTMLElement[] teamSpan = teamCell.getElementsWithAttribute("class", "teamName");
+					NodeList nodes = teamCell.getDOM().getChildNodes();
+					logger.info("t=" + nodes);
 					String team = null;
-					if (0 < teamSpan.length) {
-						team = teamSpan[0].getText();
+					if (1 < nodes.getLength()) {
+						team = nodes.item(1).getNodeValue();
 					} else {
-						team = table.getCellAsText(r, 0);
+						team = table.getCellAsText(r, 1);
 					}
 					team = TeamUtils.getShortTeamName(team);
 					String point = table.getCellAsText(r, 2);
