@@ -166,17 +166,11 @@ public class FeedEntrySaver {
 			String entryTitle = StringEscapeUtils.unescapeHtml(entry.getTitle());
 			// エントリタイトルからサイト名を抽出
 			String siteName = targetFeed.getSiteName();
-//			if(entry.getLink().startsWith("http://web.gekisaka.jp")) {
-//				siteName = "ゲキサカ";
-//			}
-//			else if(entry.getLink().startsWith("http://www.nikkansports.com")) {
-//				siteName = "日刊スポーツ";
-//			}
-//			else if(entry.getLink().startsWith("http://www.soccerdigestweb.com/")) {
-//				siteName = "サッカーダイジェストWeb";
-//			}
+			String ogImage = null;
 			if(StringUtils.isBlank(siteName)) {
-				siteName = extractSiteName(entry.getLink());
+				String[] siteNameAndImage = extractSiteNameAndImage(entry.getLink());
+				siteName = siteNameAndImage[0];
+				ogImage = siteNameAndImage[1];
 			}
 			Date pubDate = entry.getPublishedDate();
 			if (pubDate == null || entry.getLink().startsWith("http://www.soccerdigestweb.com/")) {
@@ -197,7 +191,7 @@ public class FeedEntrySaver {
 			if(cnt.intValue() == 0) {
 				String description = entry.getDescription().getValue();
 				String insertSql = "INSERT INTO " + entryTable + " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-				ImageInfo img = getImageInContent(entry, ngImageKeywordList);
+				ImageInfo img = getImageInContent(ogImage, entry, ngImageKeywordList);
 				Object[] inseartParams = new Object[] {
 						entry.getLink()
 						,entryTitle
@@ -249,7 +243,7 @@ public class FeedEntrySaver {
 	 * @param qr
 	 * @throws SQLException
 	 */
-	protected static void saveFailedFeed(String feedUrl, String feedName, 
+	protected static void saveFailedFeed(String feedUrl, String feedName,
 			String teamId, QueryRunner qr) throws SQLException {
 		String sql = "UPDATE failedFeed SET count=count+1, up_date=now()"
 				+ " WHERE feed_url=?";
@@ -263,10 +257,12 @@ public class FeedEntrySaver {
 	/**
 	 * エントリのURLにアクセスし、
 	 * og:site_nameまたはtitleタグからサイト名を抽出する
+	 * og:imageからイメージURLを抽出する。
+	 * ２つの値を配列で返す。
 	 * @param entryUrl
 	 * @return
 	 */
-	protected String extractSiteName(String entryUrl) {
+	protected String[] extractSiteNameAndImage(String entryUrl) {
 		logger.info("extractSiteName>>>>>>>>>>" + entryUrl);
 		WebConversation wc = new WebConversation();
 		HttpUnitOptions.setScriptingEnabled(false);
@@ -275,9 +271,14 @@ public class FeedEntrySaver {
 			WebResponse res = wc.getResponse(req);
 			// og:site_name (Open Graph Protocol)からサイト名を取得
 			String[] ogSiteName = res.getMetaTagContent("property", "og:site_name");
+			String[] ogImages = res.getMetaTagContent("property", "og:image");
 			if(!ArrayUtils.isEmpty(ogSiteName) && !"スポーツナビ＋".equals(ogSiteName[0])) {
 //				System.out.println("結果0=" + ogSiteName[0]);
-				return ogSiteName[0];
+				String ogImage = ogImages[0];
+				if (ogImage.contains("https://f.image.geki.jp/data/image/news/2560/")) {
+					ogImage = ogImage.replace("https://f.image.geki.jp/data/image/news/2560/", "https://f.image.geki.jp/data/image/news/800/");
+				}
+				return new String[]{ogSiteName[0], ogImage};
 			}
 			// titleタグからサイト名を抽出
 			// デリミタ「 | 」
@@ -288,7 +289,7 @@ public class FeedEntrySaver {
 //				System.out.println("★" + ToStringBuilder.reflectionToString(split, ToStringStyle.MULTI_LINE_STYLE));
 				if(1 < split.length) {
 //					System.out.println("結果1＝" + split[1]);
-					return split[1];
+					return new String[] {split[1], null};
 				}
 			}
 			// デリミタ「 - 」
@@ -296,13 +297,13 @@ public class FeedEntrySaver {
 				String[] split = StringUtils.split(title, " - ");
 				if(1 < split.length) {
 //					System.out.println("結果2＝" + split[1]);
-					return split[1];
+					return new String[] {split[1], null};
 				}
 			}
 		} catch (Exception e) {
 			logger.warn("サイト名抽出エラー", e);
 		}
-		return "";
+		return new String[] {"", null};
 	}
 
 	/**
@@ -312,30 +313,34 @@ public class FeedEntrySaver {
 	 * @param ngImageKeywordList イメージURL保存NGなサイトURLのキーワードリスト
 	 * @return
 	 */
-	protected ImageInfo getImageInContent(SyndEntry entry
+	protected ImageInfo getImageInContent(String ogImage, SyndEntry entry
 			//String sourceUrl, String content
 			, List<Map<String, Object>> ngImageKeywordList) {
 		String sourceUrl = entry.getLink();
 		ImageInfo img = new ImageInfo();
-		List<SyndContent> contents = entry.getContents();
-		String content = "";
-		for (SyndContent con : contents) {
-			content += con.getValue();
-		}		
-        int imgTagIdx = content.indexOf("<img");
-        logger.info("getImageContent.  sourceUrl=" + sourceUrl + "★ imgTagIdx=" + imgTagIdx);
-        
-        String imgUrl = null;
-        if(imgTagIdx != -1) {
-	        int srcIdx = content.indexOf("src=", imgTagIdx);
-	        if(srcIdx != -1) {
-	        	logger.debug("◯srcIdx=" + srcIdx);
-	            int urlStartIdx = srcIdx + 5;
-	            int urlEndIdx = content.indexOf('"', urlStartIdx);
-	            imgUrl = content.substring(urlStartIdx, urlEndIdx);
-	            imgUrl = imgUrl.replaceAll("&amp;", "&");
-	        }
-        } else {
+
+        String imgUrl = ogImage;
+
+        if (imgUrl == null) {
+    		List<SyndContent> contents = entry.getContents();
+    		String content = "";
+    		for (SyndContent con : contents) {
+    			content += con.getValue();
+    		}
+            int imgTagIdx = content.indexOf("<img");
+            logger.info("getImageContent.  sourceUrl=" + sourceUrl + "★ imgTagIdx=" + imgTagIdx);
+            if(imgTagIdx != -1) {
+    	        int srcIdx = content.indexOf("src=", imgTagIdx);
+    	        if(srcIdx != -1) {
+    	        	logger.debug("◯srcIdx=" + srcIdx);
+    	            int urlStartIdx = srcIdx + 5;
+    	            int urlEndIdx = content.indexOf('"', urlStartIdx);
+    	            imgUrl = content.substring(urlStartIdx, urlEndIdx);
+    	            imgUrl = imgUrl.replaceAll("&amp;", "&");
+    	        }
+            }
+        }
+        if (imgUrl == null) {
         	// <media:thumbnail... から画像取得
         	final MediaEntryModule module = (MediaEntryModule) entry.getModule(MediaModule.URI);
 //            Thumbnail[] thumbnails = module.getMetadata().getThumbnail();		//NullPointerが発生した
@@ -356,7 +361,7 @@ public class FeedEntrySaver {
             		}
             	}
             }
-            
+
         	// <enclosure...から画像取得
         	List<SyndEnclosure> enclosures = entry.getEnclosures();	//画像等の関連ファイル
         	for (SyndEnclosure enc : enclosures) {

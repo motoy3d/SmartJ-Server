@@ -120,7 +120,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 					syndFeedInput.setAllowDoctypes(true);	//DOCTYPE is disallowed....回避。
 					SyndFeed feed = syndFeedInput.build(new XmlReader(url));
 					SyndFeedHolder feedHolder = new SyndFeedHolder(
-							feed, targetFeed.getFeedId(), targetFeed.getSiteName());	
+							feed, targetFeed.getFeedId(), targetFeed.getSiteName());
 					logger.info("★件数＝" + feed.getEntries().size() + "  " + targetFeed.getSiteName());
 					entryList.add(feedHolder);
 				} catch (Exception ex0) {
@@ -165,10 +165,10 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 		//OK・NGワードリスト
 		String ngSql = "SELECT word FROM feedKeywordMaster WHERE (team_id=? OR team_id='all') AND ok_flg=false";
 		List<Map<String, Object>> ngWordList = qr.query(ngSql, new MapListHandler(), teamId);
-		
+
 		String okSql = "SELECT word FROM feedKeywordMaster WHERE (team_id=? OR team_id='all') AND ok_flg=true";
 		List<Map<String, Object>>  okWordList = qr.query(okSql, new MapListHandler(), teamId);
-		
+
 		Map<String, Object> teamName1Map = new HashMap<>();
 		teamName1Map.put("word", teamName1);
 		okWordList.add(teamName1Map);
@@ -205,9 +205,12 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 				String siteName = feedResultHolder.siteName.replace("（", "").replace("）", "");
 				// 既に同一URLが登録済みの場合は登録しない
 				if(isEntryExistsInDB(qr, entryTable, entryTitle, entry.getLink())) {
-					String insertSql = "INSERT INTO " + entryTable 
+					String[] siteNameAndImage = extractSiteNameAndImage(entry.getLink());
+					String ogImage = siteNameAndImage[1];
+
+					String insertSql = "INSERT INTO " + entryTable
 							+ " VALUES(default, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
-					ImageInfo img = getImageInContent(entry, ngImageKeywordList);	//画像情報取得
+					ImageInfo img = getImageInContent(ogImage, entry, ngImageKeywordList);	//画像情報取得
 					Object[] inseartParams = new Object[] {
 							entry.getLink()
 							,entryTitle
@@ -228,7 +231,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 						logger.error("フィード読み込みエラー", ex);
 					}
 				} else {
-					logger.info("DB登録済み");
+//					logger.info("DB登録済み");
 				}
 			}
 		}
@@ -241,7 +244,7 @@ public class FeedEntrySaver2 extends FeedEntrySaver {
 	 * @param entryDescription
 	 * @return
 	 */
-	private boolean isOKEntry(List<Map<String, Object>> okWordList, String entryTitle, 
+	private boolean isOKEntry(List<Map<String, Object>> okWordList, String entryTitle,
 			String entryDescription) {
 		for (Map<String, Object> okMap : okWordList) {
 			String okWord = (String)okMap.get("word");
