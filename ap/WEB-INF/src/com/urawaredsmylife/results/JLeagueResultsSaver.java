@@ -30,24 +30,24 @@ import com.urawaredsmylife.util.TeamUtils;
  * @author motoy3d
  */
 public class JLeagueResultsSaver {
-	private static final String J1_RESULTS_URL = "http://www.jleague.jp/match/search/j1/all/";
-	private static final String J2_RESULTS_URL = "http://www.jleague.jp/match/search/j2/all/";
-	private static final String LEAGUECUP_RESULTS_URL = "http://www.jleague.jp/match/search/leaguecup/all/";
-	private static final String ACL_RESULTS_URL = "http://www.jleague.jp/match/search/acl/all/";
-	private static final String TENNOHAI_RESULTS_URL = "http://www.jleague.jp/match/search/emperor/all/";
-	private static final String J1SHOKAKU_PLAYOFF_RESULTS_URL = "http://www.jleague.jp/match/search/playoff/all/";
-	private static final String FUJI_XEROX_RESULTS_URL = "http://www.jleague.jp/match/search/fxsc/all/";
-//	private static final String NEWYEAR_CUP_RESULTS_URL = "http://www.jleague.jp/match/search/nyc/all/";
-	private static final String SURUGA_RESULTS_URL = "http://www.jleague.jp/match/search/suruga/all/";
-	private static final String J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL = "http://www.jleague.jp/match/search/jwc/all/";
-	private static final String CLUB_WORLD_CUP_RESULTS_URL = "http://www.jleague.jp/match/search/fcwc/all/";
+	private static final String J1_RESULTS_URL = "https://www.jleague.jp/match/search/j1/all/";
+	private static final String J2_RESULTS_URL = "https://www.jleague.jp/match/search/j2/all/";
+	private static final String LEAGUECUP_RESULTS_URL = "https://www.jleague.jp/match/search/leaguecup/all/";
+	private static final String ACL_RESULTS_URL = "https://www.jleague.jp/match/search/acl/all/";
+	private static final String TENNOHAI_RESULTS_URL = "https://www.jleague.jp/match/search/emperor/all/";
+	private static final String J1SHOKAKU_PLAYOFF_RESULTS_URL = "https://www.jleague.jp/match/search/playoff/all/";
+	private static final String FUJI_XEROX_RESULTS_URL = "https://www.jleague.jp/match/search/fxsc/all/";
+//	private static final String NEWYEAR_CUP_RESULTS_URL = "https://www.jleague.jp/match/search/nyc/all/";
+	private static final String SURUGA_RESULTS_URL = "https://www.jleague.jp/match/search/suruga/all/";
+	private static final String J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL = "https://www.jleague.jp/match/search/jwc/all/";
+	private static final String CLUB_WORLD_CUP_RESULTS_URL = "https://www.jleague.jp/match/search/fcwc/all/";
 	private static final String[] URLS = new String[] {
 			J1_RESULTS_URL, J2_RESULTS_URL, LEAGUECUP_RESULTS_URL, ACL_RESULTS_URL
 			,TENNOHAI_RESULTS_URL, SURUGA_RESULTS_URL, J1SHOKAKU_PLAYOFF_RESULTS_URL
 			, FUJI_XEROX_RESULTS_URL, J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL
 			,CLUB_WORLD_CUP_RESULTS_URL
 	};
-	private static final String DETAIL_URL_BASE = "http://www.jleague.jp";
+	private static final String DETAIL_URL_BASE = "https://www.jleague.jp/sp";
 	private static Logger logger = Logger.getLogger(JLeagueResultsSaver.class.getName());
 	/**
 	 * メインメソッド
@@ -134,7 +134,7 @@ public class JLeagueResultsSaver {
 							if (30 < kaisaibiMiteiComment.length()) {
 								kaisaibiMiteiComment = kaisaibiMiteiComment.substring(0, 30);
 							}
-//							gameDate = season + "年" + 
+//							gameDate = season + "年" +
 //									kaisaibiMiteiComment.replace("/", "月").substring(0, kaisaibiMiteiComment.indexOf("(")) + "日";
 							gameDate = "開催日未定";
 							logger.info("🔵🔵🔵開催日未定＝" + kaisaibiMiteiComment + " / " + gameDate);
@@ -149,7 +149,7 @@ public class JLeagueResultsSaver {
 					} else {
 						gameDate2 = gameDate.substring(5).replaceFirst("月", "/").replaceFirst("日", "").trim();
 					}
-					
+
 					System.out.println("🌟 " + gameDate + "  " + compe);
 					// 試合
 					Elements matchTables = matchSection.select("table.matchTable");
@@ -208,14 +208,14 @@ public class JLeagueResultsSaver {
 							homePk = pk2.substring(0, idx);
 							awayPk = pk2.substring(idx+4);
 						}
-						
+
 						// 詳細URL
 						Elements link = game.select("td.match > a");
 						String detailUrl = link.isEmpty()? null : link.get(0).attr("href");
 						if (StringUtils.isNotBlank(detailUrl)) {
 							detailUrl = DETAIL_URL_BASE + detailUrl;
 						}
-						
+
 						int c = 0;
 						Object[] oneRec = new Object[14];
 						oneRec[c++] = season;
@@ -228,7 +228,7 @@ public class JLeagueResultsSaver {
 						oneRec[c++] = awayTeam;
 						oneRec[c++] = "";	//TV
 						oneRec[c++] = homeScore;
-						oneRec[c++] = awayScore;					
+						oneRec[c++] = awayScore;
 						oneRec[c++] = homePk;
 						oneRec[c++] = awayPk;
 						oneRec[c++] = detailUrl;
@@ -236,7 +236,7 @@ public class JLeagueResultsSaver {
 							insertDataList.add(oneRec);
 						}
 
-						logger.info("🌟 🌟 🌟 " + gameDate1 + " | " + gameDate2 + " | " + time + " | " + stadium + " | " 
+						logger.info("🌟 🌟 🌟 " + gameDate1 + " | " + gameDate2 + " | " + time + " | " + stadium + " | "
 								+ compe + " | " + homeTeam + " " + StringUtils.trimToEmpty(homeScore) + " - " + StringUtils.trimToEmpty(awayScore) + pk + " "
 								+ awayTeam + " | " + detailUrl);
 					}
@@ -272,10 +272,10 @@ public class JLeagueResultsSaver {
 				;
 		return compe;
 	}
-	
+
 	/**
 	 * 各チームの結果を各チーム用結果テーブルにINSERTする。
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	private static void insertEachTeamResults() throws SQLException {
 		StopWatch sw = new StopWatch();
@@ -291,7 +291,7 @@ public class JLeagueResultsSaver {
 	        String season = new SimpleDateFormat("yyyy").format(new Date());
 			// 一旦削除
 			qr.update("DELETE FROM " + team.getTeamId() + "Results WHERE season=" + season);
-	
+
 			// resultsテーブルから対象クラブの情報のみSELECTしてINSERT
 			String insertSql = "INSERT INTO " + team.getTeamId() + "Results \n"
 	        		+ "SELECT season,compe,game_date1,game_date2,kickoff_time,stadium,\n"
@@ -300,7 +300,7 @@ public class JLeagueResultsSaver {
 	        		+ " null tv,\n"
 					+ " case when home_team='${TEAM_NAME}' then \n"
 					+ " case when home_score is null then null when home_score > away_score then '◯' when home_score < away_score then '×' else '△' end\n"
-					+ " 	else case when home_score is null then null when home_score > away_score then '×' when home_score < away_score then '◯' else '△' end\n" 
+					+ " 	else case when home_score is null then null when home_score > away_score then '×' when home_score < away_score then '◯' else '△' end\n"
 					+ " end as result,\n"
 					+ " CONCAT(\n"
 					+ "   case when home_team='${TEAM_NAME}' then concat(home_score,'-',away_score) else concat(away_score,'-',home_score) end, \n"
@@ -323,5 +323,5 @@ public class JLeagueResultsSaver {
 		}
 		sw.stop();
 		logger.info((sw.getTime()/1000.0) + "秒");
-	}	
+	}
 }
