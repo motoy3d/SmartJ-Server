@@ -320,6 +320,9 @@ public class FeedEntrySaver {
 		ImageInfo img = new ImageInfo();
 
         String imgUrl = ogImage;
+        if (imgUrl != null && imgUrl.contains("www.soccerdigestweb.com")) {
+        	imgUrl = imgUrl.replaceAll("ext_03_0", "ext_04_0");
+        }
 
         if (imgUrl == null) {
     		List<SyndContent> contents = entry.getContents();
