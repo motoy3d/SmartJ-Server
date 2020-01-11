@@ -35,6 +35,11 @@ public class ResultsService {
 			QueryRunner qr = DB.createQueryRunner();
 			String season = (String)params.get("season");
 			season = new SimpleDateFormat("yyyy").format(new Date());	//パラメータに関わらず今年をセット
+			String month = new SimpleDateFormat("MM").format(new Date());
+//			logger.info(">>>>month=" + month);
+			if (month.equals("01")) {
+				season = String.valueOf(NumberUtils.toInt(season) - 1);
+			}
 			String teamId = StringUtils.defaultIfEmpty((String)params.get("teamId"), "reds");
 			if (StringUtils.isNotBlank((String)params.get("otherTeamId"))) {
 				teamId = (String)params.get("otherTeamId");
@@ -43,15 +48,6 @@ public class ResultsService {
 			String sql = "SELECT * FROM " + table + " WHERE season=" + season + " ORDER BY game_date1";
 			logger.info(sql);
 			List<Map<String, Object>> resultList = qr.query(sql, new MapListHandler());
-			if (resultList.isEmpty()) {
-				String month = new SimpleDateFormat("M").format(new Date());
-				if (month.equals("1") || month.equals("2")) {
-					season = String.valueOf(NumberUtils.toInt(season) - 1);
-				}
-				sql = "SELECT * FROM " + table + " WHERE season=" + season + " ORDER BY game_date1";
-				logger.info(sql);
-				resultList = qr.query(sql, new MapListHandler());
-			}
 			return resultList;
 		} catch (Exception e) {
 			logger.error("日程・結果読み込みエラー", e);

@@ -319,8 +319,8 @@ public class JLeagueResultsSaver {
 			insertSql = StringUtils.replace(insertSql, "${TEAM_NAME}", team.getTeamName());
 			logger.info(insertSql);
 			int count = qr.update(insertSql);
-			String month = new SimpleDateFormat("M").format(new Date());
-			if (count == 0 && (!month.equals("1"))) {
+			String month = new SimpleDateFormat("MM").format(new Date());
+			if (count == 0 && (!month.equals("01"))) {
 				throw new RuntimeException("登録件数０  " + team.getTeamName());
 			}
 	        logger.info(team.getTeamName() + " 登録件数：" + count);
