@@ -39,13 +39,13 @@ public class JLeagueResultsSaver {
 	private static final String FUJI_XEROX_RESULTS_URL = "https://www.jleague.jp/match/search/fxsc/all/";
 //	private static final String NEWYEAR_CUP_RESULTS_URL = "https://www.jleague.jp/match/search/nyc/all/";
 	private static final String SURUGA_RESULTS_URL = "https://www.jleague.jp/match/search/suruga/all/";
-	private static final String J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL = "https://www.jleague.jp/match/search/jwc/all/";
-	private static final String CLUB_WORLD_CUP_RESULTS_URL = "https://www.jleague.jp/match/search/fcwc/all/";
+//	private static final String J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL = "https://www.jleague.jp/match/search/jwc/all/";
+//	private static final String CLUB_WORLD_CUP_RESULTS_URL = "https://www.jleague.jp/match/search/fcwc/all/";
 	private static final String[] URLS = new String[] {
 			J1_RESULTS_URL, J2_RESULTS_URL, LEAGUECUP_RESULTS_URL, ACL_RESULTS_URL
 			,TENNOHAI_RESULTS_URL, SURUGA_RESULTS_URL, J1SHOKAKU_PLAYOFF_RESULTS_URL
-			, FUJI_XEROX_RESULTS_URL, J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL
-			,CLUB_WORLD_CUP_RESULTS_URL
+			, FUJI_XEROX_RESULTS_URL/*, J_LEAGUE_WORLD_CHALLENGE_RESULTS_URL
+			,CLUB_WORLD_CUP_RESULTS_URL*/
 	};
 	private static final String DETAIL_URL_BASE = "https://www.jleague.jp/sp";
 	private static Logger logger = Logger.getLogger(JLeagueResultsSaver.class.getName());
@@ -105,6 +105,9 @@ public class JLeagueResultsSaver {
 				}
 				String gameDate = h4.get(0).text();
 				logger.info("★gameDate=" + gameDate);
+				if (!gameDate.startsWith(season)) {	//1月に実行時前年のデータを取得してしまうが除外する
+					continue;
+				}
 				String gameDate1 = null;
 				String gameDate2 = "";
 				// 大会名、節
@@ -316,7 +319,8 @@ public class JLeagueResultsSaver {
 			insertSql = StringUtils.replace(insertSql, "${TEAM_NAME}", team.getTeamName());
 			logger.info(insertSql);
 			int count = qr.update(insertSql);
-			if (count == 0) {
+			String month = new SimpleDateFormat("M").format(new Date());
+			if (count == 0 && (!month.equals("1"))) {
 				throw new RuntimeException("登録件数０  " + team.getTeamName());
 			}
 	        logger.info(team.getTeamName() + " 登録件数：" + count);
