@@ -12,15 +12,12 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.NodeList;
 
 import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HTMLElement;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.TableCell;
 import com.meterware.httpunit.TableRow;
-import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
-import com.meterware.httpunit.dom.NodeListImpl;
 import com.urawaredsmylife.util.Const;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.Mail;
@@ -46,7 +43,7 @@ public class StandingsSaver {
 	 */
 	private static final int LEVAIN_TEAM_COUNT = 16;
 	private static final String[] LEVAIN_GROUPS = new String[] {"A", "B", "C", "D"};
-	
+
 	/**
 	 * ACLチーム数（年によって変わる可能性あり）
 	 */
@@ -136,18 +133,19 @@ public class StandingsSaver {
             // tableタグからデータ抽出
 			for(int r=1; r<rows.length; r++) {
 				System.out.println("-----------------------------" + tables[0].getRows()[1]);
-				String rank = tables[0].getCellAsText(r, 1);
-				String team = tables[0].getTableCell(r, 2).getText();
+				String rank = tables[0].getCellAsText(r, 0);
+				if ("-".equals(rank)) rank = "0";
+				String team = tables[0].getTableCell(r, 1).getText();
 				team = team.substring(0, team.length()/2);	//getText()するとチーム名が２回連続したテキストが返ってくるため。例：「浦和レッズ浦和レッズ」
 				team = Normalizer.normalize(team, Normalizer.Form.NFKC);	//全角アルファベットを半角に変換
-				String point = tables[0].getCellAsText(r, 3);
-				String games = tables[0].getCellAsText(r, 4);
-				String win = tables[0].getCellAsText(r, 5);
-				String draw = tables[0].getCellAsText(r, 6);
-				String lose = tables[0].getCellAsText(r, 7);
-				String gotGoal = tables[0].getCellAsText(r, 8);
-				String lostGoal = tables[0].getCellAsText(r, 9);
-				String diff = tables[0].getCellAsText(r, 10);
+				String point = tables[0].getCellAsText(r, 2);
+				String games = tables[0].getCellAsText(r, 3);
+				String win = tables[0].getCellAsText(r, 4);
+				String draw = tables[0].getCellAsText(r, 5);
+				String lose = tables[0].getCellAsText(r, 6);
+				String gotGoal = tables[0].getCellAsText(r, 7);
+				String lostGoal = tables[0].getCellAsText(r, 8);
+				String diff = tables[0].getCellAsText(r, 9);
 				String teamId = TeamUtils.getTeamId(team);
 				System.out.println(rank + " : [" + team + "] " + teamId);
 				if ("V・ファーレン長崎".equals(team)) {	//・のせいか、正しくヒットしないので無理やりセット
@@ -206,7 +204,7 @@ public class StandingsSaver {
 			WebResponse res = wc.getResponse(req);
 			WebTable[] tables = res.getTables();
 			System.out.println("テーブル数：" + tables.length);
-            
+
 			String insertSql = "INSERT INTO nabiscoStandings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             Object[][] insertDataList = new Object[LEVAIN_TEAM_COUNT][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
@@ -217,17 +215,18 @@ public class StandingsSaver {
 				TableRow[] rows = table.getRows();
 				for(int r=1; r<rows.length; r++) {
 					System.out.println("-----------------------------");
-					String rank = table.getCellAsText(r, 1).replace("-", "1");
-					TableCell teamCell = table.getTableCell(r, 2);
+					String rank = table.getCellAsText(r, 0).replace("-", "1");
+					if ("-".equals(rank)) rank = "0";
+					TableCell teamCell = table.getTableCell(r, 1);
 					String team = teamCell.getNode().getFirstChild().getFirstChild().getFirstChild().getNodeValue();
-					String point = table.getCellAsText(r, 3);
-					String games = table.getCellAsText(r, 4);
-					String win = table.getCellAsText(r, 5);
-					String draw = table.getCellAsText(r, 6);
-					String lose = table.getCellAsText(r, 7);
-					String gotGoal = table.getCellAsText(r, 8);
-					String lostGoal = table.getCellAsText(r, 9);
-					String diff = table.getCellAsText(r, 10);
+					String point = table.getCellAsText(r, 2);
+					String games = table.getCellAsText(r, 3);
+					String win = table.getCellAsText(r, 4);
+					String draw = table.getCellAsText(r, 5);
+					String lose = table.getCellAsText(r, 6);
+					String gotGoal = table.getCellAsText(r, 7);
+					String lostGoal = table.getCellAsText(r, 8);
+					String diff = table.getCellAsText(r, 9);
 					String group = LEVAIN_GROUPS[g];
 					System.out.println(group + "-" + r + ", " + rank + " : " + team);
 					int c = 0;
@@ -289,15 +288,17 @@ public class StandingsSaver {
 				for(int r=1; r<rows.length; r++) {
 					System.out.println("-----------------------------");
 					String rank = table.getCellAsText(r, 0).replace("-", "1");
+					if ("-".equals(rank)) rank = "0";
 					TableCell teamCell = table.getTableCell(r, 1);
 					NodeList nodes = teamCell.getDOM().getChildNodes();
 					logger.info("t=" + nodes);
 					String team = null;
-					if (1 < nodes.getLength()) {
-						team = nodes.item(1).getNodeValue();
-					} else {
+//					if (1 < nodes.getLength()) {
+//						team = nodes.item(1).getNodeValue();
+//					} else {
 						team = table.getCellAsText(r, 1);
-					}
+//					}
+					team = team.substring(0, team.length()/2);	//チーム名が２回連続したテキストが返ってくるため。例：「浦和レッズ浦和レッズ」
 					team = TeamUtils.getShortTeamName(team);
 					String point = table.getCellAsText(r, 2);
 					String games = table.getCellAsText(r, 3);

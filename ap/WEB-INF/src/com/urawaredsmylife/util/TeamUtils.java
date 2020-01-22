@@ -68,7 +68,7 @@ public class TeamUtils {
 		TEAMS.put("kamatamare", "カマタマーレ讃岐");
 		TEAMS.put("renofa", "レノファ山口FC");
 	}
-	
+
 	/**
 	 * チーム略称とチーム名を紐付けるマップ
 	 */
@@ -137,7 +137,7 @@ public class TeamUtils {
 		TEAM_NAMES_SHORT_FULL.put("長崎", "V・ファーレン長崎");
 		TEAM_NAMES_SHORT_FULL.put("讃岐", "カマタマーレ讃岐");
 		TEAM_NAMES_SHORT_FULL.put("山口", "レノファ山口FC");
-		
+
 		// TEAM_NAMES_FULL_SHORTと同期
 		TEAM_NAMES_SHORT_FULL.put("SHA", "上海上港");//中国
 		TEAM_NAMES_SHORT_FULL.put("SHD", "山東魯能");//中国
@@ -161,6 +161,8 @@ public class TeamUtils {
 		TEAM_NAMES_SHORT_FULL.put("ALH", "アル・ヒラル");//サウジアラビア
 		TEAM_NAMES_SHORT_FULL.put("ALJ", "アルジャジーラ");//UAE
 		TEAM_NAMES_SHORT_FULL.put("WYD", "ウィダード・カサブランカ");//モロッコ
+		TEAM_NAMES_SHORT_FULL.put("チェンライ", "チェンライ・ユナイテッド");//タイ
+		TEAM_NAMES_SHORT_FULL.put("ジョホール", "ジョホール・ダルル・タクジム");//マレーシア
 	}
 
 	/**
@@ -206,8 +208,8 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("松本山雅ＦＣ", "松本山雅");
 		TEAM_NAMES_FULL_SHORT.put("徳島ヴォルティス", "徳島");
 		TEAM_NAMES_FULL_SHORT.put("群馬ザスパクサツ", "群馬");
-		
-		
+
+
 		TEAM_NAMES_FULL_SHORT.put("ロアッソ熊本", "熊本");
 		TEAM_NAMES_FULL_SHORT.put("アビスパ福岡", "福岡");
 		TEAM_NAMES_FULL_SHORT.put("愛媛FC", "愛媛");
@@ -234,7 +236,7 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("V・ファーレン長崎", "長崎");
 		TEAM_NAMES_FULL_SHORT.put("カマタマーレ讃岐", "讃岐");
 		TEAM_NAMES_FULL_SHORT.put("レノファ山口FC", "山口");
-		
+
 		// TEAM_NAMES_SHORT_FULLと同期
 		TEAM_NAMES_FULL_SHORT.put("SHA", "上海上港");//中国
 		TEAM_NAMES_FULL_SHORT.put("SHD", "山東魯能");//中国
@@ -267,6 +269,8 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("ALH", "アル・ヒラル");//サウジアラビア
 		TEAM_NAMES_FULL_SHORT.put("ALJ", "アルジャジーラ");//UAE
 		TEAM_NAMES_FULL_SHORT.put("WYD", "ウィダード・カサブランカ");//モロッコ
+		TEAM_NAMES_FULL_SHORT.put("チェンライ・ユナイテッド", "チェンライ");//タイ
+		TEAM_NAMES_FULL_SHORT.put("ジョホール・ダルル・タクジム", "ジョホール");//マレーシア
 	}
 
 	/**
