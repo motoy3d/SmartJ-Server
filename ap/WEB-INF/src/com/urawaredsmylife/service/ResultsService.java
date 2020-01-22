@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import com.urawaredsmylife.dto.NoDataResult;
@@ -37,9 +36,9 @@ public class ResultsService {
 			season = new SimpleDateFormat("yyyy").format(new Date());	//パラメータに関わらず今年をセット
 			String month = new SimpleDateFormat("MM").format(new Date());
 //			logger.info(">>>>month=" + month);
-			if (month.equals("01")) {
-				season = String.valueOf(NumberUtils.toInt(season) - 1);
-			}
+//			if (month.equals("01")) {
+//				season = String.valueOf(NumberUtils.toInt(season) - 1);
+//			}
 			String teamId = StringUtils.defaultIfEmpty((String)params.get("teamId"), "reds");
 			if (StringUtils.isNotBlank((String)params.get("otherTeamId"))) {
 				teamId = (String)params.get("otherTeamId");
