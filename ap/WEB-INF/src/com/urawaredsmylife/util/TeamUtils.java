@@ -163,6 +163,11 @@ public class TeamUtils {
 		TEAM_NAMES_SHORT_FULL.put("WYD", "ウィダード・カサブランカ");//モロッコ
 		TEAM_NAMES_SHORT_FULL.put("チェンライ", "チェンライ・ユナイテッド");//タイ
 		TEAM_NAMES_SHORT_FULL.put("ジョホール", "ジョホール・ダルル・タクジム");//マレーシア
+		TEAM_NAMES_SHORT_FULL.put("CNF", "セレスネグロス");
+		TEAM_NAMES_SHORT_FULL.put("MEL", "メルボルンV");
+		TEAM_NAMES_SHORT_FULL.put("JDT", "ジョホール");
+		TEAM_NAMES_SHORT_FULL.put("PGF", "パースグローリー");
+		TEAM_NAMES_SHORT_FULL.put("SYD", "シドニーFC");
 	}
 
 	/**
@@ -271,6 +276,11 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("WYD", "ウィダード・カサブランカ");//モロッコ
 		TEAM_NAMES_FULL_SHORT.put("チェンライ・ユナイテッド", "チェンライ");//タイ
 		TEAM_NAMES_FULL_SHORT.put("ジョホール・ダルル・タクジム", "ジョホール");//マレーシア
+		TEAM_NAMES_FULL_SHORT.put("CNF", "セレスネグロス");
+		TEAM_NAMES_FULL_SHORT.put("MEL", "メルボルンV");
+		TEAM_NAMES_FULL_SHORT.put("PGF", "パースグローリー");
+		TEAM_NAMES_FULL_SHORT.put("SYD", "シドニーFC");
+
 	}
 
 	/**
