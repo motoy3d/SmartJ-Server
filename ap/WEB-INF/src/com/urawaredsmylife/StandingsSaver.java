@@ -300,6 +300,9 @@ public class StandingsSaver {
 //					}
 					team = team.substring(0, team.length()/2);	//チーム名が２回連続したテキストが返ってくるため。例：「浦和レッズ浦和レッズ」
 					team = TeamUtils.getShortTeamName(team);
+					if ("F東京".equals(team)) {
+						team = "FC東京";
+					}
 					String point = table.getCellAsText(r, 2);
 					String games = table.getCellAsText(r, 3);
 					String win = table.getCellAsText(r, 4);
