@@ -215,18 +215,18 @@ public class StandingsSaver {
 				TableRow[] rows = table.getRows();
 				for(int r=1; r<rows.length; r++) {
 					System.out.println("-----------------------------");
-					String rank = table.getCellAsText(r, 0).replace("-", "1");
+					String rank = table.getCellAsText(r, 1).replace("-", "1");
 					if ("-".equals(rank)) rank = "0";
-					TableCell teamCell = table.getTableCell(r, 1);
+					TableCell teamCell = table.getTableCell(r, 2);
 					String team = teamCell.getNode().getFirstChild().getFirstChild().getFirstChild().getNodeValue();
-					String point = table.getCellAsText(r, 2);
-					String games = table.getCellAsText(r, 3);
-					String win = table.getCellAsText(r, 4);
-					String draw = table.getCellAsText(r, 5);
-					String lose = table.getCellAsText(r, 6);
-					String gotGoal = table.getCellAsText(r, 7);
-					String lostGoal = table.getCellAsText(r, 8);
-					String diff = table.getCellAsText(r, 9);
+					String point = table.getCellAsText(r, 3);
+					String games = table.getCellAsText(r, 4);
+					String win = table.getCellAsText(r, 5);
+					String draw = table.getCellAsText(r, 6);
+					String lose = table.getCellAsText(r, 7);
+					String gotGoal = table.getCellAsText(r, 8);
+					String lostGoal = table.getCellAsText(r, 9);
+					String diff = table.getCellAsText(r, 10);
 					String group = LEVAIN_GROUPS[g];
 					System.out.println(group + "-" + r + ", " + rank + " : " + team);
 					int c = 0;
