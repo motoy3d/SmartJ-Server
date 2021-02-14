@@ -40,7 +40,6 @@ public class GambaResultsSaver {
 
 	/**
 	 * コンストラクタ
-	 * @param teamId
 	 */
 	public GambaResultsSaver() {
 	}
@@ -267,7 +266,7 @@ public class GambaResultsSaver {
 		TEAM_NAMES.put("山形", "モンテディオ山形");
 		TEAM_NAMES.put("横浜FC", "横浜FC");
 		TEAM_NAMES.put("横浜ＦＣ", "横浜FC");
-		TEAM_NAMES.put("栃木", "栃木FC");
+		TEAM_NAMES.put("栃木", "栃木SC");
 		TEAM_NAMES.put("北九州", "ギラヴァンツ北九州");
 		TEAM_NAMES.put("岡山", "ファジアーノ岡山");
 		TEAM_NAMES.put("水戸", "水戸ホーリーホック");

@@ -123,26 +123,27 @@ public class JLeagueResultsSaver {
 					logger.info("🔶" + compe + "  /  " + komes);
 					String kaisaibiMiteiComment = "";
 					boolean isMitei = false;
-					if (komes != null && !komes.isEmpty()) {
-						isMitei = true;
-						if (komes.size() <= i || !komes.get(i).text().contains("に開催予定")) {
-							logger.info("日程候補も未定のため登録できない。" + h5);
-							continue;
-						} else {
-							kaisaibiMiteiComment = komes.get(i).text().substring(1).replace("に開催予定", "")
-									.replace(" or ", "or").trim();
-							if (kaisaibiMiteiComment.contains("　")) {
-								kaisaibiMiteiComment = kaisaibiMiteiComment.substring(0, kaisaibiMiteiComment.indexOf("　"));
-							}
-							if (30 < kaisaibiMiteiComment.length()) {
-								kaisaibiMiteiComment = kaisaibiMiteiComment.substring(0, 30);
-							}
-//							gameDate = season + "年" +
-//									kaisaibiMiteiComment.replace("/", "月").substring(0, kaisaibiMiteiComment.indexOf("(")) + "日";
-							gameDate = "開催日未定";
-							logger.info("🔵🔵🔵開催日未定＝" + kaisaibiMiteiComment + " / " + gameDate);
-						}
-					}
+					// 日程未定の場合の処理
+//					if (komes != null && !komes.isEmpty()) {
+//						isMitei = true;
+//						if (komes.size() <= i || !komes.get(i).text().contains("に開催予定")) {
+//							logger.info("日程候補も未定のため登録できない。" + h5);
+//							continue;
+//						} else {
+//							kaisaibiMiteiComment = komes.get(i).text().substring(1).replace("に開催予定", "")
+//									.replace(" or ", "or").trim();
+//							if (kaisaibiMiteiComment.contains("　")) {
+//								kaisaibiMiteiComment = kaisaibiMiteiComment.substring(0, kaisaibiMiteiComment.indexOf("　"));
+//							}
+//							if (30 < kaisaibiMiteiComment.length()) {
+//								kaisaibiMiteiComment = kaisaibiMiteiComment.substring(0, 30);
+//							}
+////							gameDate = season + "年" +
+////									kaisaibiMiteiComment.replace("/", "月").substring(0, kaisaibiMiteiComment.indexOf("(")) + "日";
+//							gameDate = "開催日未定";
+//							logger.info("🔵🔵🔵開催日未定＝" + kaisaibiMiteiComment + " / " + gameDate);
+//						}
+//					}
 					gameDate1 = gameDate.replace("年", "/").replaceFirst("月", "/").replaceFirst("日", "").replace("（", "(");
 					if(gameDate1.indexOf("(") != -1) {
 						gameDate1 = gameDate1.substring(0, gameDate1.indexOf("("));

@@ -39,7 +39,6 @@ public class AntlersResultsSaver {
 			+ "and%20xpath%3D%22%2F%2Fdiv%5B%40class%3D'result_table'%5D%2Ftable%2Ftbody%2Ftr%22&format=json&callback=";
 	/**
 	 * コンストラクタ
-	 * @param teamId
 	 */
 	public AntlersResultsSaver() {
 	}
@@ -218,7 +217,7 @@ public class AntlersResultsSaver {
 		TEAM_NAMES.put("山形", "モンテディオ山形");
 		TEAM_NAMES.put("横浜FC", "横浜FC");
 		TEAM_NAMES.put("横浜ＦＣ", "横浜FC");
-		TEAM_NAMES.put("栃木", "栃木FC");
+		TEAM_NAMES.put("栃木", "栃木SC");
 		TEAM_NAMES.put("北九州", "ギラヴァンツ北九州");
 		TEAM_NAMES.put("岡山", "ファジアーノ岡山");
 		TEAM_NAMES.put("水戸", "水戸ホーリーホック");

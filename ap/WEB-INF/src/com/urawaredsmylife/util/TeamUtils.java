@@ -108,7 +108,7 @@ public class TeamUtils {
 		TEAM_NAMES_SHORT_FULL.put("山形", "モンテディオ山形");
 		TEAM_NAMES_SHORT_FULL.put("横浜FC", "横浜FC");
 		TEAM_NAMES_SHORT_FULL.put("横浜ＦＣ", "横浜FC");
-		TEAM_NAMES_SHORT_FULL.put("栃木", "栃木FC");
+		TEAM_NAMES_SHORT_FULL.put("栃木", "栃木SC");
 		TEAM_NAMES_SHORT_FULL.put("北九州", "ギラヴァンツ北九州");
 		TEAM_NAMES_SHORT_FULL.put("岡山", "ファジアーノ岡山");
 		TEAM_NAMES_SHORT_FULL.put("水戸", "水戸ホーリーホック");
@@ -204,8 +204,8 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("モンテディオ山形", "山形");
 		TEAM_NAMES_FULL_SHORT.put("横浜FC", "横浜FC");
 		TEAM_NAMES_FULL_SHORT.put("横浜ＦＣ", "横浜FC");
-		TEAM_NAMES_FULL_SHORT.put("栃木FC", "栃木");
-		TEAM_NAMES_FULL_SHORT.put("栃木ＦＣ", "栃木");
+		TEAM_NAMES_FULL_SHORT.put("栃木SC", "栃木");
+		TEAM_NAMES_FULL_SHORT.put("栃木ＳＣ", "栃木");
 		TEAM_NAMES_FULL_SHORT.put("北九州ギラヴァンツ", "北九州");
 		TEAM_NAMES_FULL_SHORT.put("ファジアーノ岡山", "岡山");
 		TEAM_NAMES_FULL_SHORT.put("水戸ホーリーホック", "水戸");

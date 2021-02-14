@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: redsmylife
+      MYSQL_USER: redsmylife
+      MYSQL_PASSWORD: redsmylife
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - /Users/motoy3d/DockerVolumes/redsmylife-mysql5.7/data:/var/lib/mysql
+      - /Users/motoy3d/DockerVolumes/redsmylife-mysql5.7/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - 3306:3306
+  api:
+    image: tomcat:8.0-jre8-slim
+    container_name: api
+    volumes:
+      - ./ap:/usr/local/tomcat/webapps/redsmylife
+    ports:
+      - 8080:8080

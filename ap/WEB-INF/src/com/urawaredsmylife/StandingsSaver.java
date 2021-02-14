@@ -38,6 +38,9 @@ public class StandingsSaver {
 	private static final String SRC_URL_LEVAIN = "http://www.jleague.jp/standings/leaguecup/";
 	private static final String SRC_URL_ACL = "http://www.jleague.jp/standings/acl/";
 
+	private static final int J1_TEAM_COUNT = 20; //TODO 2021年限定
+	private static final int J2_TEAM_COUNT = 22;
+
 	/**
 	 * ルヴァンカップ参加チーム数（年によって変わる可能性あり）
 	 */
@@ -61,7 +64,6 @@ public class StandingsSaver {
 
 	/**
 	 * コンストラクタ
-	 * @param teamId
 	 */
 	public StandingsSaver() {
 	}
@@ -77,13 +79,13 @@ public class StandingsSaver {
 			Date j1OpenDate = DateUtils.parseDate(Const.J1_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int j1Result = 0;
 			if (j1OpenDate.getTime() < new Date().getTime()) {
-				j1Result = insertJ(SRC_URL_J1, "J1", "", 18);
+				j1Result = insertJ(SRC_URL_J1, "J1", "", J1_TEAM_COUNT);
 			}
 			// J2
 			Date j2OpenDate = DateUtils.parseDate(Const.J2_OPEN_DATE, new String[] {"yyyy/MM/dd"});
 			int j2Result = 0;
 			if (j2OpenDate.getTime() < new Date().getTime()) {
-				j2Result = insertJ(SRC_URL_J2, "J2", "", 22);
+				j2Result = insertJ(SRC_URL_J2, "J2", "", J2_TEAM_COUNT);
 			}
 			// ルヴァンカップ
 			Date levainOpenDate = DateUtils.parseDate(Const.LEVAIN_OPEN_DATE, new String[] {"yyyy/MM/dd"});
@@ -133,19 +135,19 @@ public class StandingsSaver {
             // tableタグからデータ抽出
 			for(int r=1; r<rows.length; r++) {
 				System.out.println("-----------------------------" + tables[0].getRows()[1]);
-				String rank = tables[0].getCellAsText(r, 1);
+				String rank = tables[0].getCellAsText(r, 0);
 				if ("-".equals(rank)) rank = "0";
-				String team = tables[0].getTableCell(r, 2).getText();
+				String team = tables[0].getTableCell(r, 1).getText();
 				team = team.substring(0, team.length()/2);	//getText()するとチーム名が２回連続したテキストが返ってくるため。例：「浦和レッズ浦和レッズ」
 				team = Normalizer.normalize(team, Normalizer.Form.NFKC);	//全角アルファベットを半角に変換
-				String point = tables[0].getCellAsText(r, 3);
-				String games = tables[0].getCellAsText(r, 4);
-				String win = tables[0].getCellAsText(r, 5);
-				String draw = tables[0].getCellAsText(r, 6);
-				String lose = tables[0].getCellAsText(r, 7);
-				String gotGoal = tables[0].getCellAsText(r, 8);
-				String lostGoal = tables[0].getCellAsText(r, 9);
-				String diff = tables[0].getCellAsText(r, 10);
+				String point = tables[0].getCellAsText(r, 2);
+				String games = tables[0].getCellAsText(r, 3);
+				String win = tables[0].getCellAsText(r, 4);
+				String draw = tables[0].getCellAsText(r, 5);
+				String lose = tables[0].getCellAsText(r, 6);
+				String gotGoal = tables[0].getCellAsText(r, 7);
+				String lostGoal = tables[0].getCellAsText(r, 8);
+				String diff = tables[0].getCellAsText(r, 9);
 				String teamId = TeamUtils.getTeamId(team);
 				System.out.println(rank + " : [" + team + "] " + teamId);
 				if ("V・ファーレン長崎".equals(team)) {	//・のせいか、正しくヒットしないので無理やりセット
