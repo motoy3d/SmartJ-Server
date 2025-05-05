@@ -3,6 +3,7 @@ package com.urawaredsmylife;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.dbutils.QueryRunner;
@@ -18,6 +19,12 @@ import com.meterware.httpunit.TableRow;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.urawaredsmylife.util.Const;
 import com.urawaredsmylife.util.DB;
 import com.urawaredsmylife.util.Mail;
@@ -38,8 +45,8 @@ public class StandingsSaver {
 	private static final String SRC_URL_LEVAIN = "http://www.jleague.jp/standings/leaguecup/";
 	private static final String SRC_URL_ACL = "http://www.jleague.jp/standings/acl/";
 
-	private static final int J1_TEAM_COUNT = 20; //TODO 2021年限定
-	private static final int J2_TEAM_COUNT = 22;
+	private static final int J1_TEAM_COUNT = 20;
+	private static final int J2_TEAM_COUNT = 20;
 
 	/**
 	 * ルヴァンカップ参加チーム数（年によって変わる可能性あり）
@@ -88,19 +95,20 @@ public class StandingsSaver {
 				j2Result = insertJ(SRC_URL_J2, "J2", "", J2_TEAM_COUNT);
 			}
 			// ルヴァンカップ
-			Date levainOpenDate = DateUtils.parseDate(Const.LEVAIN_OPEN_DATE, new String[] {"yyyy/MM/dd"});
-			int levainResult = 0;
-			if (levainOpenDate.getTime() < new Date().getTime()) {
-				levainResult = insertLevain();
-			}
-			//ACL
-			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
-			int aclResult = 0;
-			if (aclOpenDate.getTime() < new Date().getTime()) {
-				aclResult = insertACL();
-			}
+			// 形式変更未対応のためコメントアウト
+//			Date levainOpenDate = DateUtils.parseDate(Const.LEVAIN_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+//			int levainResult = 0;
+//			if (levainOpenDate.getTime() < new Date().getTime()) {
+//				levainResult = insertLevain();
+//			}
+//			//ACL
+//			Date aclOpenDate = DateUtils.parseDate(Const.ACL_OPEN_DATE, new String[] {"yyyy/MM/dd"});
+//			int aclResult = 0;
+//			if (aclOpenDate.getTime() < new Date().getTime()) {
+//				aclResult = insertACL();
+//			}
 
-			return j1Result + j2Result + levainResult + aclResult;
+			return j1Result + j2Result /*+ levainResult + aclResult*/;
 		} catch(Exception ex) {
 			logger.error("順位表取得エラー", ex);
 			Mail.send(ex);
@@ -116,80 +124,90 @@ public class StandingsSaver {
 	 * @param teamCount
 	 * @return
 	 */
-	private int insertJ(String srcUrl, String league, String stage, int teamCount) {
-		WebConversation wc = new WebConversation();
-		HttpUnitOptions.setScriptingEnabled(false);
-		logger.info("----------------------------------------");
-		logger.info(srcUrl);
-		logger.info("----------------------------------------");
-		GetMethodWebRequest req = new GetMethodWebRequest(srcUrl);
-		try {
-			// HTTPリクエスト
-			WebResponse res = wc.getResponse(req);
-			WebTable[] tables = res.getTables();
-			System.out.println("tables=" + ToStringBuilder.reflectionToString(tables));
-			TableRow[] rows = tables[0].getRows();
+    private int insertJ(String srcUrl, String league, String stage, int teamCount) {
+        try {
+            logger.info("----------------------------------------");
+            logger.info(srcUrl);
+            logger.info("----------------------------------------");
+
+            // HTMLを取得してパース
+            Document doc = Jsoup.connect(srcUrl).get();
+            Element table = doc.getElementsByTag("table").get(0); // 最初のtable要素を取得
+            if (table == null) {
+                logger.warn("順位表テーブルが見つかりませんでした");
+                return -1;
+            }
+
+            Elements rows = table.select("tr");
+            if (rows.size() <= 1) {
+                logger.warn("順位表データが取得出来ませんでした");
+                return -1;
+            }
+
             String insertSql = "INSERT INTO standings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())";
             Object[][] insertDataList = new Object[teamCount][];
             String season = new SimpleDateFormat("yyyy").format(new Date());
-            // tableタグからデータ抽出
-			for(int r=1; r<rows.length; r++) {
-				System.out.println("-----------------------------" + tables[0].getRows()[1]);
-				String rank = tables[0].getCellAsText(r, 1);
-				if ("-".equals(rank)) rank = "0";
-				String team = tables[0].getTableCell(r, 2).getText();
-				team = team.substring(0, team.length()/2);	//getText()するとチーム名が２回連続したテキストが返ってくるため。例：「浦和レッズ浦和レッズ」
-				team = Normalizer.normalize(team, Normalizer.Form.NFKC);	//全角アルファベットを半角に変換
-				String point = tables[0].getCellAsText(r, 3);
-				String games = tables[0].getCellAsText(r, 4);
-				String win = tables[0].getCellAsText(r, 5);
-				String draw = tables[0].getCellAsText(r, 6);
-				String lose = tables[0].getCellAsText(r, 7);
-				String gotGoal = tables[0].getCellAsText(r, 8);
-				String lostGoal = tables[0].getCellAsText(r, 9);
-				String diff = tables[0].getCellAsText(r, 10);
-				String teamId = TeamUtils.getTeamId(team);
-				System.out.println(rank + " : [" + team + "] " + teamId);
-				if ("V・ファーレン長崎".equals(team)) {	//・のせいか、正しくヒットしないので無理やりセット
-					System.out.println("🌟 V・ファーレン長崎");
-					teamId = "v_varen";
-				}
-				int c = 0;
-				insertDataList[r-1] = new Object[15];
-				insertDataList[r-1][c++] = season;
-				insertDataList[r-1][c++] = league;
-				insertDataList[r-1][c++] = "J1".equals(league)? stage : "-";
-				insertDataList[r-1][c++] = r;
-				insertDataList[r-1][c++] = rank;
-				insertDataList[r-1][c++] = teamId;
-				insertDataList[r-1][c++] = team;
-				insertDataList[r-1][c++] = point;
-				insertDataList[r-1][c++] = games;
-				insertDataList[r-1][c++] = win;
-				insertDataList[r-1][c++] = draw;
-				insertDataList[r-1][c++] = lose;
-				insertDataList[r-1][c++] = gotGoal;
-				insertDataList[r-1][c++] = lostGoal;
-				insertDataList[r-1][c++] = diff;
-			}
-			if(rows.length == 0) {
-				logger.warn("順位表データが取得出来ませんでした");
-				return -1;
-			}
-			QueryRunner qr = DB.createQueryRunner();
-			String delSql = "DELETE FROM standings WHERE season=? AND league=?";
-			logger.info("順位表一旦削除=" + delSql);
-			int deletedCount = qr.update(delSql, season, league);
-			logger.info("削除件数: " + deletedCount);
-            int[] resultCount = qr.batch(insertSql, insertDataList);	//一括登録
-            logger.info("登録件数：" + ToStringBuilder.reflectionToString(resultCount));
-		} catch (Exception e) {
-			logger.error("J1/J2順位表抽出エラー", e);
-			Mail.send(e);
-			return 1;
-		}
-		return 0;
-	}
+
+            for (int r = 1; r < rows.size(); r++) {
+                Element row = rows.get(r);
+                Elements cells = row.select("td");
+
+                if (cells.size() < 11) {
+                    logger.warn("不正な行データをスキップします: " + row.text());
+                    continue;
+                }
+
+                String rank = cells.get(1).text().replace("-", "0");
+                String team = cells.get(2).text();
+                team = team.length() / 2 > 0 ? team.substring(0, team.length() / 2) : team; // チーム名が2回繰り返されている場合に対応
+                team = Normalizer.normalize(team, Normalizer.Form.NFKC);
+                String point = cells.get(3).text();
+                String games = cells.get(4).text();
+                String win = cells.get(5).text();
+                String draw = cells.get(6).text();
+                String lose = cells.get(7).text();
+                String gotGoal = cells.get(8).text();
+                String lostGoal = cells.get(9).text();
+                String diff = cells.get(10).text();
+
+                String teamId = TeamUtils.getTeamId(team);
+                if ("V・ファーレン長崎".equals(team)) {
+                    teamId = "v_varen";
+                }
+
+                int c = 0;
+                insertDataList[r - 1] = new Object[15];
+                insertDataList[r - 1][c++] = season;
+                insertDataList[r - 1][c++] = league;
+                insertDataList[r - 1][c++] = "J1".equals(league) ? stage : "-";
+                insertDataList[r - 1][c++] = r;
+                insertDataList[r - 1][c++] = rank;
+                insertDataList[r - 1][c++] = teamId;
+                insertDataList[r - 1][c++] = team;
+                insertDataList[r - 1][c++] = point;
+                insertDataList[r - 1][c++] = games;
+                insertDataList[r - 1][c++] = win;
+                insertDataList[r - 1][c++] = draw;
+                insertDataList[r - 1][c++] = lose;
+                insertDataList[r - 1][c++] = gotGoal;
+                insertDataList[r - 1][c++] = lostGoal;
+                insertDataList[r - 1][c++] = diff;
+            }
+
+            QueryRunner qr = DB.createQueryRunner();
+            String delSql = "DELETE FROM standings WHERE season=? AND league=?";
+            logger.info("順位表一旦削除=" + delSql);
+            int deletedCount = qr.update(delSql, season, league);
+            logger.info("削除件数: " + deletedCount);
+            int[] resultCount = qr.batch(insertSql, insertDataList);
+            logger.info("登録件数：" + Arrays.toString(resultCount));
+        } catch (Exception e) {
+            logger.error("J1/J2順位表抽出エラー", e);
+            Mail.send(e);
+            return 1;
+        }
+        return 0;
+    }
 
 	/**
 	 * ルヴァンカップ順位表URLにアクセスして解析し、nabiscoStandingsテーブルにINSERTする。

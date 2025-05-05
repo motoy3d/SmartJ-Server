@@ -28,7 +28,7 @@ public class TeamUtils {
 		TEAMS.put("reysol", "柏レイソル");
 		TEAMS.put("grampus", "名古屋グランパス");
 		TEAMS.put("vissel", "ヴィッセル神戸");
-		TEAMS.put("ardija", "大宮アルディージャ");
+		TEAMS.put("ardija", "RB大宮アルディージャ");
 		TEAMS.put("gamba", "ガンバ大阪");
 		TEAMS.put("albirex", "アルビレックス新潟");
 		TEAMS.put("consadole", "北海道コンサドーレ札幌");
@@ -67,6 +67,8 @@ public class TeamUtils {
 		TEAMS.put("v_varen", " V・ファーレン長崎");
 		TEAMS.put("kamatamare", "カマタマーレ讃岐");
 		TEAMS.put("renofa", "レノファ山口FC");
+		TEAMS.put("imabari", "FC今治");
+		TEAMS.put("iwaki", "いわきFC");
 	}
 
 	/**
@@ -93,7 +95,7 @@ public class TeamUtils {
 		TEAM_NAMES_SHORT_FULL.put("柏", "柏レイソル");
 		TEAM_NAMES_SHORT_FULL.put("名古屋", "名古屋グランパス");
 		TEAM_NAMES_SHORT_FULL.put("神戸", "ヴィッセル神戸");
-		TEAM_NAMES_SHORT_FULL.put("大宮", "大宮アルディージャ");
+		TEAM_NAMES_SHORT_FULL.put("大宮", "RB大宮アルディージャ");
 		TEAM_NAMES_SHORT_FULL.put("G大阪", "ガンバ大阪");
 		TEAM_NAMES_SHORT_FULL.put("Ｇ大阪", "ガンバ大阪");
 		TEAM_NAMES_SHORT_FULL.put("新潟", "アルビレックス新潟");
@@ -137,6 +139,8 @@ public class TeamUtils {
 		TEAM_NAMES_SHORT_FULL.put("長崎", "V・ファーレン長崎");
 		TEAM_NAMES_SHORT_FULL.put("讃岐", "カマタマーレ讃岐");
 		TEAM_NAMES_SHORT_FULL.put("山口", "レノファ山口FC");
+		TEAM_NAMES_SHORT_FULL.put("今治", "FC今治");
+		TEAM_NAMES_SHORT_FULL.put("いわき", "いわきFC");
 
 		// TEAM_NAMES_FULL_SHORTと同期
 		TEAM_NAMES_SHORT_FULL.put("SHA", "上海上港");//中国
@@ -191,7 +195,7 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("柏レイソル", "柏");
 		TEAM_NAMES_FULL_SHORT.put("名古屋グランパス", "名古屋");
 		TEAM_NAMES_FULL_SHORT.put("ヴィッセル神戸", "神戸");
-		TEAM_NAMES_FULL_SHORT.put("大宮アルディージャ", "大宮");
+		TEAM_NAMES_FULL_SHORT.put("RB大宮アルディージャ", "大宮");
 		TEAM_NAMES_FULL_SHORT.put("ガンバ大阪", "G大阪");
 		TEAM_NAMES_FULL_SHORT.put("アルビレックス新潟", "新潟");
 		TEAM_NAMES_FULL_SHORT.put("北海道コンサドーレ札幌", "札幌");
@@ -241,6 +245,8 @@ public class TeamUtils {
 		TEAM_NAMES_FULL_SHORT.put("V・ファーレン長崎", "長崎");
 		TEAM_NAMES_FULL_SHORT.put("カマタマーレ讃岐", "讃岐");
 		TEAM_NAMES_FULL_SHORT.put("レノファ山口FC", "山口");
+		TEAM_NAMES_FULL_SHORT.put("FC今治", "今治");
+		TEAM_NAMES_FULL_SHORT.put("いわきFC", "いわき");
 
 		// TEAM_NAMES_SHORT_FULLと同期
 		TEAM_NAMES_FULL_SHORT.put("SHA", "上海上港");//中国
